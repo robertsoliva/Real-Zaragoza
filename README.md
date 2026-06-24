@@ -13,10 +13,8 @@ The project has two distinct halves:
 
 ## Structure
 
-- **`wiki/`** — an LLM-maintained wiki, inspired by Andrej Karpathy's idea of a wiki that an LLM writes and maintains directly rather than humans editing prose by hand. Each page is small and atomic (one topic), dated, and sourced — facts get corrected and updated in place as they change, rather than left to rot next to newer information. Currently:
-  - `history.md` — founding, honours, notable eras, relegations, stadium history.
-  - `current-situation.md` — present-day ownership, board, coaching staff, sporting direction, and the ongoing stadium/institutional crisis.
-  - More pages (players, season-by-season stats, comparative team data) will be added as the data-sourcing work below comes online.
+- **`wiki/`** — an LLM-maintained wiki, inspired by Andrej Karpathy's idea of a wiki that an LLM writes and maintains directly rather than humans editing prose by hand. Each page is small and atomic (one topic), dated, and sourced — facts get corrected and updated in place as they change, rather than left to rot next to newer information. See `wiki/README.md` for the full index; currently covers the club's history, honours and records, present-day ownership/board/coaching situation, finances and debt, the current squad rebuild, the youth academy, and fan/identity culture.
+  - More pages (structured player pages, season-by-season stats, comparative team data) will be added as the data-sourcing work below comes online.
 - **`next-actions.md`** (repo root) — the backlog of planned work: data pulls, new wiki pages, open questions flagged inside the wiki itself. This is where ideas go before they're built — it is *not* part of the wiki.
 - **`.claude/`** — instructions for Claude Code on how to work in this repo: wiki conventions, sourcing standards, and operating rules (see `.claude/CLAUDE.md`).
 
@@ -28,4 +26,4 @@ For statistical data, the plan (tracked in `next-actions.md`) is to pull team da
 
 ## Where things stand
 
-See `next-actions.md` for the live backlog. As of now: the institutional wiki pages (history + current situation) exist; data sourcing from SofaScore/Transfermarkt has not started yet.
+See `next-actions.md` for the live backlog. As of now: seven wiki pages exist (see `wiki/README.md`) covering history, current situation, finances, squad, identity/fan culture, records, and the academy; data sourcing from SofaScore/Transfermarkt has not started yet.

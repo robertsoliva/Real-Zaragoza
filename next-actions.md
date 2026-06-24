@@ -11,11 +11,12 @@ Running backlog of ideas/future work for this repo. Not a wiki page — this tra
 
 ## Wiki content (Karpathy-style: atomic, sourced, append-only pages)
 
+- [x] Reconcile `history.md` + `current-situation.md` against realzaragoza.com and Wikipedia as sources of truth (1932 founding/merger detail, stadium demolition, 1995 Recopa final score, Ibai Gómez as head coach) — 2026-06-24
+- [x] Institution/football deep-dive pages: `wiki/finances.md` (debt history, 2026 capital increase, wage caps), `wiki/squad.md` (2026–27 rebuild), `wiki/identity-fan-culture.md` (nicknames, rivalries, ultras, anthem, socios), `wiki/records.md` (top scorer, appearances, Pichichi), `wiki/academy.md` (cantera structure, 2026 overhaul, graduates) — 2026-06-24
+- [x] `wiki/README.md` index page — 2026-06-24
 - [ ] Season-by-season results table (full history) — likely generated from the SofaScore pull once that exists, linked from `wiki/history.md`.
-- [ ] Player pages — one atomic page per current first-team player once Transfermarkt data lands.
-- [ ] Institution deep-dive pages: ownership timeline (2022 takeover → 2026 capital increase, told as a timeline rather than a snapshot), stadium (La Romareda — capacity, redevelopment plans), academy/cantera output.
-- [ ] Confirm and fill in the two open items flagged in `wiki/current-situation.md` (new institutional president / general director names; David Navarro's status for 2026–27) once public.
-- [ ] Confirm the open item flagged in `wiki/history.md` (1932 founding/merger details against the club's official history page).
+- [ ] Player pages — one atomic page per current first-team player once Transfermarkt data lands; should also replace `wiki/squad.md`'s prose roster with a structured table, and give `wiki/academy.md` a current (not 2018–19) graduate list.
+- [ ] Standing task, not a one-off: periodically sweep every wiki page's "Open items" section for things that should now be resolvable — several are genuinely time-sensitive right now (new institutional president/general director names and Fernando López succession in `current-situation.md`; 2026–27 captaincy and the "at risk" players in `squad.md`; the Ander Herrera return and Francho/Azón contract renewals in `academy.md`).
 
 ## Infrastructure
 
