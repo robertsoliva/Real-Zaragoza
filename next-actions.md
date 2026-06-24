@@ -9,6 +9,11 @@ Running backlog of ideas/future work for this repo. Not a wiki page — this tra
 - [ ] Decide on a storage format for scraped data (flat CSV/JSON in a `data/` folder vs. a small SQLite db) before the first real pull, so we don't have to migrate later.
 - [ ] Define a scraping/refresh cadence (e.g. weekly during the season) and where that lives (manual run vs. scheduled job).
 
+## Analysis & predictions
+
+- [ ] Stats analysis on players and matches once the SofaScore/Transfermarkt pull lands: form, head-to-head, performance trends.
+- [ ] Match outcome prediction model for upcoming Real Zaragoza fixtures — approach/tooling TBD, depends on the data pull above.
+
 ## Wiki content (Karpathy-style: atomic, sourced, append-only pages)
 
 - [x] Reconcile `history.md` + `current-situation.md` against realzaragoza.com and Wikipedia as sources of truth (1932 founding/merger detail, stadium demolition, 1995 Recopa final score, Ibai Gómez as head coach) — 2026-06-24

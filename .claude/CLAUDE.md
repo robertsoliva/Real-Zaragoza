@@ -1,5 +1,9 @@
 # Real-Zaragoza repo — instructions for Claude
 
+## README.md is frozen
+
+As of 2026-06-24, the user has explicitly locked `README.md` — **do not edit it**, for any reason, even as a side effect of other work (new wiki pages, restructuring, etc.), unless the user explicitly asks to lift this freeze in that conversation. It's intentionally short; don't "helpfully" expand it back out.
+
 ## What this repo is
 
 An ongoing analysis project on Real Zaragoza CF, covering both sporting (players, results, stats) and institutional (ownership, management, structure) aspects. Two kinds of content live here, and they should not be mixed:
