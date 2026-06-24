@@ -14,6 +14,7 @@ An ongoing analysis project on Real Zaragoza CF, covering both sporting (players
 - Every factual claim should be traceable to a source — end each page with a `## Sources` section of markdown links.
 - If a fact is uncertain, recently changed, or actively in flux (e.g. an ongoing boardroom restructuring), say so explicitly in an "Open items" section rather than stating it as settled. Don't guess at facts that are time-sensitive (current manager, current owners, current league position) — verify via web search before writing, since these change frequently and may be newer than training knowledge.
 - Prefer Spanish-language sources for Aragonese/club-specific news (more coverage, often first to report), but write the wiki content itself in English unless told otherwise.
+- **Sources of truth:** [realzaragoza.com](https://www.realzaragoza.com/) (browse it, don't just hit the homepage) and the [Spanish Wikipedia article](https://es.wikipedia.org/wiki/Real_Zaragoza) outrank every other source. If day-to-day press contradicts these two, these two win — but still note the discrepancy rather than silently dropping it, since the official site/Wikipedia can also lag breaking news (e.g. an org chart not yet updated after an announced departure).
 
 ## Data sourcing (future)
 
@@ -23,3 +24,4 @@ When SofaScore/Transfermarkt data pulls start (tracked in `next-actions.md`), ra
 
 - Don't invent statistics or dates. If you can't verify something, leave it as an open item.
 - Keep `next-actions.md` up to date as work gets done — move finished items to done with a date instead of deleting them.
+- **Never run `git push` (or anything else that touches the remote) without asking first, every time — a prior approval does not carry over to the next push.** Commit locally freely; pushing always needs an explicit go-ahead in that conversation.
