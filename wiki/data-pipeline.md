@@ -1,6 +1,6 @@
 # Data Pipeline — Ingestion architecture and BigQuery schema
 
-> **Status:** living document, last updated 2026-06-26. Transfermarkt scraper built and verified (32 players, all fields confirmed against live page). BQ historical strategy decided. SofaScore scraper and GCP deployment pending.
+> **Status:** living document, last updated 2026-06-26. GCP project live: datasets, table, Pub/Sub topics, service account, and budget alert all created. 32 players loaded into `rz_raw.transfermarkt_squad`. `rz_processed.squad_snapshots` view live. SofaScore scraper and Cloud Run/Function deployment pending.
 
 ## TL;DR
 
@@ -48,15 +48,17 @@ Cloud Run (scraper) and Cloud Function (BQ writer) are decoupled deliberately:
 
 ### GCP resource map
 
-| Resource | Planned name | Purpose |
-|---|---|---|
-| Cloud Scheduler job | `rz-weekly-ingest` | Fires every Tuesday, triggers Cloud Run |
-| Cloud Run job | `rz-scraper` | Scrapes both sources, publishes to Pub/Sub |
-| Pub/Sub topic | `rz-data-ingested` | Message bus; decouples scrape from load |
-| Pub/Sub dead-letter topic | `rz-data-ingested-dlq` | Catches failed messages for inspection |
-| Cloud Function | `rz-bq-loader` | Pub/Sub subscriber; writes to BQ |
-| BQ dataset | `rz_raw` | Append-only raw ingests, partitioned by `ingested_date` |
-| BQ dataset | `rz_processed` | Cleaned/transformed tables and views for analysis |
+| Resource | Name | Status | Purpose |
+|---|---|---|---|
+| Cloud Scheduler job | `rz-weekly-ingest` | pending | Fires every Tuesday, triggers Cloud Run |
+| Cloud Run job | `rz-scraper` | pending | Scrapes both sources, publishes to Pub/Sub |
+| Pub/Sub topic | `rz-data-ingested` | **live** | Message bus; decouples scrape from load |
+| Pub/Sub dead-letter topic | `rz-data-ingested-dlq` | **live** | Catches failed messages for inspection |
+| Cloud Function | `rz-bq-loader` | pending | Pub/Sub subscriber; writes to BQ |
+| BQ dataset | `rz_raw` | **live** | Append-only raw ingests, partitioned by `ingested_date` |
+| BQ dataset | `rz_processed` | **live** | Cleaned/transformed tables and views for analysis |
+| Service account | `rz-pipeline` | **live** | Minimum IAM: BQ dataEditor+jobUser, Pub/Sub publisher+subscriber |
+| Budget alert | `rz-pipeline-alert` | **live** | €10/month cap; alerts at 50%, 90%, 100% |
 
 ## BigQuery schema
 
@@ -211,11 +213,12 @@ The service account key file is **never committed to this repo**. Options:
 
 ## Open items
 
-- **SofaScore scraper strategy** — unofficial internal API (reverse-engineered endpoints); rate-limit sensitive, needs investigation
+- **SofaScore scraper** — unofficial internal API (reverse-engineered endpoints); rate-limit sensitive, needs investigation
+- **Cloud Run + Cloud Function deployment** — Dockerfile, container build, Cloud Function code, Scheduler job wiring; blocked on SofaScore scraper being ready so both sources go in the same container
 - **DLQ handling** — define what happens when a message in `rz-data-ingested-dlq` is not resolved (manual replay vs. auto-retry limit)
-- **`rz_processed` materialisation** — views are the plan; confirm whether query-time cost warrants materialised tables once data volume grows
-- **GCP project ID and region** — europe-west1 recommended for GDPR proximity; confirm with robertsoliva before creating resources
-- **Monitoring** — Cloud Monitoring alerts on Pub/Sub subscription backlog and Cloud Function error rate
+- **`rz_processed.player_valuations` view** — time-series of market value per player; add once a second weekly scrape lands so there's actual change data to query
+- **`rz_processed.season_results`** — pending SofaScore scraper
+- **Cloud Monitoring alerts** — Pub/Sub subscription backlog + Cloud Function error rate; set up when Cloud Function is deployed
 
 ## Sources
 

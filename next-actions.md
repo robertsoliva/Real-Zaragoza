@@ -5,12 +5,15 @@ Running backlog of ideas/future work for this repo. Not a wiki page — this tra
 ## Data pipeline
 
 - [x] **Scraper — Transfermarkt.** `pipeline/cloud-run/scraper_transfermarkt.py` — verein/142, `/plus/1`, 32 players, full schema confirmed — 2026-06-26
-- [ ] **Scraper — SofaScore.** Implement Cloud Run container that pulls recent matches, team stats, and player stats via SofaScore's unofficial internal API. Target tables: `rz_raw.sofascore_matches`, `rz_raw.sofascore_match_stats`, `rz_raw.sofascore_player_stats`.
-- [ ] **Cloud Function — BQ loader.** Pub/Sub subscriber that validates schema and streams rows into `rz_raw`. Handle dead-letter queue for failed messages.
-- [ ] **Cloud Scheduler job.** Wire up the Tuesday 06:00 CET trigger for the Cloud Run scraper job.
+- [ ] **Scraper — SofaScore.** Pull recent matches, team stats, and player stats via SofaScore's unofficial internal API. Target tables: `rz_raw.sofascore_matches`, `rz_raw.sofascore_match_stats`, `rz_raw.sofascore_player_stats`.
+- [ ] **Cloud Run container.** Dockerfile + deploy `rz-scraper` to Cloud Run (Transfermarkt + SofaScore in one image); publishes to `rz-data-ingested`.
+- [ ] **Cloud Function — BQ loader.** `rz-bq-loader`: Pub/Sub subscriber, validates schema, streams to `rz_raw`. Handle DLQ.
+- [ ] **Cloud Scheduler job.** `rz-weekly-ingest` — Tuesday 06:00 CET trigger.
 - [x] **`rz_processed` strategy decided.** Append-only raw + view deduplication on `(player_id, season_id)`. SQL in `wiki/data-pipeline.md` — 2026-06-26
-- [ ] **`rz_processed` views — create in BQ.** `squad_snapshots`, `player_valuations` (DDL ready in wiki); `season_results` pending SofaScore scraper.
-- [ ] **Monitoring.** Cloud Monitoring alerts on Pub/Sub backlog + Cloud Function error rate.
+- [x] **`rz_processed.squad_snapshots` view live in BQ** — 2026-06-26
+- [ ] **`rz_processed.player_valuations` view.** Add after second weekly scrape so there's actual change data to query.
+- [ ] **`rz_processed.season_results`.** Pending SofaScore scraper.
+- [ ] **Monitoring.** Cloud Monitoring alerts on Pub/Sub backlog + Cloud Function error rate; set up when Cloud Function is deployed.
 
 ## Analysis & predictions
 
@@ -35,7 +38,7 @@ Running backlog of ideas/future work for this repo. Not a wiki page — this tra
 - [x] Refresh cadence decided: weekly, every Tuesday, via Cloud Scheduler — 2026-06-26
 - [x] Pipeline architecture decided: Cloud Scheduler → Cloud Run → Pub/Sub → Cloud Function → BQ — 2026-06-26
 - [x] Repo layout decided: `data/` for local snapshots (gitignored contents), `pipeline/` for container/function code — 2026-06-26
-- [ ] GCP project setup: create project, enable APIs (Cloud Run, Cloud Functions, Pub/Sub, BigQuery, Cloud Scheduler, Secret Manager), create service account with minimum required roles.
-- [ ] Create BQ datasets `rz_raw` and `rz_processed` with correct region and partition settings.
+- [x] GCP project setup: APIs enabled, service account `rz-pipeline` created with minimum IAM roles, budget alert at €10/month — 2026-06-26
+- [x] BQ datasets `rz_raw` and `rz_processed` created (europe-west1); `transfermarkt_squad` table live, 32 rows loaded — 2026-06-26
 - [ ] Containerize scraper (Dockerfile) and deploy to Cloud Run as a job.
 - [ ] Deploy Cloud Function with Pub/Sub trigger.

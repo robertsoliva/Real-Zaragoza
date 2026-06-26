@@ -1,0 +1,20 @@
+[
+  {"name": "ingested_date",   "type": "DATE",      "mode": "REQUIRED", "description": "Partition key — date this row was scraped"},
+  {"name": "season_id",       "type": "INT64",     "mode": "REQUIRED", "description": "Transfermarkt season year (e.g. 2025 = 2025-26 season)"},
+  {"name": "player_id",       "type": "STRING",    "mode": "NULLABLE", "description": "Transfermarkt internal player ID"},
+  {"name": "name",            "type": "STRING",    "mode": "NULLABLE", "description": "Full player name"},
+  {"name": "date_of_birth",   "type": "DATE",      "mode": "NULLABLE", "description": "Player date of birth"},
+  {"name": "jersey_number",   "type": "STRING",    "mode": "NULLABLE", "description": "Current squad number; '-' if unassigned"},
+  {"name": "position",        "type": "STRING",    "mode": "NULLABLE", "description": "Transfermarkt Spanish position (e.g. Defensa central)"},
+  {"name": "age",             "type": "INT64",     "mode": "NULLABLE", "description": "Age at scrape date"},
+  {"name": "nationality",     "type": "STRING",    "mode": "NULLABLE", "description": "Primary nationality (first flag)"},
+  {"name": "nationality_all", "type": "STRING",    "mode": "NULLABLE", "description": "Comma-separated list for dual nationals"},
+  {"name": "height",          "type": "STRING",    "mode": "NULLABLE", "description": "Height as reported, e.g. 1,84m"},
+  {"name": "foot",            "type": "STRING",    "mode": "NULLABLE", "description": "Derecho / Izquierdo; null if not listed"},
+  {"name": "joined_date",     "type": "DATE",      "mode": "NULLABLE", "description": "Date player joined the club"},
+  {"name": "signed_from",     "type": "STRING",    "mode": "NULLABLE", "description": "Previous club name"},
+  {"name": "signing_fee",     "type": "STRING",    "mode": "NULLABLE", "description": "Raw fee string e.g. Libre, 120 mil euro, ?"},
+  {"name": "contract_expiry", "type": "DATE",      "mode": "NULLABLE", "description": "Contract expiry date"},
+  {"name": "market_value_eur","type": "INT64",     "mode": "NULLABLE", "description": "Market value in EUR (Spanish format parsed)"},
+  {"name": "ingested_at",     "type": "TIMESTAMP", "mode": "NULLABLE", "description": "UTC timestamp of the scrape run"}
+]
