@@ -1,0 +1,18 @@
+[
+  {"name": "match_id",         "type": "STRING",    "mode": "REQUIRED", "description": "FotMob internal match ID"},
+  {"name": "ingested_date",    "type": "DATE",      "mode": "REQUIRED", "description": "Partition key — date this row was written"},
+  {"name": "league_id",        "type": "STRING",    "mode": "NULLABLE", "description": "FotMob league ID (e.g. 893055 for LaLiga2)"},
+  {"name": "league_name",      "type": "STRING",    "mode": "NULLABLE", "description": "League display name"},
+  {"name": "parent_league_id", "type": "STRING",    "mode": "NULLABLE", "description": "FotMob parent league ID (e.g. 140 for Segunda)"},
+  {"name": "match_time_utc",   "type": "STRING",    "mode": "NULLABLE", "description": "Match kickoff in ISO UTC format"},
+  {"name": "match_date",       "type": "DATE",      "mode": "NULLABLE", "description": "Calendar date of match (UTC)"},
+  {"name": "match_round",      "type": "STRING",    "mode": "NULLABLE", "description": "League round/matchday number"},
+  {"name": "home_team_id",     "type": "STRING",    "mode": "NULLABLE", "description": "FotMob home team ID"},
+  {"name": "home_team_name",   "type": "STRING",    "mode": "NULLABLE", "description": "Home team display name"},
+  {"name": "away_team_id",     "type": "STRING",    "mode": "NULLABLE", "description": "FotMob away team ID"},
+  {"name": "away_team_name",   "type": "STRING",    "mode": "NULLABLE", "description": "Away team display name"},
+  {"name": "home_score",       "type": "INT64",     "mode": "NULLABLE", "description": "Home goals scored"},
+  {"name": "away_score",       "type": "INT64",     "mode": "NULLABLE", "description": "Away goals scored"},
+  {"name": "coverage_level",   "type": "STRING",    "mode": "NULLABLE", "description": "FotMob coverage tier: xG / ratings / lower"},
+  {"name": "ingested_at",      "type": "TIMESTAMP", "mode": "NULLABLE", "description": "UTC timestamp when row was written"}
+]

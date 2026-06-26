@@ -1,0 +1,5 @@
+playwright==1.44.*
+pandas==2.2.*
+google-cloud-bigquery==3.*
+google-cloud-bigquery-storage==2.*
+pyarrow==16.*

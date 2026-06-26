@@ -1,10 +1,10 @@
 # Data Pipeline — Ingestion architecture and BigQuery schema
 
-> **Status:** living document, last updated 2026-06-26. Transfermarkt pipeline fully automated: Cloud Run job + Cloud Scheduler (Tuesdays 06:00 CET) live and tested. Data flows scraper → BQ with no manual steps. SofaScore scraper pending (scope: full 1RFEF + multi-league for scouting).
+> **Status:** living document, last updated 2026-06-26. Transfermarkt pipeline fully automated: Cloud Run job + Cloud Scheduler (Tuesdays 06:00 CET) live and tested. FotMob scraper built and smoke-tested locally — covers LaLiga2 (Segunda División) 2024-25 full season, all 22 teams, all matches, per-player stats. Cloud Run deployment pending.
 
 ## TL;DR
 
-- Sources: Transfermarkt (player/market data) and SofaScore (match/stats data), scraped weekly every Tuesday
+- Sources: Transfermarkt (player/market data) and FotMob (match/stats data), scraped weekly every Tuesday
 - Pipeline: Cloud Scheduler → Cloud Run (scraper) → Pub/Sub → Cloud Function → BigQuery
 - Two BQ datasets: `rz_raw` (append-only partitioned ingests) and `rz_processed` (cleaned views/tables for analysis)
 - `data/` in this repo is for local working snapshots only — BigQuery is the persistence layer; raw files are gitignored
@@ -52,6 +52,7 @@ Cloud Run (scraper) and Cloud Function (BQ writer) are decoupled deliberately:
 |---|---|---|---|
 | Cloud Scheduler job | `rz-weekly-ingest` | **live** | Fires every Tuesday 06:00 CET, triggers Cloud Run |
 | Cloud Run job | `rz-scraper-transfermarkt` | **live** | Scrapes Transfermarkt, writes directly to BQ |
+| Cloud Run job | `rz-scraper-fotmob` | pending deploy | Scrapes FotMob LaLiga2 matches + player stats |
 | Pub/Sub topic | `rz-data-ingested` | **live** | Message bus; decouples scrape from load |
 | Pub/Sub dead-letter topic | `rz-data-ingested-dlq` | **live** | Catches failed messages for inspection |
 | Cloud Function | `rz-bq-loader` | pending | Pub/Sub subscriber; writes to BQ |
@@ -88,52 +89,103 @@ Weekly squad snapshot. Partitioned by `ingested_date`. Schema confirmed against 
 | `market_value_eur` | INT64 | Market value in EUR (Spanish format parsed: `mill.` = ×1M, `mil` = ×1K) |
 | `ingested_at` | TIMESTAMP | UTC load timestamp |
 
-### `rz_raw.sofascore_matches`
-One row per match. Partitioned by `match_date`.
+### `rz_raw.fotmob_matches`
+One row per match. Partitioned by `ingested_date`. FotMob leagueId=893055 (LaLiga2).
 
 | Field | Type | Notes |
 |---|---|---|
-| `match_id` | STRING | SofaScore internal ID |
-| `match_date` | DATE | Partition key |
-| `competition` | STRING | e.g. "Primera RFEF" |
-| `season` | STRING | e.g. "2026-27" |
-| `home_team` | STRING | |
-| `away_team` | STRING | |
+| `match_id` | STRING | FotMob internal ID |
+| `ingested_date` | DATE | Partition key |
+| `league_id` | STRING | 893055 for LaLiga2 |
+| `league_name` | STRING | |
+| `parent_league_id` | STRING | 140 for Segunda |
+| `match_time_utc` | STRING | ISO UTC kickoff |
+| `match_date` | DATE | Calendar date of match |
+| `match_round` | STRING | League matchday |
+| `home_team_id` | STRING | |
+| `home_team_name` | STRING | |
+| `away_team_id` | STRING | |
+| `away_team_name` | STRING | |
 | `home_score` | INT64 | |
 | `away_score` | INT64 | |
-| `venue` | STRING | |
+| `coverage_level` | STRING | `xG` / `ratings` / `lower` |
 | `ingested_at` | TIMESTAMP | |
 
-### `rz_raw.sofascore_match_stats`
-One row per team per match (2 rows per match_id).
+### `rz_raw.fotmob_player_match_stats`
+One row per player per match. Only populated for `ratings` or `xG` coverage matches.
 
 | Field | Type | Notes |
 |---|---|---|
-| `match_id` | STRING | FK → sofascore_matches |
-| `team` | STRING | |
-| `xg` | FLOAT64 | Expected goals |
-| `possession_pct` | FLOAT64 | |
-| `shots` | INT64 | |
-| `shots_on_target` | INT64 | |
-| `corners` | INT64 | |
-| `fouls` | INT64 | |
-| `ingested_at` | TIMESTAMP | |
-
-### `rz_raw.sofascore_player_stats`
-One row per player per match.
-
-| Field | Type | Notes |
-|---|---|---|
-| `match_id` | STRING | FK → sofascore_matches |
-| `player_id` | STRING | SofaScore internal ID |
+| `match_id` | STRING | FK → fotmob_matches |
+| `player_id` | STRING | FotMob player ID |
+| `ingested_date` | DATE | Partition key |
 | `player_name` | STRING | |
+| `team_id` | STRING | |
+| `team_name` | STRING | |
+| `is_goalkeeper` | BOOL | |
+| `shirt_number` | STRING | |
+| `usual_position` | INT64 | FotMob position code |
 | `minutes_played` | INT64 | |
 | `goals` | INT64 | |
 | `assists` | INT64 | |
-| `rating` | FLOAT64 | SofaScore match rating (0–10) |
-| `yellow_cards` | INT64 | |
-| `red_cards` | INT64 | |
+| `rating` | FLOAT64 | FotMob match rating (0–10) |
+| `expected_assists` | FLOAT64 | xA — xG coverage only |
+| `xg_and_xa` | FLOAT64 | xG+xA — xG coverage only |
+| `accurate_passes` | INT64 | |
+| `total_passes` | INT64 | |
+| `chances_created` | INT64 | |
+| `defensive_actions` | INT64 | |
+| `touches` | INT64 | |
+| `touches_opp_box` | INT64 | |
+| `passes_into_final_third` | INT64 | |
+| `long_balls_accurate` | INT64 | |
+| `long_balls_total` | INT64 | |
+| `dispossessed` | INT64 | |
+| `tackles` | INT64 | |
+| `blocks` | INT64 | |
+| `clearances` | INT64 | |
+| `headed_clearances` | INT64 | |
+| `interceptions` | INT64 | |
+| `recoveries` | INT64 | |
+| `dribbled_past` | INT64 | |
+| `ground_duels_won` | INT64 | |
+| `ground_duels_total` | INT64 | |
+| `aerial_duels_won` | INT64 | |
+| `aerial_duels_total` | INT64 | |
+| `was_fouled` | INT64 | |
+| `fouls_committed` | INT64 | |
 | `ingested_at` | TIMESTAMP | |
+
+### `rz_raw.fotmob_shots`
+One row per shot attempt. Only populated for `xG` coverage matches (shot coordinates + xG values available).
+
+| Field | Type | Notes |
+|---|---|---|
+| `shot_id` | STRING | FotMob shot event ID |
+| `match_id` | STRING | FK → fotmob_matches |
+| `ingested_date` | DATE | Partition key |
+| `team_id` | STRING | |
+| `player_id` | STRING | |
+| `player_name` | STRING | |
+| `event_type` | STRING | Goal / Miss / SavedShot / BlockedShot |
+| `shot_type` | STRING | Header / LeftFoot / RightFoot |
+| `situation` | STRING | RegularPlay / SetPiece / etc |
+| `period` | STRING | FirstHalf / SecondHalf / ExtraTime* |
+| `minute` | INT64 | |
+| `minute_added` | INT64 | |
+| `x` | FLOAT64 | Shot origin x (pitch %) |
+| `y` | FLOAT64 | Shot origin y (pitch %) |
+| `expected_goals` | FLOAT64 | xG of this shot |
+| `expected_goals_on_target` | FLOAT64 | xGoT |
+| `is_on_target` | BOOL | |
+| `is_blocked` | BOOL | |
+| `is_own_goal` | BOOL | |
+| `new_score_home` | INT64 | Home score after this event (goals only) |
+| `new_score_away` | INT64 | |
+| `ingested_at` | TIMESTAMP | |
+
+**FotMob coverage notes:**  
+LaLiga2 matches have `ratings` coverage for older matches and `xG` coverage for recent/prominent ones. `xG` level gives shot coordinates, xG, xA values. `ratings` level gives the full player stat suite but no xG or shot map. Both levels provide: rating, minutes, goals, assists, passes, chances created, touches, defensive stats, duels.
 
 ### `rz_processed` — historical strategy
 
@@ -213,11 +265,12 @@ The service account key file is **never committed to this repo**. Options:
 
 ## Open items
 
-- **SofaScore scraper** — unofficial internal API (reverse-engineered endpoints); rate-limit sensitive, needs investigation
-- **SofaScore Cloud Run job** — separate job once scraper is built; will reuse `rz-weekly-ingest` scheduler or get its own trigger
+- **FotMob Cloud Run deployment** — build `Dockerfile.fotmob` via Cloud Build, push to Artifact Registry as `rz-scraper-fotmob`, run one-off job for 2024-25 historical backfill, then add to Cloud Scheduler for weekly 2025-26 updates
+- **FotMob scraper: season scope** — currently hard-coded to 2024-25. After historical backfill, update to scrape 2025-26 incrementally (matches since last run only). Add a `last_match_date` checkpoint or query BQ for the most recent `match_date` already loaded.
+- **FotMob: 1RFEF coverage** — Primera Federación matches have `lower` coverage in FotMob (no player stats, no lineup, no team stats). Match results only. Not worth scraping until FotMob improves coverage.
 - **DLQ handling** — define what happens when a message in `rz-data-ingested-dlq` is not resolved (manual replay vs. auto-retry limit)
 - **`rz_processed.player_valuations` view** — time-series of market value per player; add once a second weekly scrape lands so there's actual change data to query
-- **`rz_processed.season_results`** — pending SofaScore scraper
+- **`rz_processed.season_results`** — planned: cleaned match results from `fotmob_matches` with W/D/L, goal difference, cumulative points
 - **Cloud Monitoring alerts** — Pub/Sub subscription backlog + Cloud Function error rate; set up when Cloud Function is deployed
 
 ## Sources

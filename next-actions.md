@@ -5,9 +5,10 @@ Running backlog of ideas/future work for this repo. Not a wiki page — this tra
 ## Data pipeline
 
 - [x] **Scraper — Transfermarkt.** `pipeline/cloud-run/scraper_transfermarkt.py` — verein/142, `/plus/1`, 32 players, full schema confirmed — 2026-06-26
-- [ ] **Scraper — SofaScore.** Pull recent matches, team stats, and player stats via SofaScore's unofficial internal API. Target tables: `rz_raw.sofascore_matches`, `rz_raw.sofascore_match_stats`, `rz_raw.sofascore_player_stats`.
+- [x] **Scraper — FotMob.** `pipeline/cloud-run/scraper_fotmob.py` — LaLiga2 2024-25 full season; date-iteration strategy; per-match player stats (rating, minutes, goals, assists, passes, touches, defense, duels); shot maps on xG-coverage matches. Smoke-tested locally (11 matches, 345 player rows) — 2026-06-26
 - [x] **Cloud Run + Scheduler — Transfermarkt.** `rz-scraper-transfermarkt` job deployed; `rz-weekly-ingest` scheduler firing Tuesdays 06:00 CET. Scraper → BQ, no manual steps — 2026-06-26
-- [ ] **SofaScore Cloud Run job.** Build + deploy once scraper is ready; scope: full 1RFEF + multi-league player data for scouting.
+- [ ] **FotMob Cloud Run deployment.** Build `Dockerfile.fotmob` via Cloud Build (uses Playwright/Chromium base image), push as `rz-scraper-fotmob`, run one-off job for 2024-25 historical backfill (~460 matches, ~13k player rows), add to Cloud Scheduler for weekly 2025-26 updates.
+- [ ] **FotMob incremental mode.** After historical backfill, update scraper to skip already-loaded matches (query BQ for max `match_date` per `league_id`, only fetch dates after that).
 - [ ] **Cloud Function — BQ loader (Pub/Sub).** Add when fan-out is needed (Slack alerts, wiki auto-update). Not needed yet.
 - [x] **`rz_processed` strategy decided.** Append-only raw + view deduplication on `(player_id, season_id)`. SQL in `wiki/data-pipeline.md` — 2026-06-26
 - [x] **`rz_processed.squad_snapshots` view live in BQ** — 2026-06-26
@@ -17,7 +18,7 @@ Running backlog of ideas/future work for this repo. Not a wiki page — this tra
 
 ## Analysis & predictions
 
-- [ ] Stats analysis on players and matches once the SofaScore/Transfermarkt pull lands: form, head-to-head, performance trends.
+- [ ] Stats analysis on players and matches once FotMob historical backfill lands: form, head-to-head, performance trends, player comparisons across the 22 LaLiga2 teams.
 - [ ] Match outcome prediction model for upcoming Real Zaragoza fixtures — approach/tooling TBD, depends on the data pull above.
 
 ## Wiki content
@@ -41,5 +42,5 @@ Running backlog of ideas/future work for this repo. Not a wiki page — this tra
 - [x] GCP project setup: APIs enabled, service account `rz-pipeline` created with minimum IAM roles, budget alert at €10/month — 2026-06-26
 - [x] BQ datasets `rz_raw` and `rz_processed` created (europe-west1); `transfermarkt_squad` table live, 32 rows loaded — 2026-06-26
 - [x] Containerize Transfermarkt scraper and deploy to Cloud Run (`rz-scraper-transfermarkt`, image in `rz-images` Artifact Registry repo) — 2026-06-26
-- [ ] Containerize SofaScore scraper and deploy to Cloud Run once built.
+- [ ] Containerize FotMob scraper (`Dockerfile.fotmob`) and deploy to Cloud Run as `rz-scraper-fotmob`.
 - [ ] Deploy Cloud Function with Pub/Sub trigger (deferred — add when fan-out is needed).
