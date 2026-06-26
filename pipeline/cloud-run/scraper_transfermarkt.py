@@ -1,21 +1,22 @@
 """
 Real Zaragoza — Transfermarkt squad scraper.
 
-Scrapes the detailed squad page (/plus/1) for verein/142 and outputs one row
-per player, aligned to the rz_raw.transfermarkt_squad BigQuery schema.
+Scrapes the detailed squad page (/plus/1) for verein/142 and appends one row
+per player to rz_raw.transfermarkt_squad in BigQuery.
 
 Local usage:
     python scraper_transfermarkt.py
-    → writes data/raw/transfermarkt/squad_<date>.csv
+    → writes CSV to data/raw/transfermarkt/ AND loads into BQ if GCP_PROJECT_ID is set
 
-Cloud Run usage (later):
-    Publishes a JSON-newlines payload to Pub/Sub for the BQ loader to consume.
+Cloud Run usage:
+    Set GCP_PROJECT_ID env var; ADC credentials provided by the attached service account.
+    Writes directly to BQ (no Pub/Sub yet — added when SofaScore scraper is ready).
 """
 
 import json
 import logging
+import os
 import re
-import time
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Optional
@@ -253,26 +254,54 @@ def save_local(df: pd.DataFrame) -> Path:
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / f"squad_{CLUB_SLUG}_{SEASON_ID}_{date.today().isoformat()}.csv"
     df.to_csv(out_path, index=False)
-    log.info(f"Saved → {out_path}")
+    log.info(f"Saved locally → {out_path}")
     return out_path
 
 
-def to_jsonl(df: pd.DataFrame) -> str:
-    """Serialise to JSON-newlines for BQ streaming / Pub/Sub payload."""
-    return "\n".join(json.dumps(r, default=str) for r in df.to_dict(orient="records"))
+def write_to_bq(df: pd.DataFrame, project_id: str) -> None:
+    """Append rows to rz_raw.transfermarkt_squad in BigQuery."""
+    from google.cloud import bigquery
+
+    client = bigquery.Client(project=project_id)
+    table_ref = f"{project_id}.rz_raw.transfermarkt_squad"
+
+    job_config = bigquery.LoadJobConfig(
+        write_disposition=bigquery.WriteDisposition.WRITE_APPEND,
+        schema_update_options=[bigquery.SchemaUpdateOption.ALLOW_FIELD_ADDITION],
+        source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
+    )
+
+    # Convert date/datetime columns to ISO strings for BQ JSON load
+    df_out = df.copy()
+    for col in ["ingested_date", "date_of_birth", "joined_date", "contract_expiry"]:
+        if col in df_out.columns:
+            df_out[col] = df_out[col].astype(str).replace("None", "")
+
+    rows = [
+        {k: (None if (isinstance(v, float) and __import__("math").isnan(v)) else v)
+         for k, v in row.items()}
+        for row in df_out.to_dict(orient="records")
+    ]
+
+    errors = client.insert_rows_json(table_ref, rows)
+    if errors:
+        raise RuntimeError(f"BQ insert errors: {errors}")
+    log.info(f"Inserted {len(rows)} rows → {table_ref}")
+
 
 # ── Entry point ───────────────────────────────────────────────────────────────
 
 def main():
     log.info(f"Scraping {CLUB_SLUG} verein/{CLUB_ID} season {SEASON_ID}")
     df = scrape_squad()
-
     log.info(f"Players scraped: {len(df)}")
-    pd.set_option("display.max_columns", None)
-    pd.set_option("display.width", 160)
-    print(df.to_string(index=False))
 
-    save_local(df)
+    project_id = os.environ.get("GCP_PROJECT_ID")
+    if project_id:
+        write_to_bq(df, project_id)
+    else:
+        log.info("GCP_PROJECT_ID not set — skipping BQ write, saving locally only")
+        save_local(df)
 
 
 if __name__ == "__main__":

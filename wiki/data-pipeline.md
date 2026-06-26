@@ -1,6 +1,6 @@
 # Data Pipeline — Ingestion architecture and BigQuery schema
 
-> **Status:** living document, last updated 2026-06-26. GCP project live: datasets, table, Pub/Sub topics, service account, and budget alert all created. 32 players loaded into `rz_raw.transfermarkt_squad`. `rz_processed.squad_snapshots` view live. SofaScore scraper and Cloud Run/Function deployment pending.
+> **Status:** living document, last updated 2026-06-26. Transfermarkt pipeline fully automated: Cloud Run job + Cloud Scheduler (Tuesdays 06:00 CET) live and tested. Data flows scraper → BQ with no manual steps. SofaScore scraper pending (scope: full 1RFEF + multi-league for scouting).
 
 ## TL;DR
 
@@ -50,8 +50,8 @@ Cloud Run (scraper) and Cloud Function (BQ writer) are decoupled deliberately:
 
 | Resource | Name | Status | Purpose |
 |---|---|---|---|
-| Cloud Scheduler job | `rz-weekly-ingest` | pending | Fires every Tuesday, triggers Cloud Run |
-| Cloud Run job | `rz-scraper` | pending | Scrapes both sources, publishes to Pub/Sub |
+| Cloud Scheduler job | `rz-weekly-ingest` | **live** | Fires every Tuesday 06:00 CET, triggers Cloud Run |
+| Cloud Run job | `rz-scraper-transfermarkt` | **live** | Scrapes Transfermarkt, writes directly to BQ |
 | Pub/Sub topic | `rz-data-ingested` | **live** | Message bus; decouples scrape from load |
 | Pub/Sub dead-letter topic | `rz-data-ingested-dlq` | **live** | Catches failed messages for inspection |
 | Cloud Function | `rz-bq-loader` | pending | Pub/Sub subscriber; writes to BQ |
@@ -214,7 +214,7 @@ The service account key file is **never committed to this repo**. Options:
 ## Open items
 
 - **SofaScore scraper** — unofficial internal API (reverse-engineered endpoints); rate-limit sensitive, needs investigation
-- **Cloud Run + Cloud Function deployment** — Dockerfile, container build, Cloud Function code, Scheduler job wiring; blocked on SofaScore scraper being ready so both sources go in the same container
+- **SofaScore Cloud Run job** — separate job once scraper is built; will reuse `rz-weekly-ingest` scheduler or get its own trigger
 - **DLQ handling** — define what happens when a message in `rz-data-ingested-dlq` is not resolved (manual replay vs. auto-retry limit)
 - **`rz_processed.player_valuations` view** — time-series of market value per player; add once a second weekly scrape lands so there's actual change data to query
 - **`rz_processed.season_results`** — pending SofaScore scraper

@@ -6,9 +6,9 @@ Running backlog of ideas/future work for this repo. Not a wiki page — this tra
 
 - [x] **Scraper — Transfermarkt.** `pipeline/cloud-run/scraper_transfermarkt.py` — verein/142, `/plus/1`, 32 players, full schema confirmed — 2026-06-26
 - [ ] **Scraper — SofaScore.** Pull recent matches, team stats, and player stats via SofaScore's unofficial internal API. Target tables: `rz_raw.sofascore_matches`, `rz_raw.sofascore_match_stats`, `rz_raw.sofascore_player_stats`.
-- [ ] **Cloud Run container.** Dockerfile + deploy `rz-scraper` to Cloud Run (Transfermarkt + SofaScore in one image); publishes to `rz-data-ingested`.
-- [ ] **Cloud Function — BQ loader.** `rz-bq-loader`: Pub/Sub subscriber, validates schema, streams to `rz_raw`. Handle DLQ.
-- [ ] **Cloud Scheduler job.** `rz-weekly-ingest` — Tuesday 06:00 CET trigger.
+- [x] **Cloud Run + Scheduler — Transfermarkt.** `rz-scraper-transfermarkt` job deployed; `rz-weekly-ingest` scheduler firing Tuesdays 06:00 CET. Scraper → BQ, no manual steps — 2026-06-26
+- [ ] **SofaScore Cloud Run job.** Build + deploy once scraper is ready; scope: full 1RFEF + multi-league player data for scouting.
+- [ ] **Cloud Function — BQ loader (Pub/Sub).** Add when fan-out is needed (Slack alerts, wiki auto-update). Not needed yet.
 - [x] **`rz_processed` strategy decided.** Append-only raw + view deduplication on `(player_id, season_id)`. SQL in `wiki/data-pipeline.md` — 2026-06-26
 - [x] **`rz_processed.squad_snapshots` view live in BQ** — 2026-06-26
 - [ ] **`rz_processed.player_valuations` view.** Add after second weekly scrape so there's actual change data to query.
@@ -40,5 +40,6 @@ Running backlog of ideas/future work for this repo. Not a wiki page — this tra
 - [x] Repo layout decided: `data/` for local snapshots (gitignored contents), `pipeline/` for container/function code — 2026-06-26
 - [x] GCP project setup: APIs enabled, service account `rz-pipeline` created with minimum IAM roles, budget alert at €10/month — 2026-06-26
 - [x] BQ datasets `rz_raw` and `rz_processed` created (europe-west1); `transfermarkt_squad` table live, 32 rows loaded — 2026-06-26
-- [ ] Containerize scraper (Dockerfile) and deploy to Cloud Run as a job.
-- [ ] Deploy Cloud Function with Pub/Sub trigger.
+- [x] Containerize Transfermarkt scraper and deploy to Cloud Run (`rz-scraper-transfermarkt`, image in `rz-images` Artifact Registry repo) — 2026-06-26
+- [ ] Containerize SofaScore scraper and deploy to Cloud Run once built.
+- [ ] Deploy Cloud Function with Pub/Sub trigger (deferred — add when fan-out is needed).
