@@ -2,29 +2,39 @@
 
 Running backlog of ideas/future work for this repo. Not a wiki page — this tracks what to *build*, the wiki tracks what we *know*. Move items to "Done" with a date when finished instead of deleting, so we keep a record of when things shipped.
 
-## Data sourcing
+## Data pipeline
 
-- [ ] **SofaScore — team-level data.** Pull match results, fixtures, season stats (xG, possession, etc.) for Real Zaragoza and decide which other teams (rivals / divisional peers) are worth tracking for comparison.
-- [ ] **Transfermarkt — player-level data.** Pull current squad: market values, contract expiry dates, transfer history, nationality/age/position. Decide refresh cadence (one-off snapshot vs. periodic re-pull).
-- [ ] Decide on a storage format for scraped data (flat CSV/JSON in a `data/` folder vs. a small SQLite db) before the first real pull, so we don't have to migrate later.
-- [ ] Define a scraping/refresh cadence (e.g. weekly during the season) and where that lives (manual run vs. scheduled job).
+- [ ] **Scraper — Transfermarkt.** Implement Cloud Run container that scrapes squad, market values, and contract data. Strategy TBD: HTML scraping or `transfermarkt-scraper` library. Target table: `rz_raw.transfermarkt_squad`.
+- [ ] **Scraper — SofaScore.** Implement Cloud Run container that pulls recent matches, team stats, and player stats via SofaScore's unofficial internal API. Target tables: `rz_raw.sofascore_matches`, `rz_raw.sofascore_match_stats`, `rz_raw.sofascore_player_stats`.
+- [ ] **Cloud Function — BQ loader.** Pub/Sub subscriber that validates schema and streams rows into `rz_raw`. Handle dead-letter queue for failed messages.
+- [ ] **Cloud Scheduler job.** Wire up the Tuesday 06:00 CET trigger for the Cloud Run scraper job.
+- [ ] **`rz_processed` views/tables.** Define `squad_current`, `player_valuations`, `season_results` — decide materialized vs. views.
+- [ ] **Monitoring.** Cloud Monitoring alerts on Pub/Sub backlog + Cloud Function error rate.
 
 ## Analysis & predictions
 
 - [ ] Stats analysis on players and matches once the SofaScore/Transfermarkt pull lands: form, head-to-head, performance trends.
 - [ ] Match outcome prediction model for upcoming Real Zaragoza fixtures — approach/tooling TBD, depends on the data pull above.
 
-## Wiki content (Karpathy-style: atomic, sourced, append-only pages)
+## Wiki content
 
-- [x] Reconcile `history.md` + `current-situation.md` against realzaragoza.com and Wikipedia as sources of truth (1932 founding/merger detail, stadium demolition, 1995 Recopa final score, Ibai Gómez as head coach) — 2026-06-24
-- [x] Institution/football deep-dive pages: `wiki/finances.md` (debt history, 2026 capital increase, wage caps), `wiki/squad.md` (2026–27 rebuild), `wiki/identity-fan-culture.md` (nicknames, rivalries, ultras, anthem, socios), `wiki/records.md` (top scorer, appearances, Pichichi), `wiki/academy.md` (cantera structure, 2026 overhaul, graduates) — 2026-06-24
-- [x] `wiki/README.md` index page — 2026-06-24
-- [ ] Season-by-season results table (full history) — likely generated from the SofaScore pull once that exists, linked from `wiki/history.md`.
-- [ ] Player pages — one atomic page per current first-team player once Transfermarkt data lands; should also replace `wiki/squad.md`'s prose roster with a structured table, and give `wiki/academy.md` a current (not 2018–19) graduate list.
-- [ ] Standing task, not a one-off: periodically sweep every wiki page's "Open items" section for things that should now be resolvable — several are genuinely time-sensitive right now (new institutional president/general director names and Fernando López succession in `current-situation.md`; 2026–27 captaincy and the "at risk" players in `squad.md`; the Ander Herrera return and Francho/Azón contract renewals in `academy.md`).
+- [x] Reconcile `history.md` + `current-situation.md` against realzaragoza.com and Wikipedia — 2026-06-24
+- [x] Institution/football deep-dive pages: `finances.md`, `squad.md`, `identity-fan-culture.md`, `records.md`, `academy.md` — 2026-06-24
+- [x] `wiki/index.md` navigation and status index (consolidated from `wiki/README.md`) — 2026-06-26
+- [x] Contribute-text skill, log-entry and wiki-page templates — 2026-06-26
+- [x] Data pipeline architecture documented in `wiki/data-pipeline.md` — 2026-06-26
+- [ ] Season-by-season results table (full history) — generate from SofaScore pull once live; link from `wiki/history.md`.
+- [ ] Player pages — one atomic page per current first-team player once Transfermarkt data lands; also replace `wiki/squad.md` prose roster with a structured table and give `wiki/academy.md` a current graduate list.
+- [ ] Standing task: sweep every wiki page's "Open items" section periodically for things now resolvable — several are time-sensitive right now (institutional president / Fernando López succession in `current-situation.md`; 2026–27 captaincy and "at risk" players in `squad.md`; Ander Herrera return and Francho/Azón renewals in `academy.md`).
 
 ## Infrastructure
 
 - [x] Clone repo locally, scaffold `wiki/` + `next-actions.md` + `.claude/` — 2026-06-24
-- [ ] Decide repo layout for data once sourcing starts: `data/sofascore/`, `data/transfermarkt/`, etc.
-- [ ] Consider a lightweight script/notebook setup for the scraping work (language/tooling TBD).
+- [x] Storage layer decided: Google BigQuery (`rz_raw` + `rz_processed` datasets) — 2026-06-26
+- [x] Refresh cadence decided: weekly, every Tuesday, via Cloud Scheduler — 2026-06-26
+- [x] Pipeline architecture decided: Cloud Scheduler → Cloud Run → Pub/Sub → Cloud Function → BQ — 2026-06-26
+- [x] Repo layout decided: `data/` for local snapshots (gitignored contents), `pipeline/` for container/function code — 2026-06-26
+- [ ] GCP project setup: create project, enable APIs (Cloud Run, Cloud Functions, Pub/Sub, BigQuery, Cloud Scheduler, Secret Manager), create service account with minimum required roles.
+- [ ] Create BQ datasets `rz_raw` and `rz_processed` with correct region and partition settings.
+- [ ] Containerize scraper (Dockerfile) and deploy to Cloud Run as a job.
+- [ ] Deploy Cloud Function with Pub/Sub trigger.

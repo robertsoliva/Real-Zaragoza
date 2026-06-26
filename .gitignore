@@ -1,1 +1,21 @@
 .DS_Store
+
+# Data files — raw scraped content is not committed; BQ is the persistence layer
+# Each data subdirectory has its own .gitignore that ignores * except .gitkeep
+
+# Credentials — never commit service account keys
+secrets/
+*-sa-key.json
+*-credentials.json
+service-account*.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.env
+
+# Claude local settings
+.claude/settings.local.json
