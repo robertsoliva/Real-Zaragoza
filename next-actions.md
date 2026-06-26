@@ -4,11 +4,12 @@ Running backlog of ideas/future work for this repo. Not a wiki page — this tra
 
 ## Data pipeline
 
-- [ ] **Scraper — Transfermarkt.** Implement Cloud Run container that scrapes squad, market values, and contract data. Strategy TBD: HTML scraping or `transfermarkt-scraper` library. Target table: `rz_raw.transfermarkt_squad`.
+- [x] **Scraper — Transfermarkt.** `pipeline/cloud-run/scraper_transfermarkt.py` — verein/142, `/plus/1`, 32 players, full schema confirmed — 2026-06-26
 - [ ] **Scraper — SofaScore.** Implement Cloud Run container that pulls recent matches, team stats, and player stats via SofaScore's unofficial internal API. Target tables: `rz_raw.sofascore_matches`, `rz_raw.sofascore_match_stats`, `rz_raw.sofascore_player_stats`.
 - [ ] **Cloud Function — BQ loader.** Pub/Sub subscriber that validates schema and streams rows into `rz_raw`. Handle dead-letter queue for failed messages.
 - [ ] **Cloud Scheduler job.** Wire up the Tuesday 06:00 CET trigger for the Cloud Run scraper job.
-- [ ] **`rz_processed` views/tables.** Define `squad_current`, `player_valuations`, `season_results` — decide materialized vs. views.
+- [x] **`rz_processed` strategy decided.** Append-only raw + view deduplication on `(player_id, season_id)`. SQL in `wiki/data-pipeline.md` — 2026-06-26
+- [ ] **`rz_processed` views — create in BQ.** `squad_snapshots`, `player_valuations` (DDL ready in wiki); `season_results` pending SofaScore scraper.
 - [ ] **Monitoring.** Cloud Monitoring alerts on Pub/Sub backlog + Cloud Function error rate.
 
 ## Analysis & predictions

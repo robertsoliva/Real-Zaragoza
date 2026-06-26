@@ -1,6 +1,6 @@
 # Data Pipeline — Ingestion architecture and BigQuery schema
 
-> **Status:** living document, last updated 2026-06-26. Architecture decided, code not yet written — this page is the specification. Update in place as implementation decisions are made and schemas are confirmed against actual API responses.
+> **Status:** living document, last updated 2026-06-26. Transfermarkt scraper built and verified (32 players, all fields confirmed against live page). BQ historical strategy decided. SofaScore scraper and GCP deployment pending.
 
 ## TL;DR
 
@@ -63,20 +63,28 @@ Cloud Run (scraper) and Cloud Function (BQ writer) are decoupled deliberately:
 All `rz_raw` tables are append-only — existing rows are never updated. Analysis always queries the latest partition or aggregates across partitions.
 
 ### `rz_raw.transfermarkt_squad`
-Weekly squad snapshot. Partitioned by `ingested_date`.
+Weekly squad snapshot. Partitioned by `ingested_date`. Schema confirmed against live page (verein/142, `/plus/1`, Spanish domain).
 
 | Field | Type | Notes |
 |---|---|---|
 | `ingested_date` | DATE | Partition key |
-| `player_id` | STRING | Transfermarkt internal ID |
+| `season_id` | INT64 | Transfermarkt season year (e.g. 2025 = 2025-26 season) |
+| `player_id` | STRING | Transfermarkt internal player ID |
 | `name` | STRING | Full player name |
-| `position` | STRING | Transfermarkt position taxonomy |
+| `date_of_birth` | DATE | ISO date; extracted from `DD/MM/YYYY (AGE)` cell |
+| `jersey_number` | STRING | Current squad number (`-` if unassigned) |
+| `position` | STRING | Transfermarkt Spanish position taxonomy (e.g. `Defensa central`) |
 | `age` | INT64 | Age at scrape date |
-| `nationality` | STRING | Primary nationality |
-| `market_value_eur` | INT64 | Market value in EUR |
+| `nationality` | STRING | Primary nationality (first flag) |
+| `nationality_all` | STRING | Comma-separated list for dual nationals |
+| `height` | STRING | Height as reported, e.g. `1,84m` |
+| `foot` | STRING | `Derecho` / `Izquierdo`; null if not listed |
+| `joined_date` | DATE | Date player joined the club |
+| `signed_from` | STRING | Previous club name |
+| `signing_fee` | STRING | Raw fee string e.g. `Libre`, `120 mil €`, `?` |
 | `contract_expiry` | DATE | Contract expiry date |
-| `status` | STRING | e.g. "active", "on loan", "injured" |
-| `ingested_at` | TIMESTAMP | Load timestamp |
+| `market_value_eur` | INT64 | Market value in EUR (Spanish format parsed: `mill.` = ×1M, `mil` = ×1K) |
+| `ingested_at` | TIMESTAMP | UTC load timestamp |
 
 ### `rz_raw.sofascore_matches`
 One row per match. Partitioned by `match_date`.
@@ -125,13 +133,43 @@ One row per player per match.
 | `red_cards` | INT64 | |
 | `ingested_at` | TIMESTAMP | |
 
-### `rz_processed` (planned)
+### `rz_processed` — historical strategy
 
-| Table/view | Description |
+`rz_raw.transfermarkt_squad` is append-only: every weekly scrape adds ~32 rows. Over a season this produces ~1,600 rows, all of them valid snapshots. The processed layer deduplcates via views — no MERGE or TRUNCATE needed.
+
+**Why not TRUNCATE + INSERT?** Departed players are permanently lost.  
+**Why not UPSERT on `player_id` only?** A player re-signed two seasons later overwrites their old record.  
+**Solution:** `season_id` acts as a historical partition. A MERGE keyed on `(player_id, season_id)` would work, but a view over the raw table is simpler and gives the same result without any write logic.
+
+#### `rz_processed.squad_snapshots` (view)
+One row per `(player_id, season_id)` — always the most recent scrape for that combination.
+
+```sql
+SELECT * EXCEPT(rn)
+FROM (
+  SELECT *,
+    ROW_NUMBER() OVER (
+      PARTITION BY player_id, season_id
+      ORDER BY ingested_date DESC
+    ) AS rn
+  FROM `rz_raw.transfermarkt_squad`
+)
+WHERE rn = 1
+```
+
+| Query pattern | How |
 |---|---|
-| `squad_current` | Latest squad snapshot — filters `transfermarkt_squad` for most recent `ingested_date` |
-| `player_valuations` | Time series of market value per player across all ingested dates |
-| `season_results` | Cleaned match results with computed W/D/L, goal diff, and cumulative points |
+| Current squad | `WHERE season_id = 2025` |
+| Historical squad (e.g. 2023) | `WHERE season_id = 2023` |
+| Players who left between seasons | LEFT JOIN 2024 vs 2025 on `player_id`, filter WHERE 2025.player_id IS NULL |
+| Value progression per player | JOIN across seasons on `player_id`, ORDER BY season_id |
+| Intra-season value changes | Query `rz_raw` directly, filter by `player_id` + date range |
+
+#### `rz_processed.player_valuations` (view)
+Time series of market value per player — one row per `(player_id, ingested_date)`. Useful for tracking value changes within and across seasons.
+
+#### `rz_processed.season_results` (planned)
+Cleaned match results from SofaScore with computed W/D/L, goal difference, and cumulative points. Pending SofaScore scraper.
 
 ## Local `data/` directory
 
@@ -173,12 +211,11 @@ The service account key file is **never committed to this repo**. Options:
 
 ## Open items
 
-- Confirm scraping strategy for each source: Transfermarkt has no public API (HTML scraping or `transfermarkt-scraper` library); SofaScore has an unofficial internal API (reverse-engineered endpoints, rate-limit sensitive)
-- Decide base language for Cloud Run container (Python strongly preferred given `google-cloud-bigquery` SDK maturity)
-- Define dead-letter queue handling — what happens when a message in `rz-data-ingested-dlq` is not resolved
-- Confirm whether `rz_processed` tables are materialized (scheduled query) or views (query-time compute)
-- Confirm GCP project ID and region (europe-west1 recommended for GDPR proximity)
-- Define alert/monitoring: Cloud Monitoring on the Pub/Sub subscription backlog and Cloud Function error rate
+- **SofaScore scraper strategy** — unofficial internal API (reverse-engineered endpoints); rate-limit sensitive, needs investigation
+- **DLQ handling** — define what happens when a message in `rz-data-ingested-dlq` is not resolved (manual replay vs. auto-retry limit)
+- **`rz_processed` materialisation** — views are the plan; confirm whether query-time cost warrants materialised tables once data volume grows
+- **GCP project ID and region** — europe-west1 recommended for GDPR proximity; confirm with robertsoliva before creating resources
+- **Monitoring** — Cloud Monitoring alerts on Pub/Sub subscription backlog and Cloud Function error rate
 
 ## Sources
 
