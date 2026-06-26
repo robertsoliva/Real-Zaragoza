@@ -1,19 +1,20 @@
 [
   {"name": "match_id",                  "type": "STRING",    "mode": "REQUIRED", "description": "FK → fotmob_matches.match_id"},
   {"name": "player_id",                 "type": "STRING",    "mode": "REQUIRED", "description": "FotMob internal player ID"},
-  {"name": "ingested_date",             "type": "DATE",      "mode": "REQUIRED", "description": "Partition key — date this row was written"},
+  {"name": "match_date",                "type": "DATE",      "mode": "REQUIRED", "description": "Partition key — actual match date"},
+  {"name": "match_round",               "type": "INT64",     "mode": "NULLABLE", "description": "Jornada number — clustering key"},
   {"name": "player_name",               "type": "STRING",    "mode": "NULLABLE"},
   {"name": "team_id",                   "type": "STRING",    "mode": "NULLABLE"},
   {"name": "team_name",                 "type": "STRING",    "mode": "NULLABLE"},
   {"name": "is_goalkeeper",             "type": "BOOL",      "mode": "NULLABLE"},
   {"name": "shirt_number",              "type": "STRING",    "mode": "NULLABLE"},
-  {"name": "usual_position",            "type": "INT64",     "mode": "NULLABLE", "description": "FotMob position code"},
+  {"name": "usual_position",            "type": "INT64",     "mode": "NULLABLE"},
   {"name": "minutes_played",            "type": "INT64",     "mode": "NULLABLE"},
   {"name": "goals",                     "type": "INT64",     "mode": "NULLABLE"},
   {"name": "assists",                   "type": "INT64",     "mode": "NULLABLE"},
   {"name": "rating",                    "type": "FLOAT64",   "mode": "NULLABLE", "description": "FotMob match rating (0–10)"},
-  {"name": "expected_assists",          "type": "FLOAT64",   "mode": "NULLABLE", "description": "xA — only on xG coverage matches"},
-  {"name": "xg_and_xa",                 "type": "FLOAT64",   "mode": "NULLABLE", "description": "xG+xA combined — only on xG coverage matches"},
+  {"name": "expected_assists",          "type": "FLOAT64",   "mode": "NULLABLE", "description": "xA — only on xG-coverage matches"},
+  {"name": "xg_and_xa",                 "type": "FLOAT64",   "mode": "NULLABLE", "description": "xG+xA — only on xG-coverage matches"},
   {"name": "accurate_passes",           "type": "INT64",     "mode": "NULLABLE"},
   {"name": "total_passes",              "type": "INT64",     "mode": "NULLABLE"},
   {"name": "chances_created",           "type": "INT64",     "mode": "NULLABLE"},
@@ -37,5 +38,6 @@
   {"name": "aerial_duels_total",        "type": "INT64",     "mode": "NULLABLE"},
   {"name": "was_fouled",                "type": "INT64",     "mode": "NULLABLE"},
   {"name": "fouls_committed",           "type": "INT64",     "mode": "NULLABLE"},
-  {"name": "ingested_at",               "type": "TIMESTAMP", "mode": "NULLABLE", "description": "UTC timestamp when row was written"}
+  {"name": "ingested_date",             "type": "DATE",      "mode": "NULLABLE", "description": "Audit — date row was written"},
+  {"name": "ingested_at",               "type": "TIMESTAMP", "mode": "NULLABLE"}
 ]

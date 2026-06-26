@@ -1,7 +1,7 @@
 .DS_Store
 
-# Data files — raw scraped content is not committed; BQ is the persistence layer
-# Each data subdirectory has its own .gitignore that ignores * except .gitkeep
+# Data files — BigQuery is the persistence layer; no raw data in the repo
+data/
 
 # Credentials — never commit service account keys
 secrets/

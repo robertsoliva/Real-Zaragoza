@@ -28,12 +28,12 @@ Dates are `YYYY-MM` (year-month of last edit). Update this table whenever a page
 | [squad.md](./squad.md) | 2026–27 preseason squad rebuild: departures, signings, market priorities — goes stale fast | 2026-06 |
 | [academy.md](./academy.md) | Youth structure, 2026 academy overhaul, historical and current graduates | 2026-06 |
 
-## Data
+## Data & Architecture
 
 | File | Description | Last updated |
 |------|-------------|--------------|
-| [data-pipeline.md](./data-pipeline.md) | Pipeline architecture, GCP resource map, and BigQuery schema specification | 2026-06 |
+| [architecture.md](./architecture.md) | Data sources, GCP infrastructure, BQ schemas, pipeline flow, open items | 2026-06 |
 
 ## What's not here yet
 
-Tracked in [`../next-actions.md`](../next-actions.md): structured player pages and a season-by-season results table, both waiting on the SofaScore/Transfermarkt data pull. Pipeline implementation tracked there too.
+Tracked in [`../next-actions.md`](../next-actions.md): 1RFEF player stats source (FotMob has no coverage), LaLiga2 2025-26 backfill, season results view, and player/signing analysis pages.
