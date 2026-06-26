@@ -1,8 +1,13 @@
 """
-FotMob scraper — LaLiga2 (Segunda División) historical data.
+FotMob scraper — LaLiga2 (Segunda División) match and player stats.
 
-Targets: leagueId=893055 (LaLiga2), season 2024-25 by default.
+Targets: leagueId=893055 (LaLiga2).
 Collects: match results, per-player match stats, shot maps (xG matches only).
+
+Run modes (controlled by env vars):
+  Default (no env vars): 2024-25 full-season backfill
+  SCRAPE_START + SCRAPE_END: override date range explicitly
+  INCREMENTAL=true: scrape last 8 days only (weekly scheduler mode)
 
 Phase 1: enumerate all match IDs by iterating daily matches endpoint.
 Phase 2: fetch matchDetails for each match ID.
@@ -11,7 +16,7 @@ Phase 3: write to BQ (or local CSV if GCP_PROJECT_ID not set).
 Coverage by FotMob level:
   xG      → full stats + shot map coordinates + xG, xA
   ratings  → full stats (no shot map coords, no xG)
-  lower   → match result only (1RFEF, lower leagues)
+  lower   → match result only (1RFEF, lower leagues — skipped)
 """
 
 import asyncio
@@ -30,10 +35,22 @@ from playwright.async_api import async_playwright
 # Config
 # ---------------------------------------------------------------------------
 TARGET_LEAGUE_IDS = {893055}          # LaLiga2 in FotMob
-SEASON_LABEL = "2024/2025"
-SEASON_START = date(2024, 8, 1)
-SEASON_END   = date(2025, 6, 30)
 REQUEST_DELAY_S = 0.8                 # polite delay between API calls
+
+
+def resolve_date_range() -> tuple[date, date, str]:
+    """Return (start, end, label) based on env vars."""
+    if os.environ.get("INCREMENTAL", "").lower() == "true":
+        end   = date.today()
+        start = end - timedelta(days=8)
+        return start, end, "incremental"
+    raw_start = os.environ.get("SCRAPE_START")
+    raw_end   = os.environ.get("SCRAPE_END")
+    if raw_start and raw_end:
+        return (date.fromisoformat(raw_start), date.fromisoformat(raw_end),
+                f"{raw_start}..{raw_end}")
+    # Default: 2024-25 full-season backfill
+    return date(2024, 8, 1), date(2025, 6, 30), "2024/2025 backfill"
 UA = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
@@ -263,6 +280,8 @@ async def run_scrape():
     ingested_date = date.today()
     ingested_at   = datetime.now(timezone.utc)
 
+    season_start, season_end, season_label = resolve_date_range()
+
     all_matches: list[dict] = []
     all_player_stats: list[dict] = []
     all_shots: list[dict] = []
@@ -277,10 +296,10 @@ async def run_scrape():
         await page.wait_for_timeout(2000)
 
         # ---- Phase 1: enumerate all match IDs --------------------------------
-        print(f"\nPhase 1: collecting match IDs for {SEASON_LABEL}...")
+        print(f"\nPhase 1: collecting match IDs ({season_label})...")
         match_ids: dict[int, dict] = {}  # match_id → basic match info
-        cur = SEASON_START
-        while cur <= SEASON_END:
+        cur = season_start
+        while cur <= season_end:
             matches = await fetch_matches_for_date(page, cur)
             for m in matches:
                 mid = m["id"]
