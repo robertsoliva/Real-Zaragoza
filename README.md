@@ -28,6 +28,7 @@ next-actions.md    Backlog of planned data work and analysis
 | `rz_raw.fotmob_matches` | FotMob | LaLiga2 match results by jornada | Weekly |
 | `rz_raw.fotmob_player_match_stats` | FotMob | Per-player stats per match (rating, goals, assists, passes, tackles, duels, xA) | Weekly |
 | `rz_raw.fotmob_shots` | FotMob | Shot-level data with xG coordinates | Weekly |
+| `rz_raw.fotmob_team_match_stats` | FotMob | Team totals per match (possession, shots, passes, duels, xG) | Weekly |
 
 Tables are **append-only, partitioned by match date, clustered by jornada** — past seasons stay queryable alongside the current one.
 

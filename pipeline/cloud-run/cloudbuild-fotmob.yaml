@@ -1,0 +1,11 @@
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -f
+      - Dockerfile.fotmob
+      - -t
+      - europe-west1-docker.pkg.dev/real-zaragoza-500608/rz-images/rz-scraper-fotmob:latest
+      - .
+images:
+  - europe-west1-docker.pkg.dev/real-zaragoza-500608/rz-images/rz-scraper-fotmob:latest

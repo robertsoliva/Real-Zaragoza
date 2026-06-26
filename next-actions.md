@@ -11,8 +11,9 @@ Running backlog for this repo. Not a wiki — tracks what to *build*. Move items
 - [x] **FotMob scraper** — `scraper_fotmob.py`, LaLiga2 via date-iteration, per-player stats + shot maps — 2026-06-26
 - [x] **Cloud Run + Scheduler — Transfermarkt** — `rz-scraper-transfermarkt`, `rz-weekly-ingest` Tuesdays 06:00 CET — 2026-06-26
 - [x] **Cloud Run + Scheduler — FotMob** — `rz-scraper-fotmob`, `rz-weekly-fotmob` Tuesdays 06:30 CET — 2026-06-26
-- [x] **BQ tables** — `rz_raw`: `transfermarkt_squad` (ingested_date partition), `fotmob_matches` + `fotmob_player_match_stats` + `fotmob_shots` (match_date partition, match_round cluster) — 2026-06-26
-- [x] **LaLiga2 2024-25 backfill** — executed 2026-06-26 (execution `rz-scraper-fotmob-s6ds6`) — 2026-06-26
+- [x] **BQ tables** — `rz_raw`: `transfermarkt_squad` (ingested_date partition), `fotmob_matches` + `fotmob_player_match_stats` + `fotmob_shots` + `fotmob_team_match_stats` (match_date partition, match_round cluster) — 2026-06-26
+- [x] **Team match stats** — `fotmob_team_match_stats` BQ table + `parse_team_stats()` scraper; 50 fields (possession, shots, passes, duels, xG per team per match) — 2026-06-26
+- [x] **LaLiga2 2024-25 backfill** — executed 2026-06-26 (execution `rz-scraper-fotmob-s6ds6`; re-run with team stats: `rz-scraper-fotmob-sb24f`) — 2026-06-26
 - [x] **`rz_processed` strategy** — append-only raw + view dedup on `(player_id, season_id)` — 2026-06-26
 - [x] **Incremental mode** — `INCREMENTAL=true` env var → last 8 days; weekly scheduler uses this — 2026-06-26
 

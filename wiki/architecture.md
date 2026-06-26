@@ -132,6 +132,14 @@ Key fields: `shot_id`, `match_id`, `player_id`, `event_type` (Goal/Miss/SavedSho
 
 Full schema: [`pipeline/bq-schemas/fotmob_shots.json`](../pipeline/bq-schemas/fotmob_shots.json)
 
+### `rz_raw.fotmob_team_match_stats`
+Partition: `match_date`. Clustered by: `match_round`, `team_id`.  
+Two rows per match (one per team: `side = home | away`). Populated for `ratings` and `xG` coverage matches (not `lower`).
+
+Key fields: `team_id`, `team_name`, `side`, `possession_pct`, `total_shots`, `shots_on_target`, `shots_off_target`, `blocked_shots`, `shots_inside_box`, `shots_outside_box`, `big_chances`, `big_chances_missed`, `touches_opp_box` — xG only: `xg`, `xg_open_play`, `xg_set_play`, `xg_non_penalty`, `xg_on_target` — passing: `total_passes`, `accurate_passes`, `pass_accuracy_pct`, `own_half_passes`, `opp_half_passes`, `long_balls_accurate`, `long_ball_accuracy_pct`, `accurate_crosses`, `cross_accuracy_pct`, `throws`, `offsides`, `corners` — defence: `tackles`, `interceptions`, `blocks`, `clearances`, `keeper_saves` — duels/dribbles: `duels_won`, `ground_duels_won`, `ground_duel_pct`, `aerial_duels_won`, `aerial_duel_pct`, `successful_dribbles`, `dribble_success_pct` — discipline: `yellow_cards`, `red_cards`, `fouls_committed`.
+
+Full schema: [`pipeline/bq-schemas/fotmob_team_match_stats.json`](../pipeline/bq-schemas/fotmob_team_match_stats.json)
+
 ---
 
 ## `rz_processed` — views over raw data
@@ -164,6 +172,8 @@ pipeline/
     fotmob_matches.json
     fotmob_player_match_stats.json
     fotmob_shots.json
+    fotmob_team_match_stats.json
+    cloudbuild-fotmob.yaml       # Cloud Build config for FotMob image
 ```
 
 ---

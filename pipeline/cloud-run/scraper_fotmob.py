@@ -17,6 +17,7 @@ FotMob coverage levels:
 
 import asyncio
 import os
+import re
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
@@ -52,6 +53,26 @@ def _to_int(v) -> Optional[int]:
         return int(v) if v is not None else None
     except (ValueError, TypeError):
         return None
+
+
+def _to_float(v) -> Optional[float]:
+    try:
+        return float(v) if v is not None else None
+    except (ValueError, TypeError):
+        return None
+
+
+def _parse_frac(v) -> tuple[Optional[int], Optional[float]]:
+    """'302 (82%)' → (302, 82.0). Plain int → (int, None)."""
+    if v is None:
+        return None, None
+    m = re.match(r"(\d+)\s*\((\d+)%\)", str(v))
+    if m:
+        return int(m.group(1)), float(m.group(2))
+    try:
+        return int(v), None
+    except (ValueError, TypeError):
+        return None, None
 
 
 # ---------------------------------------------------------------------------
@@ -194,6 +215,93 @@ def parse_player_stats(match_id: str, general: dict, ps_dict: dict,
     return rows
 
 
+def parse_team_stats(match_id: str, general: dict, stats_dict: dict,
+                     header: dict, ingested_date: date, ingested_at: datetime) -> list[dict]:
+    """Two rows per match (home + away) from content.stats."""
+    match_date  = (general.get("matchTimeUTCDate") or "")[:10] or None
+    match_round = _to_int(general.get("matchRound"))
+
+    # Flatten [home, away] values by stat key; skip header rows ([None, None])
+    flat: dict[str, list] = {}
+    for group in (stats_dict.get("Periods") or {}).get("All", {}).get("stats", []):
+        for stat in group.get("stats", []):
+            k = stat.get("key")
+            v = stat.get("stats")
+            if k and v and v != [None, None] and k not in flat:
+                flat[k] = v
+
+    def sv(key, idx):
+        vals = flat.get(key) or [None, None]
+        return vals[idx] if idx < len(vals) else None
+
+    teams = header.get("teams", [])
+
+    rows = []
+    for idx, side in enumerate(("home", "away")):
+        team = teams[idx] if idx < len(teams) else {}
+        acc_passes, pass_pct        = _parse_frac(sv("accurate_passes", idx))
+        long_acc,   long_pct        = _parse_frac(sv("long_balls_accurate", idx))
+        cross_acc,  cross_pct       = _parse_frac(sv("accurate_crosses", idx))
+        gd_won,     gd_pct          = _parse_frac(sv("ground_duels_won", idx))
+        ad_won,     ad_pct          = _parse_frac(sv("aerials_won", idx))
+        drib_won,   drib_pct        = _parse_frac(sv("dribbles_succeeded", idx))
+
+        rows.append({
+            "match_id":              str(match_id),
+            "match_date":            match_date,
+            "match_round":           match_round,
+            "team_id":               str(team.get("id", "")),
+            "team_name":             team.get("name"),
+            "side":                  side,
+            "possession_pct":        _to_int(sv("BallPossesion", idx)),
+            "xg":                    _to_float(sv("expected_goals", idx)),
+            "xg_open_play":          _to_float(sv("expected_goals_open_play", idx)),
+            "xg_set_play":           _to_float(sv("expected_goals_set_play", idx)),
+            "xg_non_penalty":        _to_float(sv("expected_goals_non_penalty", idx)),
+            "xg_on_target":          _to_float(sv("expected_goals_on_target", idx)),
+            "total_shots":           _to_int(sv("total_shots", idx)),
+            "shots_on_target":       _to_int(sv("ShotsOnTarget", idx)),
+            "shots_off_target":      _to_int(sv("ShotsOffTarget", idx)),
+            "blocked_shots":         _to_int(sv("blocked_shots", idx)),
+            "shots_woodwork":        _to_int(sv("shots_woodwork", idx)),
+            "shots_inside_box":      _to_int(sv("shots_inside_box", idx)),
+            "shots_outside_box":     _to_int(sv("shots_outside_box", idx)),
+            "big_chances":           _to_int(sv("big_chance", idx)),
+            "big_chances_missed":    _to_int(sv("big_chance_missed_title", idx)),
+            "touches_opp_box":       _to_int(sv("touches_opp_box", idx)),
+            "total_passes":          _to_int(sv("passes", idx)),
+            "accurate_passes":       acc_passes,
+            "pass_accuracy_pct":     pass_pct,
+            "own_half_passes":       _to_int(sv("own_half_passes", idx)),
+            "opp_half_passes":       _to_int(sv("opposition_half_passes", idx)),
+            "long_balls_accurate":   long_acc,
+            "long_ball_accuracy_pct": long_pct,
+            "accurate_crosses":      cross_acc,
+            "cross_accuracy_pct":    cross_pct,
+            "throws":                _to_int(sv("player_throws", idx)),
+            "offsides":              _to_int(sv("Offsides", idx)),
+            "corners":               _to_int(sv("corners", idx)),
+            "tackles":               _to_int(sv("matchstats.headers.tackles", idx)),
+            "interceptions":         _to_int(sv("interceptions", idx)),
+            "blocks":                _to_int(sv("shot_blocks", idx)),
+            "clearances":            _to_int(sv("clearances", idx)),
+            "keeper_saves":          _to_int(sv("keeper_saves", idx)),
+            "duels_won":             _to_int(sv("duel_won", idx)),
+            "ground_duels_won":      gd_won,
+            "ground_duel_pct":       gd_pct,
+            "aerial_duels_won":      ad_won,
+            "aerial_duel_pct":       ad_pct,
+            "successful_dribbles":   drib_won,
+            "dribble_success_pct":   drib_pct,
+            "yellow_cards":          _to_int(sv("yellow_cards", idx)),
+            "red_cards":             _to_int(sv("red_cards", idx)),
+            "fouls_committed":       _to_int(sv("fouls", idx)),
+            "ingested_date":         ingested_date.isoformat(),
+            "ingested_at":           ingested_at.isoformat(),
+        })
+    return rows
+
+
 def parse_shots(match_id: str, general: dict, shots: list[dict],
                 ingested_date: date, ingested_at: datetime) -> list[dict]:
     match_date  = (general.get("matchTimeUTCDate") or "")[:10] or None
@@ -271,6 +379,7 @@ async def run_scrape():
     all_matches:      list[dict] = []
     all_player_stats: list[dict] = []
     all_shots:        list[dict] = []
+    all_team_stats:   list[dict] = []
 
     async with async_playwright() as pw:
         browser = await pw.chromium.launch(headless=True)
@@ -306,12 +415,13 @@ async def run_scrape():
                 await asyncio.sleep(REQUEST_DELAY_S)
                 continue
 
-            general   = detail.get("general", {})
-            content   = detail.get("content", {})
-            header    = detail.get("header", {})
-            coverage  = general.get("coverageLevel", "lower")
-            ps_dict   = content.get("playerStats") or {}
-            shots_raw = (content.get("shotmap") or {}).get("shots") or []
+            general    = detail.get("general", {})
+            content    = detail.get("content", {})
+            header     = detail.get("header", {})
+            coverage   = general.get("coverageLevel", "lower")
+            ps_dict    = content.get("playerStats") or {}
+            shots_raw  = (content.get("shotmap") or {}).get("shots") or []
+            stats_dict = content.get("stats") or {}
 
             print(f"→ {coverage}, {len(ps_dict)} players, {len(shots_raw)} shots")
 
@@ -327,17 +437,23 @@ async def run_scrape():
                 all_shots.extend(
                     parse_shots(str(mid), general, shots_raw, ingested_date, ingested_at)
                 )
+            if stats_dict:
+                all_team_stats.extend(
+                    parse_team_stats(str(mid), general, stats_dict, header, ingested_date, ingested_at)
+                )
 
             await asyncio.sleep(REQUEST_DELAY_S)
 
         await browser.close()
 
-    print(f"\nSummary: {len(all_matches)} matches, {len(all_player_stats):,} player rows, {len(all_shots):,} shots")
+    print(f"\nSummary: {len(all_matches)} matches, {len(all_player_stats):,} player rows, "
+          f"{len(all_shots):,} shots, {len(all_team_stats):,} team-stat rows")
 
     payload = {
         "fotmob_matches":            all_matches,
         "fotmob_player_match_stats": all_player_stats,
         "fotmob_shots":              all_shots,
+        "fotmob_team_match_stats":   all_team_stats,
     }
     if project_id:
         print(f"\nWriting to BigQuery ({project_id})...")
