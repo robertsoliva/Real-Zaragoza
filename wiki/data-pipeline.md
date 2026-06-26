@@ -1,1 +1,0 @@
-> This page has been superseded by [architecture.md](./architecture.md), which covers data sources, GCP infrastructure, pipeline flow, BQ schemas, and open items in one place. See that file for all technical reference.
