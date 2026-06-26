@@ -2,9 +2,25 @@
 
 > **Status:** living document, last updated 2026-06-24. This page will go stale fast — it's written mid-transfer-window, ahead of preseason (training starts 20 July 2026), with the club mid-overhaul after relegation to Primera RFEF. Treat every name below as provisional until the squad is actually closed. Sources of truth: [realzaragoza.com](https://www.realzaragoza.com/) and [Spanish Wikipedia](https://es.wikipedia.org/wiki/Real_Zaragoza); the official site's own `/plantilla` page did not yet expose a structured roster as of this check, so most of this page currently relies on Aragonese sports press instead — re-verify against the official site once it publishes the 2026–27 squad list.
 
+## TL;DR
+
+- Near-total rebuild: ~26 departures (9 contracts expired, 2 loan returns, more pending), 5 signings confirmed as of June 2026
+- Primera RFEF wage-cap constraints are the direct driver of the scale of turnover
+- Ibai Gómez's first squad; preseason starts 20 July 2026; Arantegui targeting 80%+ settled by then
+- Top priority: striker signing (Jesús de Miguel a leading candidate); also pursuing wingers and a creative midfielder
+- Official squad list not yet published at realzaragoza.com/plantilla as of last check
+
+## Model
+
+**Type:** Roster  
+**Relationships:**
+- [current-situation.md](./current-situation.md) — coaching staff (Ibai Gómez, Arantegui) running the rebuild
+- [finances.md](./finances.md) — wage-cap and budget context driving the scale of departures
+- [academy.md](./academy.md) — Azón and Francho as active academy products in the squad picture
+
 ## Context
 
-The squad is being rebuilt almost from scratch for life in **Primera RFEF** (third tier, semi-professional) under new head coach **Ibai Gómez** (see `current-situation.md`). Primera RFEF's financial fair-play rules impose a much lower salary ceiling than Segunda División, which is the direct cause of the scale of turnover described below — several players who were good enough for Segunda are reportedly unaffordable in the new category. Sporting director **Lalo Arantegui** has said he wants 80%+ of the squad settled before the first day of preseason training on 20 July 2026.
+The squad is being rebuilt almost from scratch for life in **Primera RFEF** (third tier, semi-professional) under new head coach **Ibai Gómez** (see [current-situation.md](./current-situation.md)). Primera RFEF's financial fair-play rules impose a much lower salary ceiling than Segunda División, which is the direct cause of the scale of turnover described below — several players who were good enough for Segunda are reportedly unaffordable in the new category. Sporting director **Lalo Arantegui** has said he wants 80%+ of the squad settled before the first day of preseason training on 20 July 2026.
 
 ## 2025–26 captains (for reference — not yet confirmed for 2026–27)
 
@@ -39,7 +55,7 @@ The three players regarded as the most successful loanees last season are back a
 
 ## Open items for this page
 
-- Replace this whole page's prose roster with a structured table once the **Transfermarkt data pull** (tracked in `next-actions.md`) is live — that should give reliable positions, ages, nationalities, and squad numbers instead of name-only mentions pulled from news prose.
+- Replace this whole page's prose roster with a structured table once the **Transfermarkt data pull** (tracked in [`../next-actions.md`](../next-actions.md)) is live — that should give reliable positions, ages, nationalities, and squad numbers instead of name-only mentions pulled from news prose.
 - Re-check `realzaragoza.com/plantilla` once the club publishes its official 2026–27 squad list, and reconcile against it as the higher-priority source.
 - Confirm 2026–27 captaincy once announced.
 - Confirm final outcome for the three "at risk" salary-cap cases (Dani Gómez, Valery, Keidi Bare) and the three returning loanees.

@@ -1,10 +1,25 @@
 # Real Zaragoza — Finances & Debt
 
-> **Status:** living document, last updated 2026-06-24. Sources of truth for this page: [realzaragoza.com](https://www.realzaragoza.com/) and [Spanish Wikipedia](https://es.wikipedia.org/wiki/Real_Zaragoza) — where other sources disagree with these two, these two win. Neither covers club finances in much depth, so this page leans more heavily on press reporting than `history.md`/`current-situation.md` do; treat figures below as well-sourced but not official-filing-grade precision.
+> **Status:** living document, last updated 2026-06-24. Sources of truth for this page: [realzaragoza.com](https://www.realzaragoza.com/) and [Spanish Wikipedia](https://es.wikipedia.org/wiki/Real_Zaragoza) — where other sources disagree with these two, these two win. Neither covers club finances in much depth, so this page leans more heavily on press reporting than [history.md](./history.md)/[current-situation.md](./current-situation.md) do; treat figures below as well-sourced but not official-filing-grade precision.
+
+## TL;DR
+
+- 2011 insolvency (€130M liabilities) under Agapito Iglesias — ordinary debt restructured but creditors still unpaid as late as 2020
+- César Alierta's Fundación 2032 stabilized the club 2014–2022; Jorge Mas consortium took over April 2022
+- €20M capital increase approved June 2026 (Mas + Forcén), post-relegation, to finance the Primera RFEF promotion push
+- 2026–27 budget: ~€5–6M, among the highest in Primera RFEF; LaLiga's salary-limit framework no longer applies
+- Ibercaja naming rights: 10-year deal (2025–2035), valued €10–19M depending on which division the club plays in
+
+## Model
+
+**Type:** Financial  
+**Relationships:**
+- [history.md](./history.md) — "Dark Era" and founding context behind the debt explosion
+- [current-situation.md](./current-situation.md) — current ownership, capital increase detail, and boardroom structure
 
 ## The 2011 insolvency and its long tail
 
-- Under **Agapito Iglesias**'s ownership (2006–2014, the "Dark Era" — see `history.md`), the club's debt ballooned from roughly €50M to **€146M in five years**.
+- Under **Agapito Iglesias**'s ownership (2006–2014, the "Dark Era" — see [history.md](./history.md)), the club's debt ballooned from roughly €50M to **€146M in five years**.
 - In **June 2011**, Real Zaragoza SAD formally declared insolvency (**concurso de acreedores**), with liabilities of **€130M**, placed under the supervision of Zaragoza's Commercial Court No. 2.
 - Restructuring brought the **ordinary debt** down to about **€27.2M** by 2020 (from an initial €91M in ordinary claims) — but the tail was long: in **July 2020**, the club admitted it could not make a scheduled **€2.44M** payment to roughly 300 creditors and asked the court to suspend that installment, citing COVID-era stadium closures (~€4.06M in estimated lost revenue). Nearly nine years after the 2011 declaration, some creditors dating back to 2018–2019 (€566,500 and €278,001 respectively) still hadn't been paid.
 
@@ -15,7 +30,7 @@
 | 1992–2006 | Solans family | (not yet researched in financial depth — open item) |
 | 2006–2014 | Agapito Iglesias | Debt explosion (€50M → €146M), ends in the 2011 insolvency above. |
 | 2014–2022 | **Fundación Real Zaragoza 2032**, led by **César Alierta** (former Telefónica president) | Alierta's group joined the shareholding in July 2014, partly to stabilize the club post-insolvency; became majority shareholder after a 2019 capital increase. Alierta remained the club's top shareholder until selling to the Jorge Mas–led group in 2022. He died in 2026. |
-| 2022–present | Jorge Mas–led consortium (Real Z LLC) | See `current-situation.md` for the full ownership/boardroom picture. |
+| 2022–present | Jorge Mas–led consortium (Real Z LLC) | See [current-situation.md](./current-situation.md) for the full ownership/boardroom picture. |
 
 ## The 2026 capital increase
 

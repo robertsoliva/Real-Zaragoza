@@ -3,6 +3,24 @@
 > **Status:** living document, last updated 2026-06-24. Sources of truth for this page: [realzaragoza.com](https://www.realzaragoza.com/) and [Spanish Wikipedia](https://es.wikipedia.org/wiki/Real_Zaragoza) — where other sources disagree with these two, these two win.
 > Atomic, sourced facts only. Update in place as new facts are verified; do not let entries go stale — when a fact changes (promotion, relegation, a new title), edit the relevant section and bump the date above.
 
+## TL;DR
+
+- Founded 1932 in Zaragoza; 58 seasons in Primera División, 29 in Segunda out of 91 total league seasons
+- 9 major titles: 6 Copas del Rey/España, 1 Recopa de Europa (1995 "Héroes de París"), 1 Supercopa (2004), 1 Copa de Ferias (1964)
+- Best league finish: 2nd in La Liga, 1974–75 ("Los Zaraguayos" era)
+- Not in Primera División since 2013; further relegated to Primera RFEF (3rd tier) in May 2026
+- Stadium: La Romareda (1957–2025) demolished; club now at provisional Ibercaja Estadio; new Ibercaja Romareda expected ~2027
+
+## Model
+
+**Type:** Club  
+**Relationships:**
+- [current-situation.md](./current-situation.md) — present-day ownership, coaching structure, and stadium situation
+- [finances.md](./finances.md) — financial character of each ownership era
+- [records.md](./records.md) — statistical records tied to historical eras and players
+- [identity-fan-culture.md](./identity-fan-culture.md) — nicknames and cultural legacy tied to eras
+- [academy.md](./academy.md) — canteranos from notable eras
+
 ## Identity
 
 - **Full name:** Real Zaragoza, S.A.D.
@@ -74,7 +92,7 @@ Notable finals:
 
 ## Open items for this page
 
-- Add a season-by-season results table (full list of Segunda/Primera finishes) — candidate for the SofaScore/Transfermarkt data pull tracked in `next-actions.md`.
+- Add a season-by-season results table (full list of Segunda/Primera finishes) — candidate for the SofaScore/Transfermarkt data pull tracked in [`../next-actions.md`](../next-actions.md).
 - Confirm exact completion date for the new Ibercaja Romareda stadium once construction firms closer to done.
 
 ## Sources

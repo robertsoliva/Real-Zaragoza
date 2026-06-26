@@ -2,15 +2,32 @@
 
 > **Status:** living document, highly volatile right now — the club is mid-restructuring after relegation. Sources of truth for this page: [realzaragoza.com](https://www.realzaragoza.com/) and [Spanish Wikipedia](https://es.wikipedia.org/wiki/Real_Zaragoza); where day-to-day news and these two disagree, these two win, but several roles below are genuinely in transition — those lines are flagged as open questions, not settled facts.
 
+## TL;DR
+
+- Relegated to Primera RFEF (3rd tier) May 2026 — deepest crisis in 94 years, first time outside professional football since 1949
+- Ibai Gómez hired as head coach June 2026; Lalo Arantegui as sporting director since March 2026
+- Jorge Mas leads ownership consortium (Real Z LLC); €20M capital increase approved June 2026 to fund the promotion push
+- Boardroom flux: Mas may hand daily presidency to a new "institutional president"; Fernando López (general director) likely departing
+- Playing at temporary Ibercaja Estadio (20,071 seats) while new permanent Ibercaja Romareda is built (~2027)
+
+## Model
+
+**Type:** Snapshot  
+**Relationships:**
+- [history.md](./history.md) — full historical context for the relegation and ownership eras
+- [finances.md](./finances.md) — capital increase detail, wage caps, and budget breakdown
+- [squad.md](./squad.md) — squad rebuild running in parallel under the new coaching structure
+- [academy.md](./academy.md) — cantera overhaul also part of the same March 2026 restructuring
+
 ## Sporting context
 
-The club is coming off the **2025–26 Segunda División season**, which ended in relegation to **Primera Federación (Primera RFEF)** — the third tier, and outside professional football — confirmed 24 May 2026 after finishing bottom (22nd) of Segunda. See `history.md` for the full context (first time in the third tier in 77 years). The season was marked by three different head coaches and the dismissal of a sporting director mid-season. The club enters 2026–27 in its deepest institutional crisis in 94 years, and is also playing away from its historic home while La Romareda is rebuilt (see Stadium below).
+The club is coming off the **2025–26 Segunda División season**, which ended in relegation to **Primera Federación (Primera RFEF)** — the third tier, and outside professional football — confirmed 24 May 2026 after finishing bottom (22nd) of Segunda. See [history.md](./history.md) for the full context (first time in the third tier in 77 years). The season was marked by three different head coaches and the dismissal of a sporting director mid-season. The club enters 2026–27 in its deepest institutional crisis in 94 years, and is also playing away from its historic home while La Romareda is rebuilt (see Stadium below).
 
 ## Ownership
 
 Per the club's own organisational chart, **Jorge Mas** is President; per Wikipedia's infobox, ownership ("Propietario") is attributed to **Pablo Jiménez de Parga** (Spain) and **Amber Capital** (UK) — the investment vehicle of **Joseph Oughourlian**, who is also chairman of Grupo Prisa and owner of Racing Club de Lens. These aren't necessarily contradictory: reporting indicates Mas, Jiménez de Parga, Amber Capital/Oughourlian and local businessman **Juan Forcén** came in together as a consortium.
 
-- **Ownership history:** Solans family presidency 1992–2006 → Agapito Iglesias majority ownership 2006–2014 (the "Dark Era," see `history.md`) → **Fundación Real Zaragoza 2032**, led by former Telefónica president **César Alierta**, joined the shareholding in 2014 to help stabilize the club post-insolvency (see `finances.md`) and became majority shareholder after a 2019 capital increase, holding that position until selling to the Jorge Mas–led group in **April 2022**. Alierta died in 2026.
+- **Ownership history:** Solans family presidency 1992–2006 → Agapito Iglesias majority ownership 2006–2014 (the "Dark Era," see [history.md](./history.md)) → **Fundación Real Zaragoza 2032**, led by former Telefónica president **César Alierta**, joined the shareholding in 2014 to help stabilize the club post-insolvency (see [finances.md](./finances.md)) and became majority shareholder after a 2019 capital increase, holding that position until selling to the Jorge Mas–led group in **April 2022**. Alierta died in 2026.
 - **2026 internal restructuring:** the board approved a €20M capital increase (announced ~2 June 2026), the largest since the 2022 takeover. Press reporting frames this as Mas and Forcén moving to consolidate majority control within the **Real Z LLC** holding structure, at the expense of the other 2022 partners (Jiménez de Parga, Amber Capital/Oughourlian, and per some reports a fund called Global Tavira and Ares Management — **this last detail is the least certain piece of the puzzle and needs re-verification**).
 - **Open / in progress:** Jorge Mas has signaled he may step back from the *day-to-day, representative* presidency (reported ~12 May 2026) without giving up his shareholding weight, in favour of a new non-shareholding "institutional president." As of the live organisational chart (checked 2026-06-24), **Mas is still listed as President**, so this change has not yet taken effect publicly. **Flag to revisit.**
 
@@ -43,7 +60,7 @@ Per the club's own organisational chart, **Jorge Mas** is President; per Wikiped
 
 ## Stadium situation
 
-The club does not currently play at its historic home. **La Romareda** was demolished in summer 2025; the team now plays at the temporary, modular **Ibercaja Estadio** (20,071 capacity, opened 24 July 2025) while the new **Ibercaja Romareda** is built on the same site, expected to be ready around mid-to-late 2027. Playing third-tier football away from a real home ground while a rebuild drags on is itself part of the current institutional strain. See `history.md` for the full stadium history.
+The club does not currently play at its historic home. **La Romareda** was demolished in summer 2025; the team now plays at the temporary, modular **Ibercaja Estadio** (20,071 capacity, opened 24 July 2025) while the new **Ibercaja Romareda** is built on the same site, expected to be ready around mid-to-late 2027. Playing third-tier football away from a real home ground while a rebuild drags on is itself part of the current institutional strain. See [history.md](./history.md) for the full stadium history.
 
 ## Open items for this page
 

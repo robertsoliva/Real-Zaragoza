@@ -2,27 +2,42 @@
 
 > **Status:** living document, last updated 2026-06-24. Sources of truth for this page: [realzaragoza.com](https://www.realzaragoza.com/) and [Spanish Wikipedia](https://es.wikipedia.org/wiki/Real_Zaragoza) — where other sources disagree with these two, these two win. Fan-culture specifics (ultras, anthem history) are sourced beyond those two where the primary sources don't cover them in depth — flagged inline.
 
+## TL;DR
+
+- Primary nickname: "Los Maños" (colloquial Aragonese demonym); kit colours blue and white since 1932
+- Main rivalry: derbi aragonés vs. SD Huesca — historically rare due to differing divisions; both clubs relegated to 3rd tier in 2026
+- Secondary rivalry: Osasuna ("eternal rival" per Wikipedia); strongest antagonism in Ligallo Fondo Norte's ultra culture
+- Ultras: Ligallo Fondo Norte (est. 1986); 24 members arrested June 2026 in connection with match violence during 2025–26
+- 21,419 socios for 2025–26; official anthem composed 1986 ("Aupa Zaragoza")
+
+## Model
+
+**Type:** Cultural  
+**Relationships:**
+- [history.md](./history.md) — founding context (colours, nicknames), stadium history, era-specific nicknames (Los Magníficos, Zaraguayos)
+- [current-situation.md](./current-situation.md) — socios numbers, current stadium (Ibercaja Estadio)
+
 ## Nicknames
 
 - **Maños / Mañicos** — colloquial term for people from Aragón generally, applied to the club's fans and players. Etymology is disputed even in the sourcing: possibly from Latin *magnus* ("great"), possibly from *matianus* ("inhabitant of Matiena," a Roman-era town in present-day Huesca province). **Not settled — treat as folk etymology.**
 - **Zaragocistas** — generic term for the club's supporters, not a historical nickname for the team itself.
 - **Blanquillos** — from the white of the team's shirt.
-- **Avispas** ("Wasps") — inherited from predecessor club Iberia Sport Club's black-and-yellow striped kit (see `history.md`).
+- **Avispas** ("Wasps") — inherited from predecessor club Iberia Sport Club's black-and-yellow striped kit (see [history.md](./history.md)).
 - **Alifantes** ("Elephants") — used in the 1930s, referring to the team's physical power.
-- For nicknames tied to specific eras (Los Magníficos, Los Zaraguayos), see `history.md`.
+- For nicknames tied to specific eras (Los Magníficos, Los Zaraguayos), see [history.md](./history.md).
 
 ## Crest & colours
 
 - The original crest combined city heraldry with black-and-yellow trim honouring the Iberia SC lineage.
 - On **30 March 1951**, the crest was updated to add a royal crown, coinciding with the club's renaming to "Real Zaragoza Club Deportivo."
-- **Colours:** blue and white, adopted in 1932 from the Aragonese Football Federation's official colours when the unified club was formed (see `history.md` for the founding context).
+- **Colours:** blue and white, adopted in 1932 from the Aragonese Football Federation's official colours when the unified club was formed (see [history.md](./history.md) for the founding context).
 
 ## Rivalries
 
 - **Derbi aragonés (vs. SD Huesca)** — the main regional rivalry, between Aragón's two biggest clubs. Roots trace to 1948–1951 meetings between the old UD Huesca and Zaragoza CF; after UD Huesca's dissolution, the fixture didn't resume until a 1978 Copa del Rey tie. Because the two clubs have rarely shared a division, the derby has been historically rare:
   - **2008–09:** first Segunda División derbi at La Romareda (2–2), after Zaragoza's relegation from Primera coincided with Huesca's promotion from Segunda B.
   - **2015–16:** first meeting at El Alcoraz after Huesca's promotion to Segunda (1–1).
-  - **April 2026:** press described the latest derbi as the most dramatic in the rivalry's history, framed explicitly as a survival decider — both clubs were ultimately relegated to Primera RFEF that same season (see `history.md`).
+  - **April 2026:** press described the latest derbi as the most dramatic in the rivalry's history, framed explicitly as a survival decider — both clubs were ultimately relegated to Primera RFEF that same season (see [history.md](./history.md)).
 - **Osasuna** — described in Wikipedia's club infobox as an "eternal rival," though without the geographic proximity of the Huesca fixture; the Ligallo Fondo Norte's ultra rivalry (below) is specifically also strongest against Osasuna and Basque supporter groups.
 
 ## Organised supporters
@@ -39,7 +54,7 @@
 
 ## Socios (members)
 
-Real Zaragoza, S.A.D. is a stock corporation (Sociedad Anónima Deportiva) — **socios are members/season-ticket holders, not owners.** Ownership sits with the company's shareholders (see `current-situation.md`); socio status confers fan benefits and, depending on category, a stadium seat, not equity or governance rights.
+Real Zaragoza, S.A.D. is a stock corporation (Sociedad Anónima Deportiva) — **socios are members/season-ticket holders, not owners.** Ownership sits with the company's shareholders (see [current-situation.md](./current-situation.md)); socio status confers fan benefits and, depending on category, a stadium seat, not equity or governance rights.
 
 - For the 2025–26 season (the first in the temporary Ibercaja Estadio), the club reported **21,419 total members**: 17,554 "Zaragocista Abonado" (seat-holding subscribers) plus roughly 3,865 "Zaragocista" (non-seat members). 98% of the prior season's seat-holders renewed.
 - **Open:** 2026–27 socio numbers (the first season in Primera RFEF) have not yet been checked.

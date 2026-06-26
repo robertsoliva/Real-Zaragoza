@@ -2,9 +2,24 @@
 
 > **Status:** living document, last updated 2026-06-24. Sources of truth for this page: [realzaragoza.com](https://www.realzaragoza.com/) and [Spanish Wikipedia](https://es.wikipedia.org/wiki/Real_Zaragoza) — where other sources disagree with these two, these two win. Records pages are where wrong numbers are most embarrassing; where sources genuinely conflict below, both figures are given rather than picking one silently.
 
+## TL;DR
+
+- All-time top scorer: Marcelino Martínez, 116 goals (1959–1970, "Los Magníficos" era)
+- Most appearances: José Luis Violeta and Xavi Aguado, tied at 473 each
+- Only Pichichi winner: Juan Seminario, 1961–62 — the only Peruvian ever to win the award
+- Biggest win: 8–1 twice — vs. Espanyol (~1979, season unresolved) and vs. Sevilla (1987, confirmed)
+- La Romareda: highest average attendance in Segunda División Spain, 2023–24
+
+## Model
+
+**Type:** Statistical  
+**Relationships:**
+- [history.md](./history.md) — era context for all legendary players and when records were set
+- [squad.md](./squad.md) — current players who may eventually appear in records
+
 ## All-time top scorer
 
-Per Wikipedia's own statistics annex (`Anexo:Estadísticas del Real Zaragoza` / `Anexo:Futbolistas del Real Zaragoza`) — the designated source of truth for this wiki — the club's all-time leading scorer is **Marcelino Martínez**, with **116 goals**, three ahead of second-placed Joaquín Murillo. Marcelino played for the club 1959–1970 (the "Los Magníficos" era — see `history.md`), won two Copa de España titles (1964, 1966) and the Copa de Ferias (1964) with the club, and scored Spain's winning goal against the USSR in the 1964 European Championship final. This is treated as settled.
+Per Wikipedia's own statistics annex (`Anexo:Estadísticas del Real Zaragoza` / `Anexo:Futbolistas del Real Zaragoza`) — the designated source of truth for this wiki — the club's all-time leading scorer is **Marcelino Martínez**, with **116 goals**, three ahead of second-placed Joaquín Murillo. Marcelino played for the club 1959–1970 (the "Los Magníficos" era — see [history.md](./history.md)), won two Copa de España titles (1964, 1966) and the Copa de Ferias (1964) with the club, and scored Spain's winning goal against the USSR in the 1964 European Championship final. This is treated as settled.
 
 **Note on a non-authoritative competing claim:** one fan/history blog (not Wikipedia, not the official site) credits a different player nicknamed "Sabino" (Alberto Sáez García, played 1975–1987) with 141 goals and calls him the record holder instead. Since this comes from a source that ranks below our two designated sources of truth, it does not change the answer above — Marcelino's record stands. Worth a future sanity-check against a harder stats database (BDFutbol, Transfermarkt) only to understand *why* the blog's number differs, not to reopen which figure is authoritative.
 
@@ -36,12 +51,12 @@ La Romareda's listed capacity was 33,608 for most of its life (after later safet
 
 ## Legendary players by era
 
-- **Marcelino, Santos, Canario, Villa, Lapetra** — the forward line of "Los Magníficos" (1960s), the club's first golden generation; reached four Copa finals. See `history.md`.
+- **Marcelino, Santos, Canario, Villa, Lapetra** — the forward line of "Los Magníficos" (1960s), the club's first golden generation; reached four Copa finals. See [history.md](./history.md).
 - **Juan Seminario** — Peruvian forward, the club's only-ever Pichichi winner (1961–62, see above).
 - **Sabino (Alberto Sáez García)** — 1970s–80s forward, scorer in the 1986 Copa del Rey final; a non-authoritative source credits him as the all-time top scorer instead of Marcelino, but that claim doesn't outrank Wikipedia — see above.
 - **José Luis Violeta** — joint appearance-record holder (473 matches, 1961–1977).
-- **Gustavo Poyet** — Uruguayan forward/midfielder at the club **1990–1997** (not the 1970s "Los Zaraguayos" generation, despite the superficial Uruguayan-player overlap — he was part of the **1994 Copa del Rey and 1995 Recopa de Europa ("Héroes de París")** squad instead, see `history.md`); foreign-player appearance record holder, 294 official matches, 80 goals. Later had a high-profile career including Chelsea, Tottenham, and Sunderland (as manager).
-- **Nayim** — already covered in `history.md` for his iconic goal in the 1995 Recopa de Europa final win over Arsenal.
+- **Gustavo Poyet** — Uruguayan forward/midfielder at the club **1990–1997** (not the 1970s "Los Zaraguayos" generation, despite the superficial Uruguayan-player overlap — he was part of the **1994 Copa del Rey and 1995 Recopa de Europa ("Héroes de París")** squad instead, see [history.md](./history.md)); foreign-player appearance record holder, 294 official matches, 80 goals. Later had a high-profile career including Chelsea, Tottenham, and Sunderland (as manager).
+- **Nayim** — already covered in [history.md](./history.md) for his iconic goal in the 1995 Recopa de Europa final win over Arsenal.
 
 ## Open items for this page
 
