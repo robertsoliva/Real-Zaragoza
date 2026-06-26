@@ -7,8 +7,9 @@ Running backlog of ideas/future work for this repo. Not a wiki page — this tra
 - [x] **Scraper — Transfermarkt.** `pipeline/cloud-run/scraper_transfermarkt.py` — verein/142, `/plus/1`, 32 players, full schema confirmed — 2026-06-26
 - [x] **Scraper — FotMob.** `pipeline/cloud-run/scraper_fotmob.py` — LaLiga2 2024-25 full season; date-iteration strategy; per-match player stats (rating, minutes, goals, assists, passes, touches, defense, duels); shot maps on xG-coverage matches. Smoke-tested locally (11 matches, 345 player rows) — 2026-06-26
 - [x] **Cloud Run + Scheduler — Transfermarkt.** `rz-scraper-transfermarkt` job deployed; `rz-weekly-ingest` scheduler firing Tuesdays 06:00 CET. Scraper → BQ, no manual steps — 2026-06-26
-- [ ] **FotMob Cloud Run deployment.** Build `Dockerfile.fotmob` via Cloud Build (uses Playwright/Chromium base image), push as `rz-scraper-fotmob`, run one-off job for 2024-25 historical backfill (~460 matches, ~13k player rows), add to Cloud Scheduler for weekly 2025-26 updates.
-- [ ] **FotMob incremental mode.** After historical backfill, update scraper to skip already-loaded matches (query BQ for max `match_date` per `league_id`, only fetch dates after that).
+- [x] **FotMob Cloud Run deployment.** `rz-scraper-fotmob` job live (europe-west1); `rz-weekly-fotmob` scheduler Tuesdays 06:30 CET; 2024-25 historical backfill launched 2026-06-26 — 2026-06-26
+- [x] **FotMob incremental mode.** `INCREMENTAL=true` env var: scrapes last 8 days. Cloud Run job updated; weekly scheduler will use this mode — 2026-06-26
+- [ ] **FotMob BQ row count check.** After backfill completes, query `rz_raw.fotmob_matches` and `rz_raw.fotmob_player_match_stats` to confirm ~462 matches and ~13k player rows ingested.
 - [ ] **Cloud Function — BQ loader (Pub/Sub).** Add when fan-out is needed (Slack alerts, wiki auto-update). Not needed yet.
 - [x] **`rz_processed` strategy decided.** Append-only raw + view deduplication on `(player_id, season_id)`. SQL in `wiki/data-pipeline.md` — 2026-06-26
 - [x] **`rz_processed.squad_snapshots` view live in BQ** — 2026-06-26
@@ -42,5 +43,5 @@ Running backlog of ideas/future work for this repo. Not a wiki page — this tra
 - [x] GCP project setup: APIs enabled, service account `rz-pipeline` created with minimum IAM roles, budget alert at €10/month — 2026-06-26
 - [x] BQ datasets `rz_raw` and `rz_processed` created (europe-west1); `transfermarkt_squad` table live, 32 rows loaded — 2026-06-26
 - [x] Containerize Transfermarkt scraper and deploy to Cloud Run (`rz-scraper-transfermarkt`, image in `rz-images` Artifact Registry repo) — 2026-06-26
-- [ ] Containerize FotMob scraper (`Dockerfile.fotmob`) and deploy to Cloud Run as `rz-scraper-fotmob`.
+- [x] Containerize FotMob scraper (`Dockerfile.fotmob`) and deploy to Cloud Run as `rz-scraper-fotmob` — 2026-06-26
 - [ ] Deploy Cloud Function with Pub/Sub trigger (deferred — add when fan-out is needed).

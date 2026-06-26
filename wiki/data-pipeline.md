@@ -52,7 +52,8 @@ Cloud Run (scraper) and Cloud Function (BQ writer) are decoupled deliberately:
 |---|---|---|---|
 | Cloud Scheduler job | `rz-weekly-ingest` | **live** | Fires every Tuesday 06:00 CET, triggers Cloud Run |
 | Cloud Run job | `rz-scraper-transfermarkt` | **live** | Scrapes Transfermarkt, writes directly to BQ |
-| Cloud Run job | `rz-scraper-fotmob` | pending deploy | Scrapes FotMob LaLiga2 matches + player stats |
+| Cloud Run job | `rz-scraper-fotmob` | **live** | Scrapes FotMob LaLiga2 matches + player stats; `INCREMENTAL=true` for weekly mode |
+| Cloud Scheduler job | `rz-weekly-fotmob` | **live** | Fires Tuesdays 06:30 CET; triggers `rz-scraper-fotmob` |
 | Pub/Sub topic | `rz-data-ingested` | **live** | Message bus; decouples scrape from load |
 | Pub/Sub dead-letter topic | `rz-data-ingested-dlq` | **live** | Catches failed messages for inspection |
 | Cloud Function | `rz-bq-loader` | pending | Pub/Sub subscriber; writes to BQ |
@@ -265,8 +266,7 @@ The service account key file is **never committed to this repo**. Options:
 
 ## Open items
 
-- **FotMob Cloud Run deployment** — build `Dockerfile.fotmob` via Cloud Build, push to Artifact Registry as `rz-scraper-fotmob`, run one-off job for 2024-25 historical backfill, then add to Cloud Scheduler for weekly 2025-26 updates
-- **FotMob scraper: season scope** — currently hard-coded to 2024-25. After historical backfill, update to scrape 2025-26 incrementally (matches since last run only). Add a `last_match_date` checkpoint or query BQ for the most recent `match_date` already loaded.
+- **FotMob 2024-25 backfill** — launched 2026-06-26, running as Cloud Run execution `rz-scraper-fotmob-d8trg`. Expect ~462 matches, ~13k player stat rows in `rz_raw.fotmob_matches` and `rz_raw.fotmob_player_match_stats`. Verify row counts in BQ once complete.
 - **FotMob: 1RFEF coverage** — Primera Federación matches have `lower` coverage in FotMob (no player stats, no lineup, no team stats). Match results only. Not worth scraping until FotMob improves coverage.
 - **DLQ handling** — define what happens when a message in `rz-data-ingested-dlq` is not resolved (manual replay vs. auto-retry limit)
 - **`rz_processed.player_valuations` view** — time-series of market value per player; add once a second weekly scrape lands so there's actual change data to query
