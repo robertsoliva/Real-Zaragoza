@@ -1,0 +1,16 @@
+[
+  {"name": "match_id",       "type": "STRING",    "mode": "REQUIRED", "description": "SofaScore internal event ID"},
+  {"name": "match_date",     "type": "DATE",      "mode": "REQUIRED", "description": "Partition key — match date (UTC)"},
+  {"name": "match_round",    "type": "INT64",     "mode": "NULLABLE", "description": "Jornada / round number — clustering key"},
+  {"name": "tournament_id",  "type": "STRING",    "mode": "NULLABLE", "description": "SofaScore tournament ID (54=LaLiga2, 17073=1RFEF)"},
+  {"name": "season_id",      "type": "STRING",    "mode": "NULLABLE", "description": "SofaScore season ID (62048=LaLiga2 24/25, 77558=LaLiga2 25/26)"},
+  {"name": "home_team_id",   "type": "STRING",    "mode": "NULLABLE"},
+  {"name": "home_team_name", "type": "STRING",    "mode": "NULLABLE"},
+  {"name": "away_team_id",   "type": "STRING",    "mode": "NULLABLE"},
+  {"name": "away_team_name", "type": "STRING",    "mode": "NULLABLE"},
+  {"name": "home_score",     "type": "INT64",     "mode": "NULLABLE"},
+  {"name": "away_score",     "type": "INT64",     "mode": "NULLABLE"},
+  {"name": "status",         "type": "STRING",    "mode": "NULLABLE", "description": "finished / notstarted / inprogress"},
+  {"name": "ingested_date",  "type": "DATE",      "mode": "NULLABLE", "description": "Audit — date row was written"},
+  {"name": "ingested_at",    "type": "TIMESTAMP", "mode": "NULLABLE"}
+]

@@ -8,21 +8,22 @@ Running backlog for this repo. Not a wiki — tracks what to *build*. Move items
 
 ### Done
 - [x] **Transfermarkt scraper** — `scraper_transfermarkt.py`, verein/142 `/plus/1`, 32 players, full BQ schema — 2026-06-26
-- [x] **FotMob scraper** — `scraper_fotmob.py`, LaLiga2 via date-iteration, per-player stats + shot maps — 2026-06-26
 - [x] **Cloud Run + Scheduler — Transfermarkt** — `rz-scraper-transfermarkt`, `rz-weekly-ingest` Tuesdays 06:00 CET — 2026-06-26
-- [x] **Cloud Run + Scheduler — FotMob** — `rz-scraper-fotmob`, `rz-weekly-fotmob` Tuesdays 06:30 CET — 2026-06-26
-- [x] **BQ tables** — `rz_raw`: `transfermarkt_squad` (ingested_date partition), `fotmob_matches` + `fotmob_player_match_stats` + `fotmob_shots` + `fotmob_team_match_stats` (match_date partition, match_round cluster) — 2026-06-26
-- [x] **Team match stats** — `fotmob_team_match_stats` BQ table + `parse_team_stats()` scraper; 50 fields (possession, shots, passes, duels, xG per team per match) — 2026-06-26
-- [x] **LaLiga2 2024-25 backfill** — executed 2026-06-26 (execution `rz-scraper-fotmob-s6ds6`; re-run with team stats: `rz-scraper-fotmob-sb24f`) — 2026-06-26
 - [x] **`rz_processed` strategy** — append-only raw + view dedup on `(player_id, season_id)` — 2026-06-26
-- [x] **Incremental mode** — `INCREMENTAL=true` env var → last 8 days; weekly scheduler uses this — 2026-06-26
+- [x] **SofaScore scraper** — `scraper_sofascore.py`; `curl_cffi` Chrome TLS impersonation; round-based iteration; player stats, team stats, shot maps; incremental mode (last 14 days); verified working locally — 2026-06-28
+- [x] **SofaScore BQ schemas** — `sofascore_matches`, `sofascore_player_match_stats`, `sofascore_shots`, `sofascore_team_match_stats` — 2026-06-28
+- [x] **SofaScore IDs discovered** — LaLiga2=54 (SID 62048/77558), 1RFEF=17073 (SID 64430/77727), Real Zaragoza=2815 — 2026-06-28
 
 ### Pending
-- [ ] **Verify 2024-25 backfill** — query `rz_raw.fotmob_matches`: expect ~462 rows; `fotmob_player_match_stats`: ~13k rows
-- [ ] **LaLiga2 2025-26 backfill** — Zaragoza's season just finished. Run with `SCRAPE_START=2025-07-01 SCRAPE_END=2026-06-26` then revert to `INCREMENTAL=true`
-- [ ] **1RFEF player stats** — FotMob only has `lower` coverage (no player stats). Zaragoza play in 1RFEF from 2026-27. Priority: (1) test SofaScore from Cloud Run IPs — home IP was blocked but Cloud Run IPs differ; (2) FBRef scraper (free, has 1RFEF); (3) API-Football (paid)
-- [ ] **Dedup view** — `rz_processed.match_dedup`: incremental runs overlap → same match_id may appear twice. View on `(match_id)` keeping latest `ingested_at`
-- [ ] **`rz_processed.season_results`** — W/D/L, goal diff, cumulative points from `fotmob_matches` once data confirmed
+- [ ] **Create BQ tables** — `bq mk --table` for the 4 new `sofascore_*` tables using schemas in `pipeline/bq-schemas/`
+- [ ] **Cloud Run deploy — SofaScore** — `gcloud builds submit --config cloudbuild-sofascore.yaml`, create job `rz-scraper-sofascore`, update scheduler `rz-weekly-fotmob` → `rz-weekly-sofascore`
+- [ ] **Verify Cloud Run works** — test that SofaScore API is accessible from GCP IPs (not blocked); see architecture.md for fallback plan
+- [ ] **LaLiga2 2024-25 backfill** — `TOURNAMENT_ID=54 SEASON_ID=62048` (~42 rounds × 11 matches, ~30 min)
+- [ ] **LaLiga2 2025-26 backfill** — `TOURNAMENT_ID=54 SEASON_ID=77558`
+- [ ] **1RFEF 2026-27** — season ID not yet available from SofaScore; check ~July 2026 when season starts
+- [ ] **Clean up old FotMob BQ tables** — `bq rm rz_raw.fotmob_matches` etc., once SofaScore data confirmed
+- [ ] **Dedup view** — `rz_processed.match_dedup` on `(match_id)` keeping latest `ingested_at`
+- [ ] **`rz_processed.season_results`** — W/D/L, goal diff, cumulative points from `sofascore_matches` once data loaded
 - [ ] **`rz_processed.player_valuations`** — time series of market value from `transfermarkt_squad`; add after second weekly scrape
 - [ ] **Cloud Function** — `rz-bq-loader` Pub/Sub subscriber; deferred until fan-out is needed
 
@@ -30,9 +31,9 @@ Running backlog for this repo. Not a wiki — tracks what to *build*. Move items
 
 ## Analysis & predictions
 
-- [ ] **LaLiga2 2024-25 stats analysis** — form, xG trends, head-to-head, defensive and attacking profiles for all 22 teams; depends on BQ backfill
-- [ ] **Player comparison tool** — compare Zaragoza squad against league averages and specific targets; depends on `fotmob_player_match_stats`
-- [ ] **Match outcome model** — predict Zaragoza fixtures; feature set from FotMob + Transfermarkt; approach TBD
+- [ ] **LaLiga2 2024-25 stats analysis** — form, head-to-head, defensive and attacking profiles for all 22 teams; depends on BQ backfill
+- [ ] **Player comparison tool** — compare Zaragoza squad against league averages and specific targets; depends on `sofascore_player_match_stats`
+- [ ] **Match outcome model** — predict Zaragoza fixtures; feature set from SofaScore + Transfermarkt; approach TBD
 
 ---
 

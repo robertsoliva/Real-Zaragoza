@@ -1,0 +1,10 @@
+FROM python:3.12-slim
+
+WORKDIR /app
+
+COPY requirements-sofascore.txt .
+RUN pip install --no-cache-dir -r requirements-sofascore.txt
+
+COPY scraper_sofascore.py .
+
+CMD ["python", "scraper_sofascore.py"]
