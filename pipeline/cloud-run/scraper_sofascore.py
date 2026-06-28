@@ -14,6 +14,7 @@ Env vars:
   TOURNAMENT_ID  — SofaScore tournament/league ID (required; default 54 = LaLiga2)
   SEASON_ID      — SofaScore season ID (required; default 62048 = 2024-25)
   INCREMENTAL    — "true" → only matches in last 14 days
+  ROUND_START    — resume a backfill from this round number (default 1)
   GCP_PROJECT_ID — write to BigQuery when set; otherwise save local CSV
 
 BQ tables (rz_raw):
@@ -47,8 +48,8 @@ HEADERS = {
     ),
 }
 LOCAL_DIR = Path(__file__).parent.parent.parent / "data" / "raw" / "sofascore"
-REQUEST_DELAY = 1.2    # seconds between match-level requests
-ROUND_DELAY   = 0.8    # seconds between rounds
+REQUEST_DELAY    = 3.0   # seconds between match-level API calls (3 endpoints per match)
+ROUND_DELAY      = 8.0   # seconds between rounds (longer pause to avoid IP blocks)
 INCREMENTAL_DAYS = 14
 
 

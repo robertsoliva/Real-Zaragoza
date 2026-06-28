@@ -206,6 +206,47 @@ GCP_PROJECT_ID=real-zaragoza-500608 TOURNAMENT_ID=17073 SEASON_ID=<sid> INCREMEN
 
 ---
 
+## Weekly local cron (macOS launchd)
+
+Since SofaScore blocks GCP IPs, the weekly incremental run must execute on a local machine. A launchd agent handles this automatically — it fires every Tuesday at 07:30, runs the scraper for both active seasons with `INCREMENTAL=true`, and writes directly to BigQuery via ADC.
+
+**Files:**
+
+| File | Purpose |
+|---|---|
+| `pipeline/cloud-run/run_weekly_sofascore.sh` | Wrapper: sets env vars, runs scraper for each season, logs to `/tmp/sofascore_weekly_YYYYMMDD.log` |
+| `~/Library/LaunchAgents/com.realzaragoza.sofascore-weekly.plist` | launchd job definition — **not committed to git** (system folder) |
+
+**One-time setup on a new machine:**
+
+```bash
+# 1. Authenticate to GCP
+gcloud auth application-default login
+
+# 2. Copy the plist to the LaunchAgents folder
+cp pipeline/cloud-run/com.realzaragoza.sofascore-weekly.plist \
+   ~/Library/LaunchAgents/
+
+# 3. Register it with launchd
+launchctl load ~/Library/LaunchAgents/com.realzaragoza.sofascore-weekly.plist
+
+# 4. Verify it's registered
+launchctl list | grep realzaragoza
+```
+
+**To trigger manually (e.g. after a missed Tuesday):**
+```bash
+launchctl start com.realzaragoza.sofascore-weekly
+# or run the wrapper directly:
+bash pipeline/cloud-run/run_weekly_sofascore.sh
+```
+
+**Season update (start of each season):** edit `run_weekly_sofascore.sh` and update `SEASON_ID` for each tournament.
+
+**Rate limiting:** `REQUEST_DELAY=3.0s` between API calls, `ROUND_DELAY=8.0s` between rounds. Writes flush per round so a crash only loses the current round. If SofaScore returns 403 (IP cooldown), wait 2–3 hours and retry with `ROUND_START=<last_good_round>`.
+
+---
+
 ## Open items
 
 - **Weekly automation** — `rz-weekly-sofascore` scheduler is paused (GCP IPs blocked). Options: (1) local launchd cron on Mac, (2) non-GCP host (DigitalOcean/Fly.io), (3) residential proxy in the Cloud Run image.
