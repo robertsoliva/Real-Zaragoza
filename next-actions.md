@@ -15,15 +15,12 @@ Running backlog for this repo. Not a wiki — tracks what to *build*. Move items
 - [x] **SofaScore IDs discovered** — LaLiga2=54 (SID 62048/77558), 1RFEF=17073 (SID 64430/77727), Real Zaragoza=2815 — 2026-06-28
 
 ### Pending
-- [ ] **Create BQ tables** — `bq mk --table` for the 4 new `sofascore_*` tables using schemas in `pipeline/bq-schemas/`
-- [ ] **Cloud Run deploy — SofaScore** — `gcloud builds submit --config cloudbuild-sofascore.yaml`, create job `rz-scraper-sofascore`, update scheduler `rz-weekly-fotmob` → `rz-weekly-sofascore`
-- [ ] **Verify Cloud Run works** — test that SofaScore API is accessible from GCP IPs (not blocked); see architecture.md for fallback plan
-- [ ] **LaLiga2 2024-25 backfill** — `TOURNAMENT_ID=54 SEASON_ID=62048` (~42 rounds × 11 matches, ~30 min)
-- [ ] **LaLiga2 2025-26 backfill** — `TOURNAMENT_ID=54 SEASON_ID=77558`
-- [ ] **1RFEF 2026-27** — season ID not yet available from SofaScore; check ~July 2026 when season starts
-- [ ] **Clean up old FotMob BQ tables** — `bq rm rz_raw.fotmob_matches` etc., once SofaScore data confirmed
+- [ ] **Backfills in progress** — LaLiga2 2024-25, LaLiga2 2025-26, 1RFEF 2025-26 running locally → BQ (started 2026-06-28, ~90 min total). GCP Cloud Run IPs are blocked by SofaScore; scheduler paused; runs are local.
+- [ ] **Verify backfills landed** — after completion, query `rz_raw.sofascore_matches` grouped by `(tournament_id, season_id)` to confirm row counts
+- [ ] **Weekly automation** — `rz-weekly-sofascore` Cloud Run scheduler is paused. Need to set up local cron (launchd on Mac) or non-GCP host for ongoing 1RFEF data. See architecture.md.
+- [ ] **1RFEF 2026-27** — season ID not yet on SofaScore (~July 2026). When available: run local backfill with `TOURNAMENT_ID=17073 SEASON_ID=<new_sid>`, then set up weekly local run.
 - [ ] **Dedup view** — `rz_processed.match_dedup` on `(match_id)` keeping latest `ingested_at`
-- [ ] **`rz_processed.season_results`** — W/D/L, goal diff, cumulative points from `sofascore_matches` once data loaded
+- [ ] **`rz_processed.season_results`** — W/D/L, goal diff, cumulative points from `sofascore_matches` once data confirmed
 - [ ] **`rz_processed.player_valuations`** — time series of market value from `transfermarkt_squad`; add after second weekly scrape
 - [ ] **Cloud Function** — `rz-bq-loader` Pub/Sub subscriber; deferred until fan-out is needed
 

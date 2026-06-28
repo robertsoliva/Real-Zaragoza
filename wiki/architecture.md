@@ -188,24 +188,30 @@ pipeline/
 
 ---
 
-## Notes on Cloud Run compatibility
+## Notes on Cloud Run vs. local execution
 
-`curl_cffi` bundles its own libcurl binary (no system dependencies), making the Docker image simple (`python:3.12-slim` base). It impersonates Chrome's TLS fingerprint to bypass Cloudflare protection.
+`curl_cffi` bundles its own libcurl binary (no system dependencies). However, **SofaScore blocks GCP datacenter IPs** at the Cloudflare layer — Cloud Run executions get non-200 from every API call even with Chrome TLS impersonation (confirmed 2026-06-28).
 
-Home IP had been blocked by FotMob. SofaScore with `curl_cffi` works fine from the home IP. Cloud Run IPs (Google Cloud datacenter) may differ in behaviour — needs a test run after deployment to confirm. If blocked, the fallback is scheduling a small Cloud Run invocation from the home machine's IP (via a reverse proxy) or switching to FBRef as the 1RFEF data source.
+**Current execution model:**
+- **SofaScore backfills and weekly runs: local machine** — `python3 scraper_sofascore.py` with `GCP_PROJECT_ID` set, writing directly to BigQuery via Application Default Credentials. Home IP is not blocked.
+- **Transfermarkt: Cloud Run** — unaffected (static site, no bot protection).
+- `rz-scraper-sofascore` Cloud Run job exists but scheduler (`rz-weekly-sofascore`) is **paused**. Kept in case a proxy or alternative approach is added later.
+
+To run a local weekly update (1RFEF season, once it starts):
+```bash
+cd pipeline/cloud-run
+GCP_PROJECT_ID=real-zaragoza-500608 TOURNAMENT_ID=17073 SEASON_ID=<sid> INCREMENTAL=true \
+  python3 scraper_sofascore.py
+```
 
 ---
 
 ## Open items
 
-- **Cloud Run deployment** — build and deploy `rz-scraper-sofascore` image; update scheduler from FotMob to SofaScore; verify API works from GCP IPs.
-- **BQ table creation** — create `sofascore_*` tables in `rz_raw` using the new schemas.
-- **LaLiga2 2024-25 backfill** — `TOURNAMENT_ID=54 SEASON_ID=62048` (full season, ~42 rounds × 11 matches ≈ 30 min).
-- **LaLiga2 2025-26 backfill** — `TOURNAMENT_ID=54 SEASON_ID=77558`.
-- **1RFEF 2026-27** — season ID not yet available; add when SofaScore creates it (~July 2026).
-- **Clean up old FotMob BQ tables** — `rz_raw.fotmob_matches`, `fotmob_player_match_stats`, `fotmob_shots`, `fotmob_team_match_stats` (run `bq rm` once SofaScore data confirmed).
-- **Dedup view** — `rz_processed.match_dedup` on `(match_id)` keeping latest `ingested_at`.
-- **`rz_processed.season_results`** — W/D/L, GD, points once data is in BQ.
+- **Weekly automation** — `rz-weekly-sofascore` scheduler is paused (GCP IPs blocked). Options: (1) local launchd cron on Mac, (2) non-GCP host (DigitalOcean/Fly.io), (3) residential proxy in the Cloud Run image.
+- **1RFEF 2026-27** — season ID not yet available on SofaScore; check ~July 2026. Update `SEASON_ID` in weekly local run command above.
+- **Dedup view** — `rz_processed.match_dedup` on `(match_id)` keeping latest `ingested_at` (relevant once incremental runs add overlapping rows).
+- **`rz_processed.season_results`** — W/D/L, GD, points per team per season from `sofascore_matches` once backfills confirmed.
 
 ## Sources
 
