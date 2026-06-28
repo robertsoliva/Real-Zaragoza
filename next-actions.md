@@ -15,7 +15,7 @@ Running backlog for this repo. Not a wiki — tracks what to *build*. Move items
 - [x] **SofaScore IDs discovered** — LaLiga2=54 (SID 62048/77558), 1RFEF=17073 (SID 64430/77727), Real Zaragoza=2815 — 2026-06-28
 
 ### Pending
-- [ ] **Backfills in progress** — LaLiga2 2024-25, LaLiga2 2025-26, 1RFEF 2025-26 running locally → BQ (started 2026-06-28, ~90 min total). GCP Cloud Run IPs are blocked by SofaScore; scheduler paused; runs are local.
+- [ ] **Backfills in progress** — LaLiga2 2024-25, LaLiga2 2025-26, 1RFEF 2024-25, 1RFEF 2025-26 running locally → BQ (started 2026-06-28). GCP Cloud Run IPs are blocked by SofaScore; scheduler paused; runs are local.
 - [ ] **Verify backfills landed** — after completion, query `rz_raw.sofascore_matches` grouped by `(tournament_id, season_id)` to confirm row counts
 - [ ] **Weekly automation** — `rz-weekly-sofascore` Cloud Run scheduler is paused. Need to set up local cron (launchd on Mac) or non-GCP host for ongoing 1RFEF data. See architecture.md.
 - [ ] **1RFEF 2026-27** — season ID not yet on SofaScore (~July 2026). When available: run local backfill with `TOURNAMENT_ID=17073 SEASON_ID=<new_sid>`, then set up weekly local run.

@@ -25,14 +25,14 @@ next-actions.md    Backlog of planned data work and analysis
 | Table | Source | Scope | Refresh |
 |---|---|---|---|
 | `rz_raw.transfermarkt_squad` | Transfermarkt | Squad, market values, contracts | Weekly |
-| `rz_raw.fotmob_matches` | FotMob | LaLiga2 match results by jornada | Weekly |
-| `rz_raw.fotmob_player_match_stats` | FotMob | Per-player stats per match (rating, goals, assists, passes, tackles, duels, xA) | Weekly |
-| `rz_raw.fotmob_shots` | FotMob | Shot-level data with xG coordinates | Weekly |
-| `rz_raw.fotmob_team_match_stats` | FotMob | Team totals per match (possession, shots, passes, duels, xG) | Weekly |
+| `rz_raw.sofascore_matches` | SofaScore | Match results by jornada (LaLiga2 + 1RFEF) | Weekly |
+| `rz_raw.sofascore_player_match_stats` | SofaScore | Per-player stats per match (rating, goals, assists, passes, tackles, duels, xG, xA) | Weekly |
+| `rz_raw.sofascore_shots` | SofaScore | Shot-level data with xG and pitch coordinates | Weekly |
+| `rz_raw.sofascore_team_match_stats` | SofaScore | Team totals per match (possession, shots, passes, duels, big chances) | Weekly |
 
 Tables are **append-only, partitioned by match date, clustered by jornada** — past seasons stay queryable alongside the current one.
 
-Current coverage: **LaLiga2 (Segunda División) 2024-25 and 2025-26**. 1RFEF coverage is a gap — FotMob provides only match results for that tier (no player stats); alternative source pending.
+Current coverage: **LaLiga2 2024-25 and 2025-26 + 1RFEF 2024-25 and 2025-26**.
 
 ---
 
@@ -41,11 +41,11 @@ Current coverage: **LaLiga2 (Segunda División) 2024-25 and 2025-26**. 1RFEF cov
 ```
 Cloud Scheduler (Tuesdays)
   ├── 06:00 CET → Cloud Run: rz-scraper-transfermarkt → rz_raw.transfermarkt_squad
-  └── 06:30 CET → Cloud Run: rz-scraper-fotmob       → rz_raw.fotmob_*
+  └── local cron → scraper_sofascore.py (INCREMENTAL=true) → rz_raw.sofascore_*
 ```
 
-- **Historical backfill**: run once per season — `INCREMENTAL=false`, optionally set `SCRAPE_START/END`
-- **Weekly incremental**: `INCREMENTAL=true` in scheduler — scrapes last 8 days only
+- **Historical backfill**: run once per season locally — `INCREMENTAL=false`, set `TOURNAMENT_ID` + `SEASON_ID`
+- **Weekly incremental**: `INCREMENTAL=true` — scrapes last 14 days only (SofaScore blocks GCP IPs; runs locally)
 
 Full technical reference: [`wiki/architecture.md`](wiki/architecture.md)
 
