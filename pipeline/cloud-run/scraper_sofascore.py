@@ -358,13 +358,16 @@ def write_to_bq(rows: list[dict], table: str, project_id: str) -> None:
     from google.cloud import bigquery
     if not rows:
         return
-    client     = bigquery.Client(project=project_id)
-    full_table = f"{project_id}.rz_raw.{table}"
-    errors     = client.insert_rows_json(full_table, rows)
-    if errors:
-        log.error(f"BQ errors ({table}): {errors[:2]}")
-    else:
-        log.info(f"  {len(rows):,} rows → {full_table}")
+    try:
+        client     = bigquery.Client(project=project_id)
+        full_table = f"{project_id}.rz_raw.{table}"
+        errors     = client.insert_rows_json(full_table, rows)
+        if errors:
+            log.error(f"BQ errors ({table}): {errors[:2]}")
+        else:
+            log.info(f"  {len(rows):,} rows → {full_table}")
+    except Exception as e:
+        log.error(f"BQ write failed ({table}), skipping batch: {e}")
 
 
 def save_local(payload: dict[str, list[dict]]) -> None:
@@ -387,6 +390,7 @@ async def run_scrape() -> None:
     tournament_id = os.environ.get("TOURNAMENT_ID", "54")    # default LaLiga2
     season_id     = os.environ.get("SEASON_ID", "62048")     # default 2024-25
     incremental   = os.environ.get("INCREMENTAL", "").lower() == "true"
+    round_start   = int(os.environ.get("ROUND_START", "1"))
     ingested_date = date.today()
     ingested_at   = datetime.now(timezone.utc)
 
@@ -398,10 +402,7 @@ async def run_scrape() -> None:
     else:
         log.info(f"Full season mode: tournament={tournament_id}, season={season_id}")
 
-    all_matches:      list[dict] = []
-    all_player_stats: list[dict] = []
-    all_shots:        list[dict] = []
-    all_team_stats:   list[dict] = []
+    total_matches = total_players = total_shots = total_team = 0
 
     async with NetworkClient() as client:
         # 1. Get available rounds for the season
@@ -413,8 +414,12 @@ async def run_scrape() -> None:
             return
         rounds = [r["round"] for r in (rounds_data.get("rounds") or [])]
         log.info(f"Found {len(rounds)} rounds in tournament={tournament_id} season={season_id}")
+        if round_start > 1:
+            log.info(f"Resuming from round {round_start}")
 
         for round_num in rounds:
+            if round_num < round_start:
+                continue
             # 2. Matches in this round
             events_data = await client.get(
                 f"/api/v1/unique-tournament/{tournament_id}/season/{season_id}"
@@ -437,6 +442,11 @@ async def run_scrape() -> None:
             log.info(f"Round {round_num}: {len(finished)} finished matches")
             await asyncio.sleep(random.uniform(ROUND_DELAY * 0.8, ROUND_DELAY * 1.2))
 
+            r_matches: list[dict] = []
+            r_players: list[dict] = []
+            r_shots:   list[dict] = []
+            r_teams:   list[dict] = []
+
             for event in finished:
                 mid       = str(event["id"])
                 match_row = parse_match_row(event, tournament_id, season_id, ingested_date, ingested_at)
@@ -446,14 +456,14 @@ async def run_scrape() -> None:
                 away_id, away_name = match_row["away_team_id"], match_row["away_team_name"]
 
                 log.info(f"  [{mid}] {home_name} vs {away_name} ({match_date})")
-                all_matches.append(match_row)
+                r_matches.append(match_row)
 
                 # 3. Player stats (lineups)
                 lineup_data = await client.get(f"/api/v1/event/{mid}/lineups")
                 if lineup_data:
                     rows = parse_player_stats(mid, match_date, match_round, lineup_data,
                                               ingested_date, ingested_at)
-                    all_player_stats.extend(rows)
+                    r_players.extend(rows)
                     log.info(f"    {len(rows)} player rows")
                 await asyncio.sleep(random.uniform(REQUEST_DELAY * 0.8, REQUEST_DELAY * 1.2))
 
@@ -465,7 +475,7 @@ async def run_scrape() -> None:
                         home_id, home_name, away_id, away_name,
                         stats_data, ingested_date, ingested_at,
                     )
-                    all_team_stats.extend(rows)
+                    r_teams.extend(rows)
                 await asyncio.sleep(random.uniform(REQUEST_DELAY * 0.8, REQUEST_DELAY * 1.2))
 
                 # 5. Shot map
@@ -474,31 +484,34 @@ async def run_scrape() -> None:
                     rows = parse_shots(mid, match_date, match_round,
                                        shot_data.get("shotmap") or [],
                                        ingested_date, ingested_at)
-                    all_shots.extend(rows)
+                    r_shots.extend(rows)
                     log.info(f"    {len(rows)} shots")
                 await asyncio.sleep(random.uniform(REQUEST_DELAY * 0.8, REQUEST_DELAY * 1.2))
 
+            # Flush this round immediately — transient BQ errors only lose one round
+            if project_id:
+                write_to_bq(r_matches, "sofascore_matches",            project_id)
+                write_to_bq(r_players, "sofascore_player_match_stats", project_id)
+                write_to_bq(r_teams,   "sofascore_team_match_stats",   project_id)
+                write_to_bq(r_shots,   "sofascore_shots",              project_id)
+            else:
+                save_local({
+                    "sofascore_matches":            r_matches,
+                    "sofascore_player_match_stats": r_players,
+                    "sofascore_shots":              r_shots,
+                    "sofascore_team_match_stats":   r_teams,
+                })
+            total_matches += len(r_matches)
+            total_players += len(r_players)
+            total_shots   += len(r_shots)
+            total_team    += len(r_teams)
+
     log.info(
-        f"\nSummary: {len(all_matches)} matches | "
-        f"{len(all_player_stats):,} player rows | "
-        f"{len(all_shots):,} shots | "
-        f"{len(all_team_stats):,} team-stat rows"
+        f"\nSummary: {total_matches} matches | "
+        f"{total_players:,} player rows | "
+        f"{total_shots:,} shots | "
+        f"{total_team:,} team-stat rows"
     )
-
-    payload: dict[str, list[dict]] = {
-        "sofascore_matches":            all_matches,
-        "sofascore_player_match_stats": all_player_stats,
-        "sofascore_shots":              all_shots,
-        "sofascore_team_match_stats":   all_team_stats,
-    }
-
-    if project_id:
-        log.info(f"Writing to BigQuery ({project_id})...")
-        for table, rows in payload.items():
-            write_to_bq(rows, table, project_id)
-    else:
-        log.info("No GCP_PROJECT_ID — saving locally...")
-        save_local(payload)
 
 
 if __name__ == "__main__":
