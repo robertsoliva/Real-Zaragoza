@@ -1,14 +1,15 @@
 """
-SofaScore scraper — LaLiga2 / 1RFEF match, player, shot, and team stats.
+SofaScore scraper — multi-league match, player, shot, and team stats.
 
-SofaScore IDs:
-  LaLiga2 tournament     = 54       (LID)
-  LaLiga2 2024-25 season = 62048    (SID)
-  LaLiga2 2025-26 season = 77558    (SID)
-  1RFEF   tournament     = 17073    (LID)
-  1RFEF   2024-25 season = 64430    (SID)
-  1RFEF   2025-26 season = 77727    (SID)
-  Real Zaragoza team_id  = 2815
+SofaScore tournament IDs:
+  LaLiga2            = 54       Serie B (Italy)      = 53
+  1RFEF              = 17073    Ligue 2 (France)     = 182
+  Romanian SuperLiga = 152      J1 League (Japan)    = 196
+  Real Zaragoza team_id = 2815
+
+Known season IDs (run seasons_lookup.py to discover others):
+  LaLiga2 2024-25 = 62048    LaLiga2 2025-26 = 77558
+  1RFEF   2024-25 = 64430    1RFEF   2025-26 = 77727
 
 Env vars:
   TOURNAMENT_ID  — SofaScore tournament/league ID (required; default 54 = LaLiga2)
@@ -16,8 +17,9 @@ Env vars:
   INCREMENTAL    — "true" → only matches in last 14 days
   ROUND_START    — resume a backfill from this round number (default 1)
   GCP_PROJECT_ID — write to BigQuery when set; otherwise save local CSV
+  BQ_DATASET     — BQ dataset to write to (default: rz_raw; use WC_26 for World Cup)
 
-BQ tables (rz_raw):
+BQ tables (configurable via BQ_DATASET, default rz_raw):
   sofascore_matches, sofascore_player_match_stats,
   sofascore_shots, sofascore_team_match_stats
 """
@@ -38,6 +40,22 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 log = logging.getLogger("sofascore")
 
 BASE_URL = "https://api.sofascore.com"
+
+LEAGUE_NAMES: dict[str, str] = {
+    "54":    "LaLiga2",
+    "17073": "1RFEF",
+    "53":    "Serie B",
+    "182":   "Ligue 2",
+    "152":   "Romanian SuperLiga",
+    "196":   "J1 League",
+    "17":    "FIFA World Cup",   # WC 2026 — confirm ID via seasons_lookup.py
+}
+
+# Stat fields used to detect whether SofaScore returned real player stats.
+# If none of these are populated for any player in a match, we skip the BQ
+# write (stats not yet processed or league has no detailed coverage).
+_PLAYER_STAT_PROBE = ("minutes_played", "total_passes", "touches", "rating")
+
 HEADERS = {
     "Accept": "application/json, text/plain, */*",
     "Accept-Language": "es-ES,es;q=0.9,en;q=0.8",
@@ -128,6 +146,7 @@ def _frac(s) -> tuple[Optional[int], Optional[int]]:
 # ---------------------------------------------------------------------------
 
 def parse_match_row(event: dict, tournament_id: str, season_id: str,
+                    league_name: str,
                     ingested_date: date, ingested_at: datetime) -> dict:
     home = event.get("homeTeam") or {}
     away = event.get("awayTeam") or {}
@@ -141,6 +160,7 @@ def parse_match_row(event: dict, tournament_id: str, season_id: str,
         "match_round":    _int((event.get("roundInfo") or {}).get("round")),
         "tournament_id":  tournament_id,
         "season_id":      season_id,
+        "league_name":    league_name,
         "home_team_id":   str(home.get("id", "")),
         "home_team_name": home.get("name"),
         "away_team_id":   str(away.get("id", "")),
@@ -153,10 +173,17 @@ def parse_match_row(event: dict, tournament_id: str, season_id: str,
     }
 
 
+def _player_rows_have_stats(rows: list[dict]) -> bool:
+    """Return True if at least one row has at least one real stat populated."""
+    return any(row.get(f) is not None for row in rows for f in _PLAYER_STAT_PROBE)
+
+
 def parse_player_stats(match_id: str, match_date: Optional[str], match_round: Optional[int],
                        lineup_data: dict,
+                       tournament_id: str, season_id: str, league_name: str,
                        ingested_date: date, ingested_at: datetime) -> list[dict]:
     rows = []
+    _logged_empty_stats = False
     for side in ("home", "away"):
         is_home   = side == "home"
         side_data = lineup_data.get(side) or {}
@@ -166,13 +193,28 @@ def parse_player_stats(match_id: str, match_date: Optional[str], match_round: Op
 
         all_players = side_data.get("players", []) + side_data.get("substitutes", [])
         for p in all_players:
-            player = p.get("player") or {}
-            stats  = p.get("statistics") or {}
+            player    = p.get("player") or {}
+            stats_raw = p.get("statistics")
+
+            # Log once per match when stats are missing so we can diagnose the root cause
+            if not _logged_empty_stats and not stats_raw:
+                stat_keys = list(stats_raw.keys()) if isinstance(stats_raw, dict) else None
+                log.debug(
+                    f"  [{match_id}] {side} first player stats_raw={repr(stats_raw)!r} "
+                    f"keys={stat_keys} — may be null for {league_name}"
+                )
+                _logged_empty_stats = True
+
+            stats = stats_raw if isinstance(stats_raw, dict) else {}
+
             rows.append({
                 "match_id":            match_id,
                 "player_id":           str(player.get("id", "")),
                 "match_date":          match_date,
                 "match_round":         match_round,
+                "tournament_id":       tournament_id,
+                "season_id":           season_id,
+                "league_name":         league_name,
                 "player_name":         player.get("name"),
                 "team_id":             team_id,
                 "team_name":           team_name,
@@ -225,6 +267,7 @@ def parse_team_stats(match_id: str, match_date: Optional[str], match_round: Opti
                      home_team_id: str, home_team_name: Optional[str],
                      away_team_id: str, away_team_name: Optional[str],
                      stats_data: dict,
+                     tournament_id: str, season_id: str, league_name: str,
                      ingested_date: date, ingested_at: datetime) -> list[dict]:
     periods    = stats_data.get("statistics") or []
     all_period = next((p for p in periods if p.get("period") == "ALL"), periods[0] if periods else None)
@@ -264,6 +307,9 @@ def parse_team_stats(match_id: str, match_date: Optional[str], match_round: Opti
             "match_id":              match_id,
             "match_date":            match_date,
             "match_round":           match_round,
+            "tournament_id":         tournament_id,
+            "season_id":             season_id,
+            "league_name":           league_name,
             "team_id":               team_id,
             "team_name":             team_name,
             "side":                  side,
@@ -315,6 +361,7 @@ def parse_team_stats(match_id: str, match_date: Optional[str], match_round: Opti
 
 def parse_shots(match_id: str, match_date: Optional[str], match_round: Optional[int],
                 shotmap: list[dict],
+                tournament_id: str, season_id: str, league_name: str,
                 ingested_date: date, ingested_at: datetime) -> list[dict]:
     rows = []
     for shot in shotmap:
@@ -327,6 +374,9 @@ def parse_shots(match_id: str, match_date: Optional[str], match_round: Optional[
             "match_id":            match_id,
             "match_date":          match_date,
             "match_round":         match_round,
+            "tournament_id":       tournament_id,
+            "season_id":           season_id,
+            "league_name":         league_name,
             "player_id":           str(player.get("id", "")),
             "player_name":         player.get("name"),
             "is_home":             bool(shot.get("isHome", False)),
@@ -355,13 +405,13 @@ def parse_shots(match_id: str, match_date: Optional[str], match_round: Optional[
 # Output
 # ---------------------------------------------------------------------------
 
-def write_to_bq(rows: list[dict], table: str, project_id: str) -> None:
+def write_to_bq(rows: list[dict], table: str, project_id: str, dataset: str = "rz_raw") -> None:
     from google.cloud import bigquery
     if not rows:
         return
     try:
         client     = bigquery.Client(project=project_id)
-        full_table = f"{project_id}.rz_raw.{table}"
+        full_table = f"{project_id}.{dataset}.{table}"
         errors     = client.insert_rows_json(full_table, rows)
         if errors:
             log.error(f"BQ errors ({table}): {errors[:2]}")
@@ -388,12 +438,14 @@ def save_local(payload: dict[str, list[dict]]) -> None:
 
 async def run_scrape() -> None:
     project_id    = os.environ.get("GCP_PROJECT_ID")
+    bq_dataset    = os.environ.get("BQ_DATASET", "rz_raw")
     tournament_id = os.environ.get("TOURNAMENT_ID", "54")    # default LaLiga2
     season_id     = os.environ.get("SEASON_ID", "62048")     # default 2024-25
     incremental   = os.environ.get("INCREMENTAL", "").lower() == "true"
     round_start   = int(os.environ.get("ROUND_START", "1"))
     ingested_date = date.today()
     ingested_at   = datetime.now(timezone.utc)
+    league_name   = LEAGUE_NAMES.get(tournament_id, f"tournament_{tournament_id}")
 
     cutoff_ts: Optional[int] = None
     if incremental:
@@ -401,9 +453,9 @@ async def run_scrape() -> None:
         cutoff_ts = int(cutoff_dt.timestamp())
         log.info(f"Incremental mode: matches since {cutoff_dt.date()}")
     else:
-        log.info(f"Full season mode: tournament={tournament_id}, season={season_id}")
+        log.info(f"Full season mode: tournament={tournament_id} ({league_name}), season={season_id}")
 
-    total_matches = total_players = total_shots = total_team = 0
+    total_matches = total_players = total_shots = total_team = total_skipped_players = 0
 
     async with NetworkClient() as client:
         # 1. Get available rounds for the season
@@ -450,7 +502,8 @@ async def run_scrape() -> None:
 
             for event in finished:
                 mid       = str(event["id"])
-                match_row = parse_match_row(event, tournament_id, season_id, ingested_date, ingested_at)
+                match_row = parse_match_row(event, tournament_id, season_id, league_name,
+                                            ingested_date, ingested_at)
                 match_date  = match_row["match_date"]
                 match_round = match_row["match_round"]
                 home_id, home_name = match_row["home_team_id"], match_row["home_team_name"]
@@ -462,10 +515,21 @@ async def run_scrape() -> None:
                 # 3. Player stats (lineups)
                 lineup_data = await client.get(f"/api/v1/event/{mid}/lineups")
                 if lineup_data:
-                    rows = parse_player_stats(mid, match_date, match_round, lineup_data,
-                                              ingested_date, ingested_at)
-                    r_players.extend(rows)
-                    log.info(f"    {len(rows)} player rows")
+                    player_rows = parse_player_stats(
+                        mid, match_date, match_round, lineup_data,
+                        tournament_id, season_id, league_name,
+                        ingested_date, ingested_at,
+                    )
+                    if player_rows and _player_rows_have_stats(player_rows):
+                        r_players.extend(player_rows)
+                        log.info(f"    {len(player_rows)} player rows")
+                    elif player_rows:
+                        total_skipped_players += len(player_rows)
+                        log.warning(
+                            f"    [{mid}] player stats all-null ({len(player_rows)} rows skipped) — "
+                            f"SofaScore may not have processed this match yet or "
+                            f"{league_name} lacks detailed coverage"
+                        )
                 await asyncio.sleep(random.uniform(REQUEST_DELAY * 0.8, REQUEST_DELAY * 1.2))
 
                 # 4. Team stats
@@ -474,7 +538,9 @@ async def run_scrape() -> None:
                     rows = parse_team_stats(
                         mid, match_date, match_round,
                         home_id, home_name, away_id, away_name,
-                        stats_data, ingested_date, ingested_at,
+                        stats_data,
+                        tournament_id, season_id, league_name,
+                        ingested_date, ingested_at,
                     )
                     r_teams.extend(rows)
                 await asyncio.sleep(random.uniform(REQUEST_DELAY * 0.8, REQUEST_DELAY * 1.2))
@@ -482,19 +548,22 @@ async def run_scrape() -> None:
                 # 5. Shot map
                 shot_data = await client.get(f"/api/v1/event/{mid}/shotmap")
                 if shot_data:
-                    rows = parse_shots(mid, match_date, match_round,
-                                       shot_data.get("shotmap") or [],
-                                       ingested_date, ingested_at)
+                    rows = parse_shots(
+                        mid, match_date, match_round,
+                        shot_data.get("shotmap") or [],
+                        tournament_id, season_id, league_name,
+                        ingested_date, ingested_at,
+                    )
                     r_shots.extend(rows)
                     log.info(f"    {len(rows)} shots")
                 await asyncio.sleep(random.uniform(REQUEST_DELAY * 0.8, REQUEST_DELAY * 1.2))
 
             # Flush this round immediately — transient BQ errors only lose one round
             if project_id:
-                write_to_bq(r_matches, "sofascore_matches",            project_id)
-                write_to_bq(r_players, "sofascore_player_match_stats", project_id)
-                write_to_bq(r_teams,   "sofascore_team_match_stats",   project_id)
-                write_to_bq(r_shots,   "sofascore_shots",              project_id)
+                write_to_bq(r_matches, "sofascore_matches",            project_id, bq_dataset)
+                write_to_bq(r_players, "sofascore_player_match_stats", project_id, bq_dataset)
+                write_to_bq(r_teams,   "sofascore_team_match_stats",   project_id, bq_dataset)
+                write_to_bq(r_shots,   "sofascore_shots",              project_id, bq_dataset)
             else:
                 save_local({
                     "sofascore_matches":            r_matches,
@@ -512,6 +581,7 @@ async def run_scrape() -> None:
         f"{total_players:,} player rows | "
         f"{total_shots:,} shots | "
         f"{total_team:,} team-stat rows"
+        + (f" | {total_skipped_players:,} player rows skipped (all-null stats)" if total_skipped_players else "")
     )
 
 

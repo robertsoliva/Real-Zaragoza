@@ -20,9 +20,24 @@ An ongoing analysis project on Real Zaragoza CF, covering both sporting (players
 - Prefer Spanish-language sources for Aragonese/club-specific news (more coverage, often first to report), but write the wiki content itself in English unless told otherwise.
 - **Sources of truth:** [realzaragoza.com](https://www.realzaragoza.com/) (browse it, don't just hit the homepage) and the [Spanish Wikipedia article](https://es.wikipedia.org/wiki/Real_Zaragoza) outrank every other source. If day-to-day press contradicts these two, these two win — but still note the discrepancy rather than silently dropping it, since the official site/Wikipedia can also lag breaking news (e.g. an org chart not yet updated after an announced departure).
 
-## Data sourcing (future)
+## Data platform
 
-When SofaScore/Transfermarkt data pulls start (tracked in `next-actions.md`), raw data belongs in a `data/` directory, separate from `wiki/`. Wiki pages can reference/summarize that data but shouldn't be the dumping ground for raw scraped tables.
+The pipeline is live. SofaScore match/player/team/shot data and Transfermarkt squad data are loaded into BigQuery (`real-zaragoza-500608.rz_raw`). Raw data lives in `data/` and BQ — not in `wiki/`. Wiki pages may summarise or reference data findings but should never contain raw tables.
+
+Active leagues: LaLiga2 (54), 1RFEF (17073), Serie B (53), Ligue 2 (182), Romanian SuperLiga (152), J1 League (196). Season IDs in `.claude/agents/data-engineer/AGENT.md`.
+
+## Agent ecosystem
+
+Four specialised agents live in `.claude/agents/`. Invoke the right one for the task:
+
+| Agent | When to use | Cannot |
+|---|---|---|
+| **data-lead** | Vision, roadmap, priorities, governance, documentation | Write SQL, run pipelines, modify code |
+| **data-engineer** | SQL, dbt models, BQ schemas, pipeline code, backfills | Update wiki, set strategy |
+| **data-scout** | Player profiles, scouting reports, acquisition fit analysis | Match/team performance analysis |
+| **match-analyst** | Zaragoza form, match breakdowns, player trends, league benchmarks | Transfer recommendations |
+
+Each agent's `AGENT.md` defines its context-loading checklist, capabilities, hard limits, and output format. A new conversation using one of these agents must read its `AGENT.md` before doing anything else.
 
 ## General
 
