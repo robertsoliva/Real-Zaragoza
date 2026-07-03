@@ -44,5 +44,5 @@ Each agent's `AGENT.md` defines its context-loading checklist, capabilities, har
 ## General
 
 - Don't invent statistics or dates. If you can't verify something, leave it as an open item.
-- Keep `next-actions.md` up to date as work gets done — move finished items to done with a date instead of deleting them.
+- Keep `next-actions.md` forward-looking only — remove completed items and note them in `wiki/log.md` instead. `next-actions.md` has no Done sections; it only tracks pending and active work.
 - **Never run `git push` (or anything else that touches the remote) without asking first, every time — a prior approval does not carry over to the next push.** Commit locally freely; pushing always needs an explicit go-ahead in that conversation.

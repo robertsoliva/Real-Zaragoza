@@ -1,4 +1,4 @@
-# Real Zaragoza — Current Situation (as of 2026-07-03)
+# Real Zaragoza — Current Situation
 
 > **Status:** living document, highly volatile right now — the club is mid-restructuring after relegation. Sources of truth for this page: [realzaragoza.com](https://www.realzaragoza.com/) and [Spanish Wikipedia](https://es.wikipedia.org/wiki/Real_Zaragoza); where day-to-day news and these two disagree, these two win, but several roles below are genuinely in transition — those lines are flagged as open questions, not settled facts.
 

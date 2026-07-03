@@ -1,7 +1,6 @@
 # Real Zaragoza — Club History
 
 > **Status:** living document, last updated 2026-06-24. Sources of truth for this page: [realzaragoza.com](https://www.realzaragoza.com/) and [Spanish Wikipedia](https://es.wikipedia.org/wiki/Real_Zaragoza) — where other sources disagree with these two, these two win.
-> Atomic, sourced facts only. Update in place as new facts are verified; do not let entries go stale — when a fact changes (promotion, relegation, a new title), edit the relevant section and bump the date above.
 
 ## TL;DR
 
@@ -88,7 +87,7 @@ Notable finals:
 
 - **La Romareda** was the club's home from its construction (1957) until the end of the 2024–25 season, with a final capacity of 33,608. It was fully demolished during summer 2025 to make way for a rebuild.
 - The club currently plays at the **Ibercaja Estadio**, a provisional, modular stadium (Spain's first) seating 20,071, built in roughly 26 weeks and inaugurated 24 July 2025.
-- The new stadium on the same site — sponsor-named **Ibercaja Romareda** through 2035 — is expected to be completed around mid-to-late 2027; capacity could be expanded to 42,119 if Zaragoza is awarded matches in the 2030 World Cup.
+- The new stadium on the same site — sponsor-named **Ibercaja Romareda** through 2035 — has an officially announced opening date of **August 31, 2027**; capacity could be expanded to 42,119 if Zaragoza is awarded matches in the 2030 World Cup.
 
 ## Open items for this page
 
