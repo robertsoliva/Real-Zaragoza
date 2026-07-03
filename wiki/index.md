@@ -10,7 +10,7 @@ Dates are `YYYY-MM` (year-month of last edit). Update this table whenever a page
 
 | File | Description | Last updated |
 |------|-------------|--------------|
-| [current-situation.md](./current-situation.md) | Ownership, board, coaching staff, and stadium situation — most volatile page | 2026-06 |
+| [current-situation.md](./current-situation.md) | Ownership, board, coaching staff, and stadium situation — most volatile page | 2026-07 |
 | [finances.md](./finances.md) | Debt history, ownership eras by financial character, wage caps, stadium sponsorship | 2026-06 |
 | [identity-fan-culture.md](./identity-fan-culture.md) | Nicknames, crest/colours, derbi aragonés rivalry, ultras, anthem, socios | 2026-06 |
 
@@ -25,14 +25,14 @@ Dates are `YYYY-MM` (year-month of last edit). Update this table whenever a page
 
 | File | Description | Last updated |
 |------|-------------|--------------|
-| [squad.md](./squad.md) | 2026–27 preseason squad rebuild: departures, signings, market priorities — goes stale fast | 2026-06 |
+| [squad.md](./squad.md) | 2026–27 preseason squad rebuild: departures, signings, market priorities — goes stale fast | 2026-07 |
 | [academy.md](./academy.md) | Youth structure, 2026 academy overhaul, historical and current graduates | 2026-06 |
 
 ## Data & Architecture
 
 | File | Description | Last updated |
 |------|-------------|--------------|
-| [architecture.md](./architecture.md) | Data sources, GCP infrastructure, BQ schemas, pipeline flow, open items | 2026-06 |
+| [architecture.md](./architecture.md) | Data sources, GCP infrastructure, BQ schemas, pipeline flow, open items | 2026-07 |
 
 ## What's not here yet
 

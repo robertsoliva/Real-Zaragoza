@@ -1,13 +1,13 @@
 # Architecture — Data sources, pipeline, and BigQuery
 
-> **Status:** living document, last updated 2026-07-01. Transfermarkt + SofaScore pipelines live. SofaScore now covers 6 leagues. Full 12-season backfill running locally. Agent ecosystem (data-lead, data-engineer, data-scout, match-analyst) in place.
+> **Status:** living document, last updated 2026-07-03. Transfermarkt + SofaScore pipelines live. SofaScore covers 6 leagues (4 more pending backfill). 2-season/day extraction cadence in place via launchd queue. Agent ecosystem (data-lead, data-engineer, data-scout, match-analyst) in place.
 
 ## Goal
 
 Build a data foundation to:
 - **Predict match outcomes** — model Zaragoza fixtures using historical and live form data
 - **Evaluate signings** — compare targets against current squad and league-wide benchmarks
-- **Scout opponents** — aggregate player and team stats across 6 leagues (LaLiga2, 1RFEF, Serie B, Ligue 2, Romanian SuperLiga, J1 League)
+- **Scout opponents** — aggregate player and team stats across 6 confirmed leagues (LaLiga2, 1RFEF, Serie B, Ligue 2, Romanian SuperLiga, J1 League) + 4 pending (Turkish Süper Lig, Norwegian Eliteserien, Austrian Bundesliga, Korean K League 1) + WC 2026
 
 ---
 
@@ -16,7 +16,7 @@ Build a data foundation to:
 | Source | What | Leagues | Method | Status |
 |---|---|---|---|---|
 | **Transfermarkt** | Squad, market values, contracts | All (Zaragoza only) | httpx + BeautifulSoup | Live, weekly |
-| **SofaScore** | Match results, player stats, team stats, shot maps | LaLiga2, 1RFEF, Serie B, Ligue 2, Romanian SuperLiga, J1 League | curl_cffi (Chrome TLS impersonation) | Live locally; Cloud Run blocked by Cloudflare |
+| **SofaScore** | Match results, player stats, team stats, shot maps | LaLiga2, 1RFEF, Serie B, Ligue 2, Romanian SuperLiga, J1 League (+ Turkish, Norwegian, Austrian, Korean pending; WC 2026 separate) | curl_cffi (Chrome TLS impersonation) | Live locally; Cloud Run blocked by Cloudflare |
 
 **Why SofaScore over FotMob:** FotMob provides only match results (`lower` coverage) for 1RFEF with no player stats. SofaScore has full player and team stats for both LaLiga2 and 1RFEF, and was extended to 4 additional leagues on 2026-07-01 for scouting context.
 
@@ -26,12 +26,17 @@ Build a data foundation to:
 
 | League | Tournament ID | 2024-25 Season ID | 2025-26 Season ID | Notes |
 |---|---|---|---|---|
-| LaLiga2 | 54 | 62048 | 77558 | |
-| 1RFEF | 17073 | 64430 | 77727 | |
-| Serie B (Italy) | 53 | 63812 | 79502 | |
-| Ligue 2 (France) | 182 | 61737 | 77357 | 2026-27 = 96109 |
-| Romanian SuperLiga | 152 | 62837 | 77312 | 2026-27 = 97124 |
-| J1 League (Japan) | 196 | 2025 = 69871 | 2026 = 87931 | Calendar-year seasons |
+| LaLiga2 | 54 | 62048 | 77558 | ✅ in BQ |
+| 1RFEF | 17073 | 64430 | 77727 | ✅ 24-25 in BQ; 25-26 pending |
+| Serie B (Italy) | 53 | 63812 | 79502 | ✅ both in BQ |
+| Ligue 2 (France) | 182 | 61737 | 77357 | pending backfill; 2026-27 = 96109 |
+| Romanian SuperLiga | 152 | 62837 | 77312 | pending backfill; 2026-27 = 97124 |
+| J1 League (Japan) | 196 | 2025 = 69871 | 2026 = 87931 | pending backfill; calendar-year |
+| FIFA World Cup 2026 | 17 | — | TBD | separate dataset `WC_26`; season_id via seasons_lookup.py |
+| Turkish Süper Lig | TBD | TBD | TBD | tournament_id unconfirmed; verify with seasons_lookup.py |
+| Norwegian Eliteserien | TBD | 2024 = TBD | 2025 = TBD | calendar-year; verify with seasons_lookup.py |
+| Austrian Bundesliga | TBD | TBD | TBD | verify with seasons_lookup.py |
+| Korean K League 1 | TBD | 2024 = TBD | 2025 = TBD | calendar-year; verify with seasons_lookup.py |
 
 Real Zaragoza team ID: **2815**. Run `python seasons_lookup.py <tournament_id>` to discover future season IDs.
 
@@ -175,10 +180,16 @@ SELECT * EXCEPT(rn) FROM (
 pipeline/
   cloud-run/
     scraper_transfermarkt.py     # Transfermarkt scraper
-    scraper_sofascore.py         # SofaScore scraper (backfill + incremental, 6 leagues)
+    scraper_sofascore.py         # SofaScore scraper (backfill + incremental, 6+ leagues)
     seasons_lookup.py            # Helper: list all season IDs for any tournament
-    backfill_all.sh              # One-shot: 12 seasons × 6 leagues (run after table truncate)
-    run_weekly_sofascore.sh      # Weekly incremental: all 6 active seasons, INCREMENTAL=true
+    sofascore_queue.txt          # Priority-ordered backfill queue (pop on completion)
+    run_next_from_queue.sh       # Pop + run next season from queue; fired by launchd
+    com.realzaragoza.sofascore-9am.plist   # launchd: fires 09:00 daily
+    com.realzaragoza.sofascore-6pm.plist   # launchd: fires 18:00 daily
+    run_daily_wc26.sh            # WC 2026 daily incremental → BQ dataset WC_26
+    com.realzaragoza.wc26-daily.plist      # launchd: fires 09:00 daily (WC period only)
+    backfill_all.sh              # One-shot: 12 seasons × 6 leagues (historical)
+    run_weekly_sofascore.sh      # Weekly incremental: all active seasons, INCREMENTAL=true
     Dockerfile                   # Transfermarkt container (python:3.12-slim)
     Dockerfile.sofascore         # SofaScore container (python:3.12-slim + curl_cffi)
     requirements.txt             # Transfermarkt deps
@@ -249,9 +260,9 @@ bash pipeline/cloud-run/run_weekly_sofascore.sh
 
 **Season update (start of each season):** edit `run_weekly_sofascore.sh` and update `SEASON_ID` for each tournament.
 
-**Rate limiting:** `REQUEST_DELAY=3.0s` between API calls, `ROUND_DELAY=8.0s` between rounds. Writes flush per round so a crash only loses the current round.
+**Rate limiting:** `REQUEST_DELAY=5.0s` between API calls, `ROUND_DELAY=20.0s` between rounds (increased 2026-07-03 after repeated bans). Writes flush per round so a crash only loses the current round.
 
-**IP ban behaviour (confirmed 2026-07-01):** Scraping ~3 consecutive full seasons (~3 hours of continuous requests) triggers a **24-hour Cloudflare IP ban** — not a short cooldown. The scraper returns `Could not fetch rounds` immediately; a plain curl shows HTTP 403. Recovery: wait the full 24 hours. Prevention: `backfill_retry.sh` inserts a **15-minute pause between each league group** (`LEAGUE_PAUSE=900`). Do not run more than 2–3 consecutive full seasons without a break.
+**IP ban behaviour (confirmed 2026-07-03):** Even **2 consecutive full seasons** (~50 min of continuous requests) is enough to trigger a **24-hour Cloudflare IP ban**. The scraper returns `Could not fetch rounds` immediately; a plain curl shows HTTP 403 `{"reason":"challenge"}`. Recovery: wait the full 24 hours — shorter waits don't work. **Prevention: run max 1 season per slot, 2 slots/day (09:00 + 18:00 via launchd + `run_next_from_queue.sh`).** The per-round delays are a buffer, not the primary protection — the 1-season-per-run cadence is.
 
 ---
 
@@ -278,8 +289,8 @@ BQ dataset `WC_26` (europe-west1) created 2026-07-01 for FIFA World Cup 2026 dat
 | Tables | `sofascore_matches`, `sofascore_player_match_stats`, `sofascore_team_match_stats`, `sofascore_shots` — identical schema to `rz_raw` |
 | Daily script | `pipeline/cloud-run/run_daily_wc26.sh` — runs `INCREMENTAL=true, BQ_DATASET=WC_26` |
 | launchd plist | `pipeline/cloud-run/com.realzaragoza.wc26-daily.plist` — fires 09:00 daily |
-| WC tournament ID | **TBD** — run `python3 seasons_lookup.py 17` once IP ban clears |
-| WC season ID | **TBD** — same lookup |
+| WC tournament ID | **17** (confirmed in scraper `LEAGUE_NAMES`) |
+| WC season ID | **TBD** — run `python3 seasons_lookup.py 17` once IP ban clears |
 
 `scraper_sofascore.py` now accepts `BQ_DATASET` env var (default `rz_raw`); set `BQ_DATASET=WC_26` to write to the WC dataset. Historical backfill from June 11 still pending IP ban lift.
 
@@ -287,11 +298,11 @@ BQ dataset `WC_26` (europe-west1) created 2026-07-01 for FIFA World Cup 2026 dat
 
 ## Open items
 
-- **League retry backfill** — 9/12 seasons failed 2026-07-01 due to 24-hour IP ban (triggered by 3 consecutive full seasons). `backfill_retry.sh` is ready with 15-min inter-league pauses. Will auto-launch when IP clears (~13:30 on 2026-07-02). Order: Serie B → Ligue 2 → Romanian SuperLiga → J1 → 1RFEF last.
-- **WC_26 backfill + IDs** — find WC 2026 tournament/season IDs via `seasons_lookup.py`, patch `run_daily_wc26.sh`, run full historical backfill (June 11 → today), then register launchd plist for daily 09:00.
-- **1RFEF 2024-25 anomaly** — only 100 matches loaded (expected ~380+). May be SofaScore exposing only playoff rounds via the rounds API. Investigate structure before re-backfilling.
-- **Weekly automation** — `rz-weekly-sofascore` scheduler is paused (GCP IPs blocked). `run_weekly_sofascore.sh` covers all 6 leagues; needs launchd plist update to reflect new leagues.
-- **1RFEF 2026-27** — season ID not yet available on SofaScore; check ~July 2026. Add to `run_weekly_sofascore.sh` when available.
+- **Backfill cadence (active)** — 1 season/slot × 2 slots/day via `run_next_from_queue.sh` + launchd (09:00 + 18:00). Queue: Ligue 2 × 2, Romanian SuperLiga × 2, J1 × 2, 1RFEF 25-26. Register plists before Sunday 2026-07-06 to auto-start. Do not run until ban clears (~11:17 on 2026-07-04).
+- **New league IDs** — run `python3 seasons_lookup.py 17 52 57 45 55` once IP clears to confirm WC and Turkish/Norwegian/Austrian/Korean tournament IDs, then fill in `sofascore_queue.txt`.
+- **WC_26 backfill** — tournament_id=17 confirmed. Resolve season_id via seasons_lookup.py, run full backfill (June 11 → now), register `com.realzaragoza.wc26-daily.plist`. WC final is July 19 — this is time-sensitive.
+- **1RFEF 2024-25 anomaly** — only 100 matches loaded (expected ~380+). May be SofaScore exposing only playoff rounds via the rounds API. Investigate before deciding whether to re-backfill.
+- **Weekly automation** — update `run_weekly_sofascore.sh` to include all active leagues once backfills complete.
 - **Dedup view** — `rz_processed.match_dedup` on `(match_id)` keeping latest `ingested_at`.
 - **`rz_processed.season_results`** — W/D/L, GD, points per team per season from `sofascore_matches` once backfills confirmed.
 - **Bronze/silver/gold layers** — dbt models on top of `rz_raw`; not yet started.

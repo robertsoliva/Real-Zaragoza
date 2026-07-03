@@ -1,4 +1,4 @@
-# Real Zaragoza — Current Situation (as of 2026-06-24)
+# Real Zaragoza — Current Situation (as of 2026-07-03)
 
 > **Status:** living document, highly volatile right now — the club is mid-restructuring after relegation. Sources of truth for this page: [realzaragoza.com](https://www.realzaragoza.com/) and [Spanish Wikipedia](https://es.wikipedia.org/wiki/Real_Zaragoza); where day-to-day news and these two disagree, these two win, but several roles below are genuinely in transition — those lines are flagged as open questions, not settled facts.
 
@@ -8,7 +8,7 @@
 - Ibai Gómez hired as head coach June 2026; Lalo Arantegui as sporting director since March 2026
 - Jorge Mas leads ownership consortium (Real Z LLC); €20M capital increase approved June 2026 to fund the promotion push
 - Boardroom flux: Mas may hand daily presidency to a new "institutional president"; Fernando López (general director) likely departing
-- Playing at temporary Ibercaja Estadio (20,071 seats) while new permanent Ibercaja Romareda is built (~2027)
+- Playing at temporary Ibercaja Estadio (20,071 seats) while new permanent Ibercaja Romareda is built (expected August 31, 2027)
 
 ## Model
 
@@ -23,6 +23,8 @@
 
 The club is coming off the **2025–26 Segunda División season**, which ended in relegation to **Primera Federación (Primera RFEF)** — the third tier, and outside professional football — confirmed 24 May 2026 after finishing bottom (22nd) of Segunda. See [history.md](./history.md) for the full context (first time in the third tier in 77 years). The season was marked by three different head coaches and the dismissal of a sporting director mid-season. The club enters 2026–27 in its deepest institutional crisis in 94 years, and is also playing away from its historic home while La Romareda is rebuilt (see Stadium below).
 
+The club has been placed in **Group II of 1ª RFEF** for 2026–27; **Nàstic** is confirmed as their first opponent.
+
 ## Ownership
 
 Per the club's own organisational chart, **Jorge Mas** is President; per Wikipedia's infobox, ownership ("Propietario") is attributed to **Pablo Jiménez de Parga** (Spain) and **Amber Capital** (UK) — the investment vehicle of **Joseph Oughourlian**, who is also chairman of Grupo Prisa and owner of Racing Club de Lens. These aren't necessarily contradictory: reporting indicates Mas, Jiménez de Parga, Amber Capital/Oughourlian and local businessman **Juan Forcén** came in together as a consortium.
@@ -31,12 +33,12 @@ Per the club's own organisational chart, **Jorge Mas** is President; per Wikiped
 - **2026 internal restructuring:** the board approved a €20M capital increase (announced ~2 June 2026), the largest since the 2022 takeover. Press reporting frames this as Mas and Forcén moving to consolidate majority control within the **Real Z LLC** holding structure, at the expense of the other 2022 partners (Jiménez de Parga, Amber Capital/Oughourlian, and per some reports a fund called Global Tavira and Ares Management — **this last detail is the least certain piece of the puzzle and needs re-verification**).
 - **Open / in progress:** Jorge Mas has signaled he may step back from the *day-to-day, representative* presidency (reported ~12 May 2026) without giving up his shareholding weight, in favour of a new non-shareholding "institutional president." As of the live organisational chart (checked 2026-06-24), **Mas is still listed as President**, so this change has not yet taken effect publicly. **Flag to revisit.**
 
-## Board of Directors (per official organigrama, checked 2026-06-24)
+## Board of Directors (per official organigrama, checked 2026-07-03)
 
 | Role | Person |
 |---|---|
 | President | Jorge Mas |
-| General Director | Fernando López — note: press reported (~2 June 2026) that his departure was agreed by mutual consent and a successor search was opening, but he is still listed in this role on the official org chart as of this check. **Flag to revisit.** |
+| General Director | Fernando López — press reported (~2 June 2026) that his departure was agreed; he remains listed in this role on the official org chart as of the 2026-07-03 re-check. **Still unresolved — flag to revisit.** |
 | Board member / council secretary | Cristina Llop |
 | Board member | Pilar Gil |
 | Board member | Mariano Aguilar |
@@ -60,11 +62,11 @@ Per the club's own organisational chart, **Jorge Mas** is President; per Wikiped
 
 ## Stadium situation
 
-The club does not currently play at its historic home. **La Romareda** was demolished in summer 2025; the team now plays at the temporary, modular **Ibercaja Estadio** (20,071 capacity, opened 24 July 2025) while the new **Ibercaja Romareda** is built on the same site, expected to be ready around mid-to-late 2027. Playing third-tier football away from a real home ground while a rebuild drags on is itself part of the current institutional strain. See [history.md](./history.md) for the full stadium history.
+The club does not currently play at its historic home. **La Romareda** was demolished in summer 2025; the team now plays at the temporary, modular **Ibercaja Estadio** (20,071 capacity, opened 24 July 2025) while the new **Ibercaja Romareda** is built on the same site, with the opening date officially set at **August 31, 2027**. Playing third-tier football away from a real home ground while a rebuild drags on is itself part of the current institutional strain. See [history.md](./history.md) for the full stadium history.
 
 ## Open items for this page
 
-- Confirm names for the new "institutional president" role, and confirm whether/when Fernando López is actually replaced as general director.
+- Confirm names for the new "institutional president" role, and confirm whether/when Fernando López is actually replaced as general director. (Re-checked 2026-07-03: both Mas and López still listed on official organigrama — change not yet implemented publicly.)
 - Re-verify the "Global Tavira" / "Ares Management" shareholder detail — currently sourced only from one round of press reporting, not from the official site or Wikipedia.
 - Add an organizational chart graphic once the restructuring settles (cross-reference `https://www.realzaragoza.com/organigrama`).
 
