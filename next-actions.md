@@ -63,3 +63,11 @@ Running backlog for this repo. Not a wiki — tracks what to *build*. Move items
 
 ### Pending
 - [ ] **Cloud Monitoring alerts** — Pub/Sub backlog + Cloud Run failure rate; add when Cloud Function is deployed
+
+---
+
+## Public website
+
+**Prerequisite: data layer must be stable** — backfills complete, weekly automation running, at least one full season of player/team stats queryable.
+
+- [ ] **Real Zaragoza stats website** — public-facing web app modelled on [atleticostats.com](https://atleticostats.com/home). Covers all club dimensions: match results and stats, player profiles and season stats, squad overview, scouting/comparison views, and institutional info from the wiki. Reads from BQ (via a backend API layer or direct queries). Scope and tech stack TBD once data is ready — log key decisions here as they're made.
