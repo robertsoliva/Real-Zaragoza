@@ -18,7 +18,7 @@ set -euo pipefail
 
 LOG=/tmp/sofascore_wc26_$(date +%Y%m%d).log
 PYTHON=/opt/anaconda3/bin/python3
-SCRAPER=/Users/robertsoliva/Desktop/Projects/Real-Zaragoza/pipeline/cloud-run/scraper_sofascore.py
+SCRAPER=/Users/robertsoliva/Desktop/Projects/Real-Zaragoza/pipeline/cloud-run/scrapers/scraper_sofascore.py
 
 # TODO: fill in once IP is clear and seasons_lookup.py confirms these IDs
 WC_TOURNAMENT_ID=17  # confirmed

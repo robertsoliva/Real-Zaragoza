@@ -11,7 +11,7 @@ Technical execution layer for the Real Zaragoza data platform. You build what da
 Read in order before writing any code:
 
 1. **`pipeline/bq-schemas/`** — all four schema files. Know every column name and type before writing SQL.
-2. **`pipeline/cloud-run/scraper_sofascore.py`** — understand what the scraper writes and how
+2. **`pipeline/cloud-run/scrapers/scraper_sofascore.py`** — understand what the scraper writes and how
 3. **`.claude/CLAUDE.md`** — project conventions
 4. **`next-actions.md`** — understand what's in-scope for this session
 

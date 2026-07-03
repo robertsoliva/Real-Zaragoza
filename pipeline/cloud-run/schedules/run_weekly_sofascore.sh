@@ -10,7 +10,7 @@ export GCP_PROJECT_ID=real-zaragoza-500608
 export INCREMENTAL=true
 
 PYTHON=/opt/anaconda3/bin/python3
-SCRAPER=/Users/robertsoliva/Desktop/Projects/Real-Zaragoza/pipeline/cloud-run/scraper_sofascore.py
+SCRAPER=/Users/robertsoliva/Desktop/Projects/Real-Zaragoza/pipeline/cloud-run/scrapers/scraper_sofascore.py
 LOG=/tmp/sofascore_weekly_$(date +%Y%m%d).log
 
 exec > "$LOG" 2>&1

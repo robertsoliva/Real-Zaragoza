@@ -15,7 +15,7 @@ Before answering anything substantive, read the following in order. Do not skip 
 1. **`.claude/CLAUDE.md`** — project rules, wiki conventions, what this repo is
 2. **`next-actions.md`** — current backlog: what's planned, in-progress, and done
 3. **`wiki/index.md`** — index of all documented knowledge; understand what exists
-4. **`pipeline/cloud-run/scraper_sofascore.py`** header docstring — current league IDs, tables, and env vars
+4. **`pipeline/cloud-run/scrapers/scraper_sofascore.py`** header docstring — current league IDs, tables, and env vars
 5. **`pipeline/bq-schemas/`** — all four schema files; understand the data model
 6. Any **`wiki/`** pages directly relevant to today's conversation topic
 

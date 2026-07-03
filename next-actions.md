@@ -19,7 +19,7 @@ Running backlog for this repo. Not a wiki — tracks what to *build*. Move items
 - [x] **1RFEF 2024-25 partial** — 100 matches loaded; anomaly: expected ~380+ matches. Likely SofaScore exposes only playoff rounds for this season via the rounds API. Needs investigation.
 - [x] **Serie B backfill** — both seasons (2024-25 and 2025-26) loaded successfully 2026-07-03
 - [ ] **Backfill cadence — active** — 2 seasons/day via `run_next_from_queue.sh` (launchd 09:00 + 18:00). Queue in `sofascore_queue.txt`. Ban recovered ~11:17 2026-07-04. Remaining: Ligue 2 × 2, Romanian SuperLiga × 2, J1 × 2, 1RFEF 25-26 (7 seasons = ~3.5 days).
-  - Register plists: `launchctl load ~/Desktop/Projects/Real-Zaragoza/pipeline/cloud-run/com.realzaragoza.sofascore-9am.plist` (and 6pm variant)
+  - Register plists: `launchctl load ~/Desktop/Projects/Real-Zaragoza/pipeline/cloud-run/schedules/com.realzaragoza.sofascore-9am.plist` (and 6pm variant)
 - [ ] **WC 2026 setup (PRIORITY 1)** — tournament_id=17 confirmed. Need season_id: `python3 seasons_lookup.py 17`. Then patch `run_daily_wc26.sh` and register `com.realzaragoza.wc26-daily.plist`. Run full backfill from 2026-06-11 first (not incremental).
 - [ ] **New leagues — ID lookup** — run `python3 seasons_lookup.py 52 57 45 55` once IP clears to confirm tournament IDs and get season IDs for: Turkish Süper Lig, Norwegian Eliteserien, Austrian Bundesliga, Korean K League 1. Then fill in `sofascore_queue.txt` (currently TODO). Both 2024 and 2025/26 seasons each.
 - [ ] **Verify backfills landed** — after each league completes, query `rz_raw.sofascore_matches GROUP BY tournament_id, season_id` to confirm row counts

@@ -1,3 +1,6 @@
+# Run from pipeline/cloud-run/docker/:
+#   gcloud builds submit . --config cloudbuild-sofascore.yaml
+# NOTE: rz-scraper-sofascore Cloud Run job is currently unused (GCP IPs blocked by SofaScore).
 steps:
   - name: gcr.io/cloud-builders/docker
     args:

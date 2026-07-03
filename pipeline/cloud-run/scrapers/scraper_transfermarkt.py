@@ -250,7 +250,7 @@ def scrape_squad(
 
 def save_local(df: pd.DataFrame) -> Path:
     """Write CSV to data/raw/transfermarkt/ for local dev inspection."""
-    out_dir = Path(__file__).parents[2] / "data" / "raw" / "transfermarkt"
+    out_dir = Path(__file__).parents[3] / "data" / "raw" / "transfermarkt"
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / f"squad_{CLUB_SLUG}_{SEASON_ID}_{date.today().isoformat()}.csv"
     df.to_csv(out_path, index=False)

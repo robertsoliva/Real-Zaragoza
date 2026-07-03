@@ -65,7 +65,7 @@ HEADERS = {
         "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
     ),
 }
-LOCAL_DIR = Path(__file__).parent.parent.parent / "data" / "raw" / "sofascore"
+LOCAL_DIR = Path(__file__).parents[3] / "data" / "raw" / "sofascore"
 REQUEST_DELAY    = 5.0   # seconds between match-level API calls (3 endpoints per match)
 ROUND_DELAY      = 20.0  # seconds between rounds (longer pause to avoid IP blocks)
 INCREMENTAL_DAYS = 14

@@ -9,7 +9,7 @@
   <key>ProgramArguments</key>
   <array>
     <string>/bin/bash</string>
-    <string>/Users/robertsoliva/Desktop/Projects/Real-Zaragoza/pipeline/cloud-run/run_weekly_sofascore.sh</string>
+    <string>/Users/robertsoliva/Desktop/Projects/Real-Zaragoza/pipeline/cloud-run/schedules/run_weekly_sofascore.sh</string>
   </array>
 
   <!-- Every Tuesday at 07:30 local time -->

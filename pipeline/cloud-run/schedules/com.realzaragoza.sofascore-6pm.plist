@@ -3,27 +3,27 @@
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.realzaragoza.sofascore-9am</string>
+    <string>com.realzaragoza.sofascore-6pm</string>
 
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
-        <string>/Users/robertsoliva/Desktop/Projects/Real-Zaragoza/pipeline/cloud-run/run_next_from_queue.sh</string>
+        <string>/Users/robertsoliva/Desktop/Projects/Real-Zaragoza/pipeline/cloud-run/schedules/run_next_from_queue.sh</string>
     </array>
 
-    <!-- Fire daily at 09:00 local time -->
+    <!-- Fire daily at 18:00 local time -->
     <key>StartCalendarInterval</key>
     <dict>
         <key>Hour</key>
-        <integer>9</integer>
+        <integer>18</integer>
         <key>Minute</key>
         <integer>0</integer>
     </dict>
 
     <key>StandardOutPath</key>
-    <string>/tmp/sofascore_9am_launchd.log</string>
+    <string>/tmp/sofascore_6pm_launchd.log</string>
     <key>StandardErrorPath</key>
-    <string>/tmp/sofascore_9am_launchd.log</string>
+    <string>/tmp/sofascore_6pm_launchd.log</string>
 
     <key>RunAtLoad</key>
     <false/>

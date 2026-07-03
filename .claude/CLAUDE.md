@@ -26,7 +26,7 @@ The pipeline is live. SofaScore match/player/team/shot data and Transfermarkt sq
 
 Active leagues (confirmed in BQ or pending backfill): LaLiga2 (54), 1RFEF (17073), Serie B (53), Ligue 2 (182), Romanian SuperLiga (152), J1 League (196). Expanding to: Turkish Süper Lig, Norwegian Eliteserien, Austrian Bundesliga, Korean K League 1 (tournament IDs TBD — pending `seasons_lookup.py`). WC 2026 in separate dataset `WC_26` (tournament_id=17; season_id TBD). Season IDs and full status in `.claude/agents/data-engineer/AGENT.md`.
 
-**Extraction cadence:** 1 season per slot, 2 slots/day (09:00 + 18:00) via launchd + `run_next_from_queue.sh`. Queue in `pipeline/cloud-run/sofascore_queue.txt`. Do not run back-to-back seasons manually — even 2 consecutive seasons triggers a 24-hour Cloudflare IP ban.
+**Extraction cadence:** 1 season per slot, 2 slots/day (09:00 + 18:00) via launchd + `run_next_from_queue.sh`. Queue in `pipeline/cloud-run/schedules/sofascore_queue.txt`. Do not run back-to-back seasons manually — even 2 consecutive seasons triggers a 24-hour Cloudflare IP ban.
 
 ## Agent ecosystem
 

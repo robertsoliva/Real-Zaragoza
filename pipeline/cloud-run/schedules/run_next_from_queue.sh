@@ -9,9 +9,9 @@
 
 set -euo pipefail
 
-QUEUE=/Users/robertsoliva/Desktop/Projects/Real-Zaragoza/pipeline/cloud-run/sofascore_queue.txt
+QUEUE=/Users/robertsoliva/Desktop/Projects/Real-Zaragoza/pipeline/cloud-run/schedules/sofascore_queue.txt
 PYTHON=/opt/anaconda3/bin/python3
-SCRAPER=/Users/robertsoliva/Desktop/Projects/Real-Zaragoza/pipeline/cloud-run/scraper_sofascore.py
+SCRAPER=/Users/robertsoliva/Desktop/Projects/Real-Zaragoza/pipeline/cloud-run/scrapers/scraper_sofascore.py
 
 export GCP_PROJECT_ID=real-zaragoza-500608
 

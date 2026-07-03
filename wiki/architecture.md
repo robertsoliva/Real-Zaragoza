@@ -179,22 +179,29 @@ SELECT * EXCEPT(rn) FROM (
 ```
 pipeline/
   cloud-run/
-    scraper_transfermarkt.py     # Transfermarkt scraper
-    scraper_sofascore.py         # SofaScore scraper (backfill + incremental, 6+ leagues)
-    seasons_lookup.py            # Helper: list all season IDs for any tournament
-    sofascore_queue.txt          # Priority-ordered backfill queue (pop on completion)
-    run_next_from_queue.sh       # Pop + run next season from queue; fired by launchd
-    com.realzaragoza.sofascore-9am.plist   # launchd: fires 09:00 daily
-    com.realzaragoza.sofascore-6pm.plist   # launchd: fires 18:00 daily
-    run_daily_wc26.sh            # WC 2026 daily incremental → BQ dataset WC_26
-    com.realzaragoza.wc26-daily.plist      # launchd: fires 09:00 daily (WC period only)
-    backfill_all.sh              # One-shot: 12 seasons × 6 leagues (historical)
-    run_weekly_sofascore.sh      # Weekly incremental: all active seasons, INCREMENTAL=true
-    Dockerfile                   # Transfermarkt container (python:3.12-slim)
-    Dockerfile.sofascore         # SofaScore container (python:3.12-slim + curl_cffi)
-    requirements.txt             # Transfermarkt deps
-    requirements-sofascore.txt   # SofaScore deps (curl_cffi, pandas, google-cloud-bigquery)
-    cloudbuild-sofascore.yaml    # Cloud Build config for SofaScore image
+    scrapers/                        # Python source — data extractors
+      scraper_sofascore.py           #   SofaScore: matches, player/team stats, shots
+      scraper_transfermarkt.py       #   Transfermarkt: squad + market values
+      seasons_lookup.py              #   Helper: list season IDs for any tournament
+    schedules/                       # How and when scrapers run (local macOS)
+      sofascore_queue.txt            #   Priority backfill queue (one season per line)
+      run_next_from_queue.sh         #   Pops queue, runs 1 season; fired by launchd
+      run_weekly_sofascore.sh        #   Weekly incremental (all active seasons)
+      run_daily_wc26.sh              #   WC 2026 daily incremental → BQ WC_26
+      com.realzaragoza.sofascore-9am.plist   # launchd: 09:00 daily
+      com.realzaragoza.sofascore-6pm.plist   # launchd: 18:00 daily
+      com.realzaragoza.sofascore-weekly.plist # launchd: Tuesdays 07:30
+      com.realzaragoza.wc26-daily.plist      # launchd: 09:00 daily (WC period)
+    docker/                          # Cloud Run containers (Transfermarkt only)
+      Dockerfile                     #   Transfermarkt (deployed, runs weekly)
+      Dockerfile.sofascore           #   SofaScore (built; scheduler paused — GCP IPs blocked)
+      requirements.txt
+      requirements-sofascore.txt
+      cloudbuild-sofascore.yaml      #   Run from docker/ folder
+    archive/                         # Historical one-off scripts (superseded by queue)
+      backfill_all.sh
+      backfill_retry.sh
+      backfill_retry2.sh
   bq-schemas/
     transfermarkt_squad.json
     sofascore_matches.json
@@ -216,7 +223,7 @@ pipeline/
 
 To run a local weekly update (1RFEF season, once it starts):
 ```bash
-cd pipeline/cloud-run
+cd pipeline/cloud-run/scrapers
 GCP_PROJECT_ID=real-zaragoza-500608 TOURNAMENT_ID=17073 SEASON_ID=<sid> INCREMENTAL=true \
   python3 scraper_sofascore.py
 ```
@@ -231,34 +238,19 @@ Since SofaScore blocks GCP IPs, the weekly incremental run must execute on a loc
 
 | File | Purpose |
 |---|---|
-| `pipeline/cloud-run/run_weekly_sofascore.sh` | Wrapper: sets env vars, runs scraper for each season, logs to `/tmp/sofascore_weekly_YYYYMMDD.log` |
-| `~/Library/LaunchAgents/com.realzaragoza.sofascore-weekly.plist` | launchd job definition — **not committed to git** (system folder) |
+| `pipeline/cloud-run/schedules/run_weekly_sofascore.sh` | Wrapper: sets env vars, runs scraper for each season, logs to `/tmp/sofascore_weekly_YYYYMMDD.log` |
+| `pipeline/cloud-run/schedules/com.realzaragoza.sofascore-weekly.plist` | launchd job definition (copy to `~/Library/LaunchAgents/` to activate) |
 
-**One-time setup on a new machine:**
-
-```bash
-# 1. Authenticate to GCP
-gcloud auth application-default login
-
-# 2. Copy the plist to the LaunchAgents folder
-cp pipeline/cloud-run/com.realzaragoza.sofascore-weekly.plist \
-   ~/Library/LaunchAgents/
-
-# 3. Register it with launchd
-launchctl load ~/Library/LaunchAgents/com.realzaragoza.sofascore-weekly.plist
-
-# 4. Verify it's registered
-launchctl list | grep realzaragoza
-```
+See `pipeline/cloud-run/schedules/README.md` for full setup instructions.
 
 **To trigger manually (e.g. after a missed Tuesday):**
 ```bash
 launchctl start com.realzaragoza.sofascore-weekly
 # or run the wrapper directly:
-bash pipeline/cloud-run/run_weekly_sofascore.sh
+bash pipeline/cloud-run/schedules/run_weekly_sofascore.sh
 ```
 
-**Season update (start of each season):** edit `run_weekly_sofascore.sh` and update `SEASON_ID` for each tournament.
+**Season update (start of each season):** edit `schedules/run_weekly_sofascore.sh` and update `SEASON_ID` for each tournament.
 
 **Rate limiting:** `REQUEST_DELAY=5.0s` between API calls, `ROUND_DELAY=20.0s` between rounds (increased 2026-07-03 after repeated bans). Writes flush per round so a crash only loses the current round.
 
@@ -287,8 +279,8 @@ BQ dataset `WC_26` (europe-west1) created 2026-07-01 for FIFA World Cup 2026 dat
 |---|---|
 | BQ dataset | `real-zaragoza-500608:WC_26` |
 | Tables | `sofascore_matches`, `sofascore_player_match_stats`, `sofascore_team_match_stats`, `sofascore_shots` — identical schema to `rz_raw` |
-| Daily script | `pipeline/cloud-run/run_daily_wc26.sh` — runs `INCREMENTAL=true, BQ_DATASET=WC_26` |
-| launchd plist | `pipeline/cloud-run/com.realzaragoza.wc26-daily.plist` — fires 09:00 daily |
+| Daily script | `pipeline/cloud-run/schedules/run_daily_wc26.sh` — runs `INCREMENTAL=true, BQ_DATASET=WC_26` |
+| launchd plist | `pipeline/cloud-run/schedules/com.realzaragoza.wc26-daily.plist` — fires 09:00 daily |
 | WC tournament ID | **17** (confirmed in scraper `LEAGUE_NAMES`) |
 | WC season ID | **TBD** — run `python3 seasons_lookup.py 17` once IP ban clears |
 
