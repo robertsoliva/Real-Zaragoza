@@ -66,8 +66,8 @@ HEADERS = {
     ),
 }
 LOCAL_DIR = Path(__file__).parent.parent.parent / "data" / "raw" / "sofascore"
-REQUEST_DELAY    = 3.0   # seconds between match-level API calls (3 endpoints per match)
-ROUND_DELAY      = 8.0   # seconds between rounds (longer pause to avoid IP blocks)
+REQUEST_DELAY    = 5.0   # seconds between match-level API calls (3 endpoints per match)
+ROUND_DELAY      = 20.0  # seconds between rounds (longer pause to avoid IP blocks)
 INCREMENTAL_DAYS = 14
 
 

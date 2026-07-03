@@ -38,14 +38,21 @@ Do not guess at column names. If unsure, check the schema file.
 
 **Active leagues + season IDs:**
 
-| League | `tournament_id` | Current season_id |
-|---|---|---|
-| LaLiga2 | 54 | 77558 (25/26) |
-| 1RFEF | 17073 | 77727 (25/26) |
-| Serie B | 53 | 79502 (25/26) |
-| Ligue 2 | 182 | 77357 (25/26) |
-| Romanian SuperLiga | 152 | 77312 (25/26) |
-| J1 League | 196 | 87931 (2026) |
+| League | `tournament_id` | Current season_id | Notes |
+|---|---|---|---|
+| LaLiga2 | 54 | 77558 (25/26) | ✅ in BQ |
+| 1RFEF | 17073 | 77727 (25/26) | 24-25 in BQ; 25-26 pending backfill |
+| Serie B | 53 | 79502 (25/26) | ✅ both seasons in BQ |
+| Ligue 2 | 182 | 77357 (25/26) | pending backfill |
+| Romanian SuperLiga | 152 | 77312 (25/26) | pending backfill |
+| J1 League | 196 | 87931 (2026) | pending backfill |
+| FIFA World Cup 2026 | 17 | TBD | separate dataset: `WC_26`; incremental only |
+| Turkish Süper Lig | TBD | TBD | tournament_id unconfirmed — run seasons_lookup.py |
+| Norwegian Eliteserien | TBD | TBD | calendar-year seasons (2024, 2025); run seasons_lookup.py |
+| Austrian Bundesliga | TBD | TBD | run seasons_lookup.py |
+| Korean K League 1 | TBD | TBD | calendar-year seasons (2024, 2025); run seasons_lookup.py |
+
+**Extraction cadence (backfill phase):** 2 seasons/day via `run_next_from_queue.sh` — launchd fires at 09:00 and 18:00. Queue order in `sofascore_queue.txt`. WC 2026 runs separately via `run_daily_wc26.sh` (incremental, `WC_26` dataset).
 
 ---
 
