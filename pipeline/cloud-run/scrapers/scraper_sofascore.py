@@ -5,6 +5,9 @@ SofaScore tournament IDs:
   LaLiga2            = 54       Serie B (Italy)      = 53
   1RFEF              = 17073    Ligue 2 (France)     = 182
   Romanian SuperLiga = 152      J1 League (Japan)    = 196
+  FIFA World Cup     = 16       Turkish Süper Lig    = 52
+  Norwegian Elitser. = 20       Austrian Bundesliga  = 45
+  Korean K League 1  = 410
   Real Zaragoza team_id = 2815
 
 Known season IDs (run seasons_lookup.py to discover others):
@@ -48,7 +51,11 @@ LEAGUE_NAMES: dict[str, str] = {
     "182":   "Ligue 2",
     "152":   "Romanian SuperLiga",
     "196":   "J1 League",
-    "17":    "FIFA World Cup",   # WC 2026 — confirm ID via seasons_lookup.py
+    "16":    "FIFA World Cup",
+    "52":    "Turkish Süper Lig",
+    "20":    "Norwegian Eliteserien",
+    "45":    "Austrian Bundesliga",
+    "410":   "Korean K League 1",
 }
 
 # Stat fields used to detect whether SofaScore returned real player stats.
