@@ -1,6 +1,6 @@
 # Architecture — Data sources, pipeline, and BigQuery
 
-> **Status:** living document, last updated 2026-07-05. Transfermarkt + SofaScore pipelines live. SofaScore covers 6 leagues (4 more pending backfill). 2-season/day extraction cadence in place via launchd queue. Agent ecosystem (data-lead, data-engineer, data-scout, match-analyst) in place.
+> **Status:** living document, last updated 2026-07-05. Transfermarkt + SofaScore pipelines live. SofaScore covers 6 leagues (10 total, 4 more pending backfill). 2-season/day extraction cadence in place via launchd queue. Bronze/silver/gold view layers live in `rz_processed` (13 views). WC 2026 full backfill complete. Agent ecosystem (data-lead, data-engineer, data-scout, match-analyst) in place.
 
 ## Goal
 
@@ -162,15 +162,67 @@ Full schema: [`pipeline/bq-schemas/sofascore_team_match_stats.json`](../pipeline
 
 ## `rz_processed` — views over raw data
 
-**`rz_processed.squad_snapshots`** — most recent Transfermarkt record per `(player_id, season_id)`:
+Three-layer architecture. All layers are BigQuery views in `real-zaragoza-500608.rz_processed`.
+
+### Bronze — union + normalise
+
+Unions `rz_raw` and `WC_26` source tables into a single canonical column order (the two datasets have different column positions due to scraper versions). Adds a `dataset_source` tag (`standard` or `wc_26`). No business logic.
+
+| View | Source | Notes |
+|---|---|---|
+| `bronze_matches` | rz_raw + WC_26 `sofascore_matches` | Explicit column list fixes column order mismatch |
+| `bronze_player_stats` | rz_raw + WC_26 `sofascore_player_match_stats` | Explicit column list |
+| `bronze_team_stats` | rz_raw + WC_26 `sofascore_team_match_stats` | Explicit column list |
+| `bronze_shots` | rz_raw + WC_26 `sofascore_shots` | Explicit column list |
+| `bronze_squad` | rz_raw `transfermarkt_squad` passthrough | Single source |
+
+**Why explicit column lists?** rz_raw tables have `tournament_id/season_id/league_name` at the end; WC_26 tables (newer scraper) have them near the beginning. `SELECT *` in a UNION ALL matches by position — causing type conflicts. All bronze views select columns by name in a fixed canonical order.
+
+### Silver — dedup + team_name fix
+
+One row per natural key, latest `ingested_at` wins. Also resolves the `team_name` NULL bug in player stats and shots (scraper bug: `team_id` and `team_name` were written as empty strings for all rows). Fix: LEFT JOIN to `silver_matches` using the `is_home` boolean.
+
+| View | Natural key | Extra fix |
+|---|---|---|
+| `silver_matches` | `match_id` | — |
+| `silver_player_stats` | `(match_id, player_id)` | team_name resolved via is_home JOIN |
+| `silver_team_stats` | `(match_id, team_id)` | — |
+| `silver_shots` | `shot_id` | team_name resolved via is_home JOIN |
+| `silver_squad` | `player_id` | — |
+
+Dedup pattern (all silver views):
 ```sql
-SELECT * EXCEPT(rn) FROM (
-  SELECT *, ROW_NUMBER() OVER (PARTITION BY player_id, season_id ORDER BY ingested_date DESC) AS rn
-  FROM `rz_raw.transfermarkt_squad`
-) WHERE rn = 1
+WITH ranked AS (
+  SELECT *,
+    ROW_NUMBER() OVER (PARTITION BY <key> ORDER BY ingested_at DESC) AS rn
+  FROM bronze_view
+)
+SELECT * EXCEPT (rn) FROM ranked WHERE rn = 1
 ```
 
-**Planned:** `rz_processed.season_results` — W/D/L, GD, cumulative points per team per season.
+Team name fix pattern (player_stats and shots):
+```sql
+CASE WHEN d.is_home THEN m.home_team_id ELSE m.away_team_id END AS team_id,
+CASE WHEN d.is_home THEN m.home_team_name ELSE m.away_team_name END AS team_name
+FROM deduped d
+LEFT JOIN silver_matches m USING (match_id)
+```
+
+### Gold — aggregated for consumption
+
+Ready for analysis. No raw match rows.
+
+| View | Grain | Primary use |
+|---|---|---|
+| `gold_player_season` | `(player_id, team_name, league_name, season_id)` | Scout queries, player comparisons |
+| `gold_team_season` | `(team_id, team_name, league_name, season_id)` | League benchmarking, team style |
+| `gold_zaragoza_matches` | `match_id` | Form analysis, W/D/L by season |
+
+`gold_player_season` includes: `primary_position` (ANY_VALUE), `matches`, `total_minutes`, `avg_rating`, goals/assists/shots + per-90s, pass acc %, long ball acc %, cross acc %, tackle/aerial/duel win %, interceptions/p90, touches/p90, yellows/p90.
+
+`gold_zaragoza_matches` joins `silver_team_stats` for Zaragoza's match-level metrics and derives `result` (W/D/L), `venue` (home/away), `opponent`, `rz_goals`, `opponent_goals`. Filtered to `team_id = "2815"`.
+
+**Known data quality issue:** WC_26 rows ingested before 2026-07-05 have `league_name = "tournament_16"` instead of `"FIFA World Cup"` (LEAGUE_NAMES dict was fixed mid-backfill). Filter by `tournament_id = "16"` rather than `league_name` when querying WC data.
 
 ---
 
@@ -281,23 +333,20 @@ BQ dataset `WC_26` (europe-west1) created 2026-07-01 for FIFA World Cup 2026 dat
 | Tables | `sofascore_matches`, `sofascore_player_match_stats`, `sofascore_team_match_stats`, `sofascore_shots` — identical schema to `rz_raw` |
 | Daily script | `pipeline/cloud-run/schedules/run_daily_wc26.sh` — runs `INCREMENTAL=true, BQ_DATASET=WC_26` |
 | launchd plist | `pipeline/cloud-run/schedules/com.realzaragoza.wc26-daily.plist` — fires 09:00 daily |
-| WC tournament ID | **17** (confirmed in scraper `LEAGUE_NAMES`) |
-| WC season ID | **TBD** — run `python3 seasons_lookup.py 17` once IP ban clears |
+| WC tournament ID | **16** (confirmed 2026-07-05 via seasons_lookup.py) |
+| WC season ID | **58210** (confirmed 2026-07-05) |
 
-`scraper_sofascore.py` now accepts `BQ_DATASET` env var (default `rz_raw`); set `BQ_DATASET=WC_26` to write to the WC dataset. Historical backfill from June 11 still pending IP ban lift.
+`scraper_sofascore.py` accepts `BQ_DATASET` env var (default `rz_raw`); set `BQ_DATASET=WC_26` to write to the WC dataset. Full backfill (June 11 → June 28) + gap fill (June 29 → July 5) completed 2026-07-05.
 
 ---
 
 ## Open items
 
-- **Backfill cadence (active)** — 1 season/slot × 2 slots/day via `run_next_from_queue.sh` + launchd (09:00 + 18:00). Queue: Ligue 2 × 2, Romanian SuperLiga × 2, J1 × 2, 1RFEF 25-26. Register plists before Sunday 2026-07-06 to auto-start. Do not run until ban clears (~11:17 on 2026-07-04).
-- **New league IDs** — run `python3 seasons_lookup.py 17 52 57 45 55` once IP clears to confirm WC and Turkish/Norwegian/Austrian/Korean tournament IDs, then fill in `sofascore_queue.txt`.
-- **WC_26 backfill** — tournament_id=17 confirmed. Resolve season_id via seasons_lookup.py, run full backfill (June 11 → now), register `com.realzaragoza.wc26-daily.plist`. WC final is July 19 — this is time-sensitive.
-- **1RFEF 2024-25 anomaly** — only 100 matches loaded (expected ~380+). May be SofaScore exposing only playoff rounds via the rounds API. Investigate before deciding whether to re-backfill.
+- **Backfill cadence (active)** — 1 season/slot × 2 slots/day via `run_next_from_queue.sh` + launchd (09:00 + 18:00). Remaining queue: Ligue 2 × 2, Romanian SuperLiga × 2, J1 × 2, 1RFEF 2025-26, Turkish × 2, Norwegian × 2, Austrian × 2, Korean × 2.
+- **1RFEF 2024-25 anomaly** — only 100 matches loaded (expected ~380+). Likely SofaScore only exposes playoff rounds for this season. Investigate before deciding to re-backfill.
 - **Weekly automation** — update `run_weekly_sofascore.sh` to include all active leagues once backfills complete.
-- **Dedup view** — `rz_processed.match_dedup` on `(match_id)` keeping latest `ingested_at`.
-- **`rz_processed.season_results`** — W/D/L, GD, points per team per season from `sofascore_matches` once backfills confirmed.
-- **Bronze/silver/gold layers** — dbt models on top of `rz_raw`; not yet started.
+- **WC league_name inconsistency** — rows from the initial WC backfill (before 2026-07-05) have `league_name = "tournament_16"` instead of `"FIFA World Cup"`. Fix: re-run backfill OR normalise `league_name` in bronze_matches with a CASE on `tournament_id`. Until fixed, always filter WC data by `tournament_id = "16"` not by `league_name`.
+- **`rz_processed.season_results`** — W/D/L, GD, cumulative points per team per season (can now be built from `gold_zaragoza_matches` as a starting point).
 
 ## Sources
 

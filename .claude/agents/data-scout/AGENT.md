@@ -12,62 +12,32 @@ You never give a verdict without first loading the numbers. Intuition shapes the
 
 Before writing any scouting report, run the following BQ queries. Acknowledge which queries returned data and which returned nothing (player not in database, team not found, etc.).
 
+All queries run against the `rz_processed` gold/silver layer — never `rz_raw` directly.
+
 ### 1. Target player stats
 ```sql
 SELECT
-  player_name, team_name, league_name, season_id,
-  COUNT(DISTINCT match_id)                            AS matches,
-  SUM(minutes_played)                                 AS total_minutes,
-  ROUND(AVG(rating), 2)                               AS avg_rating,
-  -- Attacking
-  SUM(goals)                AS goals,
-  SUM(goal_assists)         AS assists,
-  SUM(total_shots)          AS shots,
-  SUM(shots_on_target)      AS shots_on_target,
-  ROUND(AVG(expected_goals), 3)                       AS avg_xg,
-  -- Passing
-  SUM(total_passes)         AS passes,
-  SUM(accurate_passes)      AS acc_passes,
-  ROUND(SAFE_DIVIDE(SUM(accurate_passes), SUM(total_passes)) * 100, 1) AS pass_acc_pct,
-  SUM(key_passes)           AS key_passes,
-  SUM(total_long_balls)     AS long_balls,
-  -- Defensive
-  SUM(total_tackle)         AS tackles,
-  SUM(won_tackle)           AS tackles_won,
-  SUM(interceptions)        AS interceptions,
-  SUM(total_clearance)      AS clearances,
-  SUM(duel_won)             AS duels_won,
-  SUM(aerial_won)           AS aerials_won,
-  -- Physical/Discipline
-  SUM(touches)              AS touches,
-  SUM(fouls)                AS fouls,
-  SUM(was_fouled)           AS was_fouled,
-  SUM(yellow_cards)         AS yellows,
-  SUM(red_cards)            AS reds
-FROM `real-zaragoza-500608.rz_raw.sofascore_player_match_stats`
-WHERE player_name LIKE '%{PLAYER_NAME}%'
-  AND minutes_played IS NOT NULL
-GROUP BY 1,2,3,4
+  player_name, team_name, league_name, dataset_source, season_id,
+  matches, total_minutes, avg_rating, primary_position,
+  goals, assists, shots, shots_on_target, conversion_pct,
+  goals_p90, assists_p90, shots_p90, avg_xg_per_match, key_passes_p90,
+  pass_acc_pct, long_ball_acc_pct, cross_acc_pct,
+  tackles, tackles_won, tackle_win_pct,
+  interceptions, clearances, aerials_won, aerial_win_pct,
+  duels_won, duel_win_pct, interceptions_p90, tackles_p90,
+  touches_p90, fouls_committed, fouls_won, yellows, reds, yellows_p90
+FROM `real-zaragoza-500608.rz_processed.gold_player_season`
+WHERE LOWER(player_name) LIKE LOWER('%{PLAYER_NAME}%')
 ORDER BY season_id DESC, total_minutes DESC
 ```
 
+Note: WC data appears here alongside league data. Filter `dataset_source = 'wc_26'` or `tournament_id = '16'` to separate WC rows.
+
 ### 2. Origin team metrics (last full season)
 ```sql
-SELECT
-  team_name, league_name, season_id,
-  COUNT(DISTINCT match_id)                            AS matches,
-  ROUND(AVG(possession_pct), 1)                       AS avg_possession,
-  ROUND(AVG(total_passes), 0)                         AS avg_passes_per_match,
-  ROUND(AVG(accurate_passes), 0)                      AS avg_acc_passes,
-  ROUND(AVG(total_shots), 1)                          AS avg_shots,
-  ROUND(AVG(shots_on_target), 1)                      AS avg_sot,
-  ROUND(AVG(total_tackles), 1)                        AS avg_tackles,
-  ROUND(AVG(interceptions), 1)                        AS avg_interceptions,
-  ROUND(AVG(corners), 1)                              AS avg_corners,
-  ROUND(AVG(fouls), 1)                                AS avg_fouls
-FROM `real-zaragoza-500608.rz_raw.sofascore_team_match_stats`
-WHERE team_name LIKE '%{ORIGIN_TEAM}%'
-GROUP BY 1,2,3
+SELECT *
+FROM `real-zaragoza-500608.rz_processed.gold_team_season`
+WHERE LOWER(team_name) LIKE LOWER('%{ORIGIN_TEAM}%')
 ORDER BY season_id DESC
 ```
 
@@ -75,14 +45,13 @@ ORDER BY season_id DESC
 
 ### 4. League context (both leagues)
 ```sql
-SELECT
-  league_name, season_id,
-  ROUND(AVG(possession_pct), 1)   AS avg_possession,
-  ROUND(AVG(total_passes), 0)     AS avg_passes_per_match,
-  ROUND(AVG(total_shots), 1)      AS avg_shots,
-  ROUND(AVG(fouls), 1)            AS avg_fouls,
-  ROUND(AVG(yellow_cards), 2)     AS avg_yellows
-FROM `real-zaragoza-500608.rz_raw.sofascore_team_match_stats`
+SELECT league_name, season_id,
+  ROUND(AVG(avg_possession), 1)   AS avg_possession,
+  ROUND(AVG(avg_passes), 0)       AS avg_passes,
+  ROUND(AVG(avg_shots), 1)        AS avg_shots,
+  ROUND(AVG(avg_fouls), 1)        AS avg_fouls,
+  ROUND(AVG(avg_yellows), 2)      AS avg_yellows
+FROM `real-zaragoza-500608.rz_processed.gold_team_season`
 WHERE league_name IN ('{ORIGIN_LEAGUE}', '{DEST_LEAGUE}')
 GROUP BY 1,2
 ORDER BY 2 DESC, 1
@@ -91,29 +60,20 @@ ORDER BY 2 DESC, 1
 ### 5. Destination team's players in the same position
 ```sql
 SELECT
-  player_name, team_name,
-  COUNT(DISTINCT match_id)                            AS matches,
-  SUM(minutes_played)                                 AS minutes,
-  SUM(goals)        AS goals,
-  SUM(goal_assists) AS assists,
-  ROUND(AVG(rating), 2)                               AS avg_rating,
-  SUM(total_shots)  AS shots,
-  SUM(key_passes)   AS key_passes,
-  SUM(total_passes) AS passes,
-  ROUND(SAFE_DIVIDE(SUM(accurate_passes), SUM(total_passes)) * 100, 1) AS pass_acc_pct
-FROM `real-zaragoza-500608.rz_raw.sofascore_player_match_stats`
-WHERE team_name LIKE '%{DEST_TEAM}%'
-  AND position = '{POSITION_CODE}'    -- G / D / M / F
-  AND minutes_played IS NOT NULL
-GROUP BY 1,2
-ORDER BY minutes DESC
+  player_name, team_name, primary_position,
+  matches, total_minutes AS minutes, goals, assists, avg_rating,
+  shots, key_passes_p90, pass_acc_pct
+FROM `real-zaragoza-500608.rz_processed.gold_player_season`
+WHERE LOWER(team_name) LIKE LOWER('%{DEST_TEAM}%')
+  AND primary_position = '{POSITION_CODE}'    -- G / D / M / F
+ORDER BY total_minutes DESC
 ```
 
 ### 6. Transfermarkt data
 ```sql
 SELECT *
-FROM `real-zaragoza-500608.rz_raw.transfermarkt_squad`
-WHERE player LIKE '%{PLAYER_NAME}%'
+FROM `real-zaragoza-500608.rz_processed.silver_squad`
+WHERE LOWER(name) LIKE LOWER('%{PLAYER_NAME}%')
 ```
 
 ---

@@ -56,6 +56,29 @@ Do not guess at column names. If unsure, check the schema file.
 
 ---
 
+## Processed dataset (`rz_processed`)
+
+All views in `real-zaragoza-500608.rz_processed`. Three-layer architecture:
+
+**Bronze** — union rz_raw + WC_26, explicit column lists (schemas differ by scraper version), adds `dataset_source`:
+- `bronze_matches`, `bronze_player_stats`, `bronze_team_stats`, `bronze_shots`, `bronze_squad`
+
+**Silver** — dedup (ROW_NUMBER on natural key, latest ingested_at), plus team_name NULL fix for player_stats and shots (is_home JOIN to silver_matches):
+- `silver_matches` (key: match_id)
+- `silver_player_stats` (key: match_id, player_id) — team_name fixed
+- `silver_team_stats` (key: match_id, team_id)
+- `silver_shots` (key: shot_id) — team_name fixed
+- `silver_squad` (key: player_id)
+
+**Gold** — aggregated for consumption:
+- `gold_player_season` (grain: player_id, team_name, league_name, season_id) — full per-90 stats, pass/tackle/aerial/duel %, `primary_position` via ANY_VALUE
+- `gold_team_season` (grain: team_id, team_name, league_name, season_id) — team averages per season
+- `gold_zaragoza_matches` (grain: match_id) — Zaragoza only (team_id="2815"), with W/D/L, venue, opponent, team match metrics
+
+**Known issue:** WC rows ingested before 2026-07-05 have `league_name = "tournament_16"` not `"FIFA World Cup"`. Always filter WC data by `tournament_id = "16"` until a re-backfill or bronze normalisation fixes this.
+
+---
+
 ## SQL conventions
 
 - Always filter on the partition column (`match_date`) when querying large tables.

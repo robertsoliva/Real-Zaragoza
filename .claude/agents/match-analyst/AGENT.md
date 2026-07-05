@@ -12,91 +12,78 @@ You work primarily with Real Zaragoza's data but can run comparable analysis on 
 
 Before writing any analysis, load the appropriate data depending on the question type:
 
+All queries run against the `rz_processed` silver/gold layer — never `rz_raw` directly.
+
 ### For a single-match analysis
 ```sql
 -- Match overview
-SELECT * FROM `real-zaragoza-500608.rz_raw.sofascore_team_match_stats`
+SELECT * FROM `real-zaragoza-500608.rz_processed.silver_team_stats`
 WHERE match_id = '{MATCH_ID}'
 
--- Player performances
+-- Player performances (team_name is now correctly populated via silver fix)
 SELECT
-  player_name, position, is_substitute, minutes_played,
+  player_name, team_name, position, is_substitute, minutes_played,
   goals, goal_assists, rating,
   total_passes, accurate_passes,
   ROUND(SAFE_DIVIDE(accurate_passes, total_passes) * 100, 1) AS pass_acc_pct,
   total_shots, shots_on_target, key_passes,
   total_tackle, interceptions, duel_won, duel_lost,
   yellow_cards, red_cards
-FROM `real-zaragoza-500608.rz_raw.sofascore_player_match_stats`
+FROM `real-zaragoza-500608.rz_processed.silver_player_stats`
 WHERE match_id = '{MATCH_ID}'
 ORDER BY is_substitute, position, minutes_played DESC
 
 -- Shot map
 SELECT
-  player_name, is_home, minute, shot_type, situation,
+  player_name, team_name, is_home, minute, shot_type, situation,
   body_part, x, y, xg
-FROM `real-zaragoza-500608.rz_raw.sofascore_shots`
+FROM `real-zaragoza-500608.rz_processed.silver_shots`
 WHERE match_id = '{MATCH_ID}'
 ORDER BY minute
 ```
 
 ### For a form / season analysis
 ```sql
--- Zaragoza team metrics over a date range
+-- Zaragoza match-by-match (pre-joined, W/D/L derived, possession/shots included)
 SELECT
-  m.match_date, m.match_round,
-  m.home_team_name, m.away_team_name,
-  m.home_score, m.away_score,
-  ts.side, ts.possession_pct,
-  ts.total_shots, ts.shots_on_target,
-  ts.total_passes, ts.accurate_passes,
-  ts.total_tackles, ts.interceptions,
-  ts.fouls, ts.corners
-FROM `real-zaragoza-500608.rz_raw.sofascore_matches` m
-JOIN `real-zaragoza-500608.rz_raw.sofascore_team_match_stats` ts
-  ON m.match_id = ts.match_id
-WHERE ts.team_name LIKE '%Zaragoza%'
-  AND m.match_date BETWEEN '{START_DATE}' AND '{END_DATE}'
-ORDER BY m.match_date
+  match_date, match_round, league_name, season_id,
+  home_team_name, away_team_name, home_score, away_score,
+  result, venue, rz_goals, opponent_goals, opponent,
+  possession_pct, total_shots, shots_on_target,
+  total_passes, accurate_passes, total_tackles, interceptions, fouls
+FROM `real-zaragoza-500608.rz_processed.gold_zaragoza_matches`
+WHERE match_date BETWEEN '{START_DATE}' AND '{END_DATE}'
+ORDER BY match_date
 ```
 
 ### For a player trend analysis
 ```sql
 SELECT
-  m.match_date, m.match_round,
-  ps.player_name, ps.position, ps.is_substitute,
+  m.match_date, m.match_round, m.league_name,
+  ps.player_name, ps.team_name, ps.position, ps.is_substitute,
   ps.minutes_played, ps.rating,
   ps.goals, ps.goal_assists,
   ps.total_passes, ps.accurate_passes,
   ps.total_shots, ps.key_passes,
   ps.total_tackle, ps.interceptions,
   ps.duel_won, ps.duel_lost
-FROM `real-zaragoza-500608.rz_raw.sofascore_player_match_stats` ps
-JOIN `real-zaragoza-500600.rz_raw.sofascore_matches` m
+FROM `real-zaragoza-500608.rz_processed.silver_player_stats` ps
+JOIN `real-zaragoza-500608.rz_processed.silver_matches` m
   ON ps.match_id = m.match_id
 WHERE ps.team_name LIKE '%Zaragoza%'
-  AND ps.player_name LIKE '%{PLAYER_NAME}%'
+  AND LOWER(ps.player_name) LIKE LOWER('%{PLAYER_NAME}%')
 ORDER BY m.match_date
 ```
 
 ### For league benchmarking (compare Zaragoza to league average)
 ```sql
 SELECT
-  ts.team_name,
-  ts.league_name,
-  COUNT(DISTINCT ts.match_id)           AS matches,
-  ROUND(AVG(ts.possession_pct), 1)      AS avg_possession,
-  ROUND(AVG(ts.total_shots), 1)         AS avg_shots,
-  ROUND(AVG(ts.shots_on_target), 1)     AS avg_sot,
-  ROUND(AVG(ts.total_passes), 0)        AS avg_passes,
-  ROUND(AVG(ts.total_tackles), 1)       AS avg_tackles,
-  ROUND(AVG(ts.interceptions), 1)       AS avg_interceptions,
-  ROUND(AVG(ts.fouls), 1)               AS avg_fouls,
-  ROUND(AVG(ts.yellow_cards), 2)        AS avg_yellows
-FROM `real-zaragoza-500608.rz_raw.sofascore_team_match_stats` ts
-WHERE ts.league_name = '{LEAGUE_NAME}'
-  AND ts.season_id = '{SEASON_ID}'
-GROUP BY 1,2
+  team_name, league_name, season_id, matches,
+  avg_possession, avg_shots, avg_sot, avg_passes,
+  avg_tackles, avg_interceptions, avg_fouls, avg_yellows
+FROM `real-zaragoza-500608.rz_processed.gold_team_season`
+WHERE league_name = '{LEAGUE_NAME}'
+  AND season_id = '{SEASON_ID}'
 ORDER BY avg_shots DESC
 ```
 

@@ -6,21 +6,19 @@ Forward-looking only — pending items by category. Completed items graduate to 
 
 ## Active
 
-- **Backfill cadence** — 1 season/slot × 2/day via `run_next_from_queue.sh` (launchd 09:00 + 18:00). IP ban clears ~11:17 on 2026-07-04. Remaining queue: Ligue 2 × 2, Romanian SuperLiga × 2, J1 × 2, 1RFEF 2025-26 (7 seasons).
-  - Register plists before Sunday: `launchctl load ~/Desktop/Projects/Real-Zaragoza/pipeline/cloud-run/schedules/com.realzaragoza.sofascore-9am.plist` (and 6pm variant)
-- **WC 2026 (priority)** — tournament_id=17 confirmed; season_id still TODO. Run `python3 seasons_lookup.py 17` once IP clears, patch `run_daily_wc26.sh`, register `com.realzaragoza.wc26-daily.plist`, then run full backfill from 2026-06-11. WC final is July 19 — time-sensitive.
+- **Backfill cadence** — 1 season/slot × 2/day via `run_next_from_queue.sh` (launchd 09:00 + 18:00). Remaining queue: Ligue 2 × 2, Romanian SuperLiga × 2, J1 × 2, 1RFEF 2025-26, Turkish × 2, Norwegian × 2, Austrian × 2, Korean × 2 (15 seasons).
+- **WC 2026 daily incremental** — `com.realzaragoza.wc26-daily.plist` should be registered to keep WC data current through July 19. Full backfill + July 5 gap fill already complete.
 
 ---
 
 ## Data pipeline
 
-- **New leagues — ID lookup** — run `python3 seasons_lookup.py 52 57 45 55` once IP clears to confirm tournament IDs and season IDs for Turkish Süper Lig, Norwegian Eliteserien, Austrian Bundesliga, Korean K League 1. Fill in `sofascore_queue.txt` (currently TODO). Both 2024 and 2025/26 seasons each.
-- **Verify backfills landed** — after each league completes, query `rz_raw.sofascore_matches GROUP BY tournament_id, season_id` to confirm row counts.
-- **Weekly automation** — once backfill is done, update `run_weekly_sofascore.sh` to include all active leagues and ensure launchd Tuesday job is registered.
+- **Verify backfills landed** — after each league completes, run `SELECT tournament_id, season_id, COUNT(*) FROM rz_raw.sofascore_matches GROUP BY 1,2` to confirm row counts.
+- **Weekly automation** — once backfills are done, update `run_weekly_sofascore.sh` to include all active leagues and ensure launchd Tuesday job is registered.
 - **1RFEF 2026-27** — season ID not yet on SofaScore (~July 2026). When available: add to queue and weekly script.
 - **1RFEF 2024-25 anomaly** — only 100 matches loaded (expected ~380+). Likely SofaScore exposes only playoff rounds for this season via the rounds API. Investigate before deciding whether to re-backfill.
-- **Dedup view** — `rz_processed.match_dedup` on `(match_id)` keeping latest `ingested_at`.
-- **`rz_processed.season_results`** — W/D/L, goal diff, cumulative points from `sofascore_matches` once backfills confirmed.
+- **WC league_name fix** — rows from the initial WC backfill (before 2026-07-05) have `league_name = "tournament_16"` not `"FIFA World Cup"`. Fix: either re-backfill or normalise in `bronze_matches` with a CASE on `tournament_id`. Until then, always filter WC data by `tournament_id = "16"`.
+- **`rz_processed.season_results`** — W/D/L, GD, cumulative points per team per season. Starting point: `gold_zaragoza_matches` + `silver_team_stats` for all teams.
 - **`rz_processed.player_valuations`** — time series of market value from `transfermarkt_squad`; add after second weekly scrape.
 - **Cloud Function** — `rz-bq-loader` Pub/Sub subscriber; deferred until fan-out is needed.
 
