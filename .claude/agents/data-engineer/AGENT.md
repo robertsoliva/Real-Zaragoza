@@ -51,8 +51,12 @@ Do not guess at column names. If unsure, check the schema file.
 | Norwegian Eliteserien | 20 | 70174 (2025) | calendar-year seasons; backfill also: 57322 (2024) |
 | Austrian Bundesliga | 45 | 77382 (25/26) | backfill also: 62629 (24/25) |
 | Korean K League 1 | 410 | 70830 (2025) | calendar-year seasons; backfill also: 57878 (2024) |
+| Brasileirao Serie B | 390 | 89840 (2026) | calendar-year seasons; backfill also: 72603 (2025) |
+| Mozzart Bet Superliga | 210 | 76909 (25/26) | backfill also: 61448 (24/25) |
+| MLS | 242 | 86668 (2026) | calendar-year seasons; backfill also: 70158 (2025) |
+| Allsvenskan | 40 | 87925 (2026) | calendar-year seasons; backfill also: 69956 (2025) |
 
-**Extraction cadence (backfill phase):** 2 seasons/day via `run_next_from_queue.sh` — launchd fires at 09:00 and 18:00. Queue order in `sofascore_queue.txt`. WC 2026 runs separately via `run_daily_wc26.sh` (incremental, `WC_26` dataset).
+**Extraction cadence (backfill phase):** 4 seasons/day via `run_next_from_queue.sh` — launchd fires at 00:00, 06:00, 12:00, and 18:00. Queue order in `sofascore_queue.txt`. WC 2026 runs separately via `run_daily_wc26.sh` (incremental, `WC_26` dataset).
 
 ---
 

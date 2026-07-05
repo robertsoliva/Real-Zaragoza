@@ -2,7 +2,7 @@
 # Format: TOURNAMENT_ID  SEASON_ID  LABEL
 # Lines starting with # are comments (skipped).
 #
-# Cadence: 2 seasons/day — 09:00 and 18:00 via launchd.
+# Cadence: 4 seasons/day — 00:00, 06:00, 12:00, and 18:00 via launchd.
 # After each successful run, run_next_from_queue.sh removes that line.
 # Last updated: 2026-07-05
 #
@@ -27,3 +27,13 @@
 45   77382  AustrianBundesliga_2025-26
 410  57878  KoreanKLeague1_2024
 410  70830  KoreanKLeague1_2025
+# -------------------------------------------------------------------------
+# PRIORITY 3 — Additional leagues (all IDs confirmed via seasons_lookup.py 2026-07-05)
+390  72603  BrasileiraoSerieB_2025
+390  89840  BrasileiraoSerieB_2026
+210  61448  MozzartBetSuperliga_2024-25
+210  76909  MozzartBetSuperliga_2025-26
+242  70158  MLS_2025
+242  86668  MLS_2026
+40   69956  Allsvenskan_2025
+40   87925  Allsvenskan_2026

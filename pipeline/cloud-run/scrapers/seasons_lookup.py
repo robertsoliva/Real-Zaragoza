@@ -35,6 +35,10 @@ LEAGUE_NAMES = {
     "20":    "Norwegian Eliteserien",
     "45":    "Austrian Bundesliga",
     "410":   "Korean K League 1",
+    "390":   "Brasileirao Serie B",
+    "210":   "Mozzart Bet Superliga",
+    "242":   "MLS",
+    "40":    "Allsvenskan",
 }
 
 
