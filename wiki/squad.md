@@ -1,10 +1,10 @@
 # Real Zaragoza — Squad (2026–27 preseason)
 
-> **Status:** living document, last updated 2026-07-03. This page will go stale fast — it's written mid-transfer-window, ahead of preseason (training starts 20 July 2026), with the club mid-overhaul after relegation to Primera RFEF. Treat every name below as provisional until the squad is actually closed. Sources of truth: [realzaragoza.com](https://www.realzaragoza.com/) and [Spanish Wikipedia](https://es.wikipedia.org/wiki/Real_Zaragoza); the official site's own `/plantilla` page did not yet expose a structured roster as of this check, so most of this page currently relies on Aragonese sports press instead — re-verify against the official site once it publishes the 2026–27 squad list.
+> **Status:** living document, last updated 2026-07-05. This page will go stale fast — it's written mid-transfer-window, ahead of preseason (training starts 20 July 2026), with the club mid-overhaul after relegation to Primera RFEF. Treat every name below as provisional until the squad is actually closed. Sources of truth: [realzaragoza.com](https://www.realzaragoza.com/) and [Spanish Wikipedia](https://es.wikipedia.org/wiki/Real_Zaragoza); the official site's own `/plantilla` page did not yet expose a structured roster as of this check, so most of this page currently relies on Aragonese sports press instead — re-verify against the official site once it publishes the 2026–27 squad list.
 
 ## TL;DR
 
-- Near-total rebuild: ~26 departures (9 contracts expired, 2 loan returns, more pending), 6+ signings confirmed as of July 2026
+- Near-total rebuild: ~26 departures (9 contracts expired, 2 loan returns, 1 permanent transfer out, more pending), 7+ signings confirmed as of July 2026
 - Primera RFEF wage-cap constraints are the direct driver of the scale of turnover
 - Ibai Gómez's first squad; preseason starts 20 July 2026; Arantegui targeting 80%+ settled by then
 - Placed in **Group II of 1ª RFEF** for 2026-27; Nàstic is first opponent
@@ -35,12 +35,13 @@ The club used a four-captain system in 2025–26: **Francho Serrano**, **Keidi B
 - **Contracts expired:** Martín Aguirregabiria, Insua, El Yamiq, Pomares, Guti, Toni Moya, Sinan Bakis, Soberón, Willy Agada.
 - **Loan returns to parent clubs:** goalkeepers Adrián Rodríguez (back to Deportivo Alavés) and Esteban Andrada (back to Monterrey).
 - **Loan out confirmed:** **Sebastian Kóša** (defender) — loan at FC Košice (Slovakia) confirmed for 2026-27. (source: official site, 2026-07)
+- **Transfer out confirmed:** **Juan Sebastián** (born 7 Feb 2002) — permanent transfer to FC Andorra confirmed 2026-07. Academy product since 2014-15 (joined U-12); made his first-team debut Nov 2023 (Copa del Rey); played 26 matches in 2025-26 including a loan at Alcorcón (2024-25) before returning to the senior squad. (source: official site, 2026-07)
 - **At risk of release on salary-cap grounds** (reported, not yet confirmed as final): Dani Gómez, Valery, Keidi Bare.
 - Sporting director Lalo Arantegui has been reported as planning a total of **26 departures** against **5 incomings** so far — this is a near-total squad rebuild, not an ordinary offseason turnover.
 
 ## Players returning from loan (futures unclear)
 
-The three players regarded as the most successful loanees last season are back at the club with uncertain roles: **Adrián Liso**, **Pau Sans**, **Samed Baždar**. Press describes their outlooks as "very different from each other" — i.e. don't assume all three are kept. Note: Samed Baždar was representing his national team at **FIFA World Cup 2026** as of July 2026 (tournament runs to July 19) — his summer situation may not be resolved until the tournament ends.
+The three players regarded as the most successful loanees last season are back at the club with uncertain roles: **Adrián Liso**, **Pau Sans**, **Samed Baždar**. Press describes their outlooks as "very different from each other" — i.e. don't assume all three are kept. Note: Samed Baždar represented Bosnia &amp; Herzegovina at **FIFA World Cup 2026** — Bosnia were eliminated in the Round of 16, losing 2-0 to the United States (Baždar did not feature in that match). He is now available for preseason. (source: official site, 2026-07-05)
 
 ## Confirmed 2026 summer signings (so far)
 
@@ -50,6 +51,7 @@ The three players regarded as the most successful loanees last season are back a
 - **Raúl Pereira**
 - **Peter Ademo**
 - **Sergio Escudero** — left back, free transfer from RC Deportivo de A Coruña (who were promoted to Primera División), 1-year deal. Experienced defender described as strengthening the left flank. Born in Valladolid. (confirmed via official site, 2026-07)
+- **Jokin Gabilondo** — right back, born 9 Apr 1999 (25). Free transfer from Málaga CF. 2-year contract. Real Sociedad academy product; helped Real Sociedad B promotion in 2022-23 (37 apps, 4G 1A), then Málaga promotion to LaLiga Hypermotion (37 apps) — two promotions in three years. (confirmed via official site, 2026-07)
 
 ## Stated market priorities (not yet closed)
 
@@ -74,3 +76,6 @@ The three players regarded as the most successful loanees last season are back a
 - [Francho, Keidi, Raúl Guti e Iván Calero, designados capitanes del Real Zaragoza — official site](https://www.realzaragoza.com/noticias/francho-keidi-raul-guti-e-ivan-calero-designados-capitanes-del-real-zaragoza)
 - [Francho Serrano, el capitán y escudo que el Real Zaragoza sigue sin renovar — Hoy Aragón](https://www.hoyaragon.es/articulo/noticias-real-zaragoza/francho-serrano-capitan-escudo-que-real-zaragoza-sigue-renovar/20250311095406089807.html)
 - [El día 1 del Real Zaragoza en Primera RFEF — El Español](https://www.elespanol.com/aragon/deportes/real-zaragoza/20260601/dia-real-zaragoza-primera-rfef-paso-adelante-forcen-ibai-gomez-hora-lalo-arantegui/1003744265973_0.html)
+- [Acuerdo con el FC Andorra para el traspaso de Juan Sebastián — official site](https://www.realzaragoza.com/noticias/acuerdo-con-el-fc-andorra-para-el-traspaso-de-juan-sebastian)
+- [Jokin Gabilondo, oficio y recorrido para el lateral derecho del Real Zaragoza — official site](https://www.realzaragoza.com/noticias/jokin-gabilondo-oficio-y-recorrido-para-el-lateral-derecho-del-real-zaragoza)
+- [Baždar se despide del Mundial tras la derrota de Bosnia contra Estados Unidos — official site](https://www.realzaragoza.com/noticias/bazdar-se-despide-del-mundial-tras-la-derrota-de-bosnia-contra-estados-unidos)

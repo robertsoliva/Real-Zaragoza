@@ -33,7 +33,7 @@ Per the club's own organisational chart, **Jorge Mas** is President; per Wikiped
 - **2026 internal restructuring:** the board approved a €20M capital increase (announced ~2 June 2026), the largest since the 2022 takeover. Press reporting frames this as Mas and Forcén moving to consolidate majority control within the **Real Z LLC** holding structure, at the expense of the other 2022 partners (Jiménez de Parga, Amber Capital/Oughourlian, and per some reports a fund called Global Tavira and Ares Management — **this last detail is the least certain piece of the puzzle and needs re-verification**).
 - **Open / in progress:** Jorge Mas has signaled he may step back from the *day-to-day, representative* presidency (reported ~12 May 2026) without giving up his shareholding weight, in favour of a new non-shareholding "institutional president." As of the live organisational chart (checked 2026-06-24), **Mas is still listed as President**, so this change has not yet taken effect publicly. **Flag to revisit.**
 
-## Board of Directors (per official organigrama, checked 2026-07-03)
+## Board of Directors (per official organigrama, checked 2026-07-05)
 
 | Role | Person |
 |---|---|
@@ -66,7 +66,7 @@ The club does not currently play at its historic home. **La Romareda** was demol
 
 ## Open items for this page
 
-- Confirm names for the new "institutional president" role, and confirm whether/when Fernando López is actually replaced as general director. (Re-checked 2026-07-03: both Mas and López still listed on official organigrama — change not yet implemented publicly.)
+- Confirm names for the new "institutional president" role, and confirm whether/when Fernando López is actually replaced as general director. (Re-checked 2026-07-05: both Mas and López still listed on official organigrama — change not yet implemented publicly.)
 - Re-verify the "Global Tavira" / "Ares Management" shareholder detail — currently sourced only from one round of press reporting, not from the official site or Wikipedia.
 - Add an organizational chart graphic once the restructuring settles (cross-reference `https://www.realzaragoza.com/organigrama`).
 
