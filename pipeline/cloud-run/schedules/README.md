@@ -9,6 +9,7 @@ Shell runners and launchd plists that control when scrapers fire. All SofaScore 
 | `run_next_from_queue.sh` | launchd 09:00 + 18:00 | Pops next season from `sofascore_queue.txt`, runs it, removes it from queue |
 | `run_daily_wc26.sh` | launchd 09:00 (WC period only) | Incremental WC 2026 scrape → `WC_26` BQ dataset |
 | `run_weekly_sofascore.sh` | launchd Tuesdays 07:30 | Incremental update for all active seasons (last 14 days) |
+| `run_refresh_processed.sh` | launchd 11:00 + 20:00 | Rematerialises `rz_silver` tables and `rz_gold` tables from `rz_bronze` views |
 
 ## launchd plists
 
@@ -18,6 +19,8 @@ Shell runners and launchd plists that control when scrapers fire. All SofaScore 
 | `com.realzaragoza.sofascore-6pm.plist` | Daily 18:00 | `run_next_from_queue.sh` |
 | `com.realzaragoza.sofascore-weekly.plist` | Tuesdays 07:30 | `run_weekly_sofascore.sh` |
 | `com.realzaragoza.wc26-daily.plist` | Daily 09:00 | `run_daily_wc26.sh` |
+| `com.realzaragoza.refresh-11am.plist` | Daily 11:00 | `run_refresh_processed.sh` |
+| `com.realzaragoza.refresh-8pm.plist` | Daily 20:00 | `run_refresh_processed.sh` |
 
 ## The backfill queue
 
@@ -43,4 +46,18 @@ launchctl load ~/Library/LaunchAgents/com.realzaragoza.sofascore-weekly.plist
 # WC 2026 (only during tournament: June 11 – July 19)
 cp "$BASE/com.realzaragoza.wc26-daily.plist" ~/Library/LaunchAgents/
 launchctl load ~/Library/LaunchAgents/com.realzaragoza.wc26-daily.plist
+
+# Processed layer refresh (2h after each extraction slot)
+cp "$BASE/com.realzaragoza.refresh-11am.plist" ~/Library/LaunchAgents/
+cp "$BASE/com.realzaragoza.refresh-8pm.plist" ~/Library/LaunchAgents/
+launchctl load ~/Library/LaunchAgents/com.realzaragoza.refresh-11am.plist
+launchctl load ~/Library/LaunchAgents/com.realzaragoza.refresh-8pm.plist
+```
+
+## Trigger a manual refresh
+
+```bash
+bash ~/Desktop/Projects/Real-Zaragoza/pipeline/cloud-run/schedules/run_refresh_processed.sh
+# or via launchctl:
+launchctl start com.realzaragoza.refresh-11am
 ```

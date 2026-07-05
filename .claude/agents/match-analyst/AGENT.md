@@ -17,7 +17,7 @@ All queries run against the `rz_processed` silver/gold layer — never `rz_raw` 
 ### For a single-match analysis
 ```sql
 -- Match overview
-SELECT * FROM `real-zaragoza-500608.rz_processed.silver_team_stats`
+SELECT * FROM `real-zaragoza-500608.rz_silver.silver_team_stats`
 WHERE match_id = '{MATCH_ID}'
 
 -- Player performances (team_name is now correctly populated via silver fix)
@@ -29,7 +29,7 @@ SELECT
   total_shots, shots_on_target, key_passes,
   total_tackle, interceptions, duel_won, duel_lost,
   yellow_cards, red_cards
-FROM `real-zaragoza-500608.rz_processed.silver_player_stats`
+FROM `real-zaragoza-500608.rz_silver.silver_player_stats`
 WHERE match_id = '{MATCH_ID}'
 ORDER BY is_substitute, position, minutes_played DESC
 
@@ -37,7 +37,7 @@ ORDER BY is_substitute, position, minutes_played DESC
 SELECT
   player_name, team_name, is_home, minute, shot_type, situation,
   body_part, x, y, xg
-FROM `real-zaragoza-500608.rz_processed.silver_shots`
+FROM `real-zaragoza-500608.rz_silver.silver_shots`
 WHERE match_id = '{MATCH_ID}'
 ORDER BY minute
 ```
@@ -51,7 +51,7 @@ SELECT
   result, venue, rz_goals, opponent_goals, opponent,
   possession_pct, total_shots, shots_on_target,
   total_passes, accurate_passes, total_tackles, interceptions, fouls
-FROM `real-zaragoza-500608.rz_processed.gold_zaragoza_matches`
+FROM `real-zaragoza-500608.rz_gold.gold_zaragoza_matches`
 WHERE match_date BETWEEN '{START_DATE}' AND '{END_DATE}'
 ORDER BY match_date
 ```
@@ -67,8 +67,8 @@ SELECT
   ps.total_shots, ps.key_passes,
   ps.total_tackle, ps.interceptions,
   ps.duel_won, ps.duel_lost
-FROM `real-zaragoza-500608.rz_processed.silver_player_stats` ps
-JOIN `real-zaragoza-500608.rz_processed.silver_matches` m
+FROM `real-zaragoza-500608.rz_silver.silver_player_stats` ps
+JOIN `real-zaragoza-500608.rz_silver.silver_matches` m
   ON ps.match_id = m.match_id
 WHERE ps.team_name LIKE '%Zaragoza%'
   AND LOWER(ps.player_name) LIKE LOWER('%{PLAYER_NAME}%')
@@ -81,7 +81,7 @@ SELECT
   team_name, league_name, season_id, matches,
   avg_possession, avg_shots, avg_sot, avg_passes,
   avg_tackles, avg_interceptions, avg_fouls, avg_yellows
-FROM `real-zaragoza-500608.rz_processed.gold_team_season`
+FROM `real-zaragoza-500608.rz_gold.gold_team_season`
 WHERE league_name = '{LEAGUE_NAME}'
   AND season_id = '{SEASON_ID}'
 ORDER BY avg_shots DESC

@@ -162,67 +162,67 @@ Full schema: [`pipeline/bq-schemas/sofascore_team_match_stats.json`](../pipeline
 
 ## `rz_processed` — views over raw data
 
-Three-layer architecture. All layers are BigQuery views in `real-zaragoza-500608.rz_processed`.
+Three separate BigQuery datasets — one per layer. SQL source files live in `pipeline/sql/{layer}/` and are the authoritative definition; BQ objects are created/refreshed by running those files. This is **not dbt** — it is plain SQL + shell scripts. dbt migration is a future option if the model count grows.
 
-### Bronze — union + normalise
+### `rz_bronze` — views, union + normalise
 
-Unions `rz_raw` and `WC_26` source tables into a single canonical column order (the two datasets have different column positions due to scraper versions). Adds a `dataset_source` tag (`standard` or `wc_26`). No business logic.
+Unions `rz_raw` and `WC_26` source tables into a single canonical column order (the two datasets have different column positions due to scraper versions). Adds a `dataset_source` tag (`standard` or `wc_26`). No business logic.  
+**Type: views** — no storage cost, always reflect raw data in real time.
 
-| View | Source | Notes |
+| View | SQL file | Source tables |
 |---|---|---|
-| `bronze_matches` | rz_raw + WC_26 `sofascore_matches` | Explicit column list fixes column order mismatch |
-| `bronze_player_stats` | rz_raw + WC_26 `sofascore_player_match_stats` | Explicit column list |
-| `bronze_team_stats` | rz_raw + WC_26 `sofascore_team_match_stats` | Explicit column list |
-| `bronze_shots` | rz_raw + WC_26 `sofascore_shots` | Explicit column list |
-| `bronze_squad` | rz_raw `transfermarkt_squad` passthrough | Single source |
+| `bronze_matches` | `bronze/bronze_matches.sql` | rz_raw + WC_26 `sofascore_matches` |
+| `bronze_player_stats` | `bronze/bronze_player_stats.sql` | rz_raw + WC_26 `sofascore_player_match_stats` |
+| `bronze_team_stats` | `bronze/bronze_team_stats.sql` | rz_raw + WC_26 `sofascore_team_match_stats` |
+| `bronze_shots` | `bronze/bronze_shots.sql` | rz_raw + WC_26 `sofascore_shots` |
+| `bronze_squad` | `bronze/bronze_squad.sql` | rz_raw `transfermarkt_squad` passthrough |
 
-**Why explicit column lists?** rz_raw tables have `tournament_id/season_id/league_name` at the end; WC_26 tables (newer scraper) have them near the beginning. `SELECT *` in a UNION ALL matches by position — causing type conflicts. All bronze views select columns by name in a fixed canonical order.
+**Why explicit column lists?** rz_raw has `tournament_id/season_id/league_name` at the end; WC_26 (newer scraper) has them near the beginning. `SELECT *` in UNION ALL matches by position, causing type conflicts.
 
-### Silver — dedup + team_name fix
+### `rz_silver` — tables, dedup + team_name fix
 
-One row per natural key, latest `ingested_at` wins. Also resolves the `team_name` NULL bug in player stats and shots (scraper bug: `team_id` and `team_name` were written as empty strings for all rows). Fix: LEFT JOIN to `silver_matches` using the `is_home` boolean.
+Materialised tables. One row per natural key; latest `ingested_at` wins. Resolves the `team_name` NULL bug in player_stats and shots (scraper wrote empty strings for `team_id` and `team_name`): fix is a LEFT JOIN to `silver_matches` using the `is_home` boolean.  
+**Type: partitioned/clustered tables** — refreshed by `run_refresh_processed.sh` at 11:00 and 20:00.
 
-| View | Natural key | Extra fix |
-|---|---|---|
-| `silver_matches` | `match_id` | — |
-| `silver_player_stats` | `(match_id, player_id)` | team_name resolved via is_home JOIN |
-| `silver_team_stats` | `(match_id, team_id)` | — |
-| `silver_shots` | `shot_id` | team_name resolved via is_home JOIN |
-| `silver_squad` | `player_id` | — |
+| Table | SQL file | Key | Partition / Cluster |
+|---|---|---|---|
+| `silver_matches` | `silver/silver_matches.sql` | `match_id` | match_date / tournament_id, match_round |
+| `silver_player_stats` | `silver/silver_player_stats.sql` | `match_id, player_id` | match_date / tournament_id, team_id |
+| `silver_team_stats` | `silver/silver_team_stats.sql` | `match_id, team_id` | match_date / tournament_id, team_id |
+| `silver_shots` | `silver/silver_shots.sql` | `shot_id` | match_date / tournament_id |
+| `silver_squad` | `silver/silver_squad.sql` | `player_id` | — |
 
-Dedup pattern (all silver views):
-```sql
-WITH ranked AS (
-  SELECT *,
-    ROW_NUMBER() OVER (PARTITION BY <key> ORDER BY ingested_at DESC) AS rn
-  FROM bronze_view
-)
-SELECT * EXCEPT (rn) FROM ranked WHERE rn = 1
-```
+`silver_matches` must be materialised before `silver_player_stats` and `silver_shots` (they JOIN to it). The refresh script handles this ordering.
 
-Team name fix pattern (player_stats and shots):
-```sql
-CASE WHEN d.is_home THEN m.home_team_id ELSE m.away_team_id END AS team_id,
-CASE WHEN d.is_home THEN m.home_team_name ELSE m.away_team_name END AS team_name
-FROM deduped d
-LEFT JOIN silver_matches m USING (match_id)
-```
+### `rz_gold` — tables, aggregated for consumption
 
-### Gold — aggregated for consumption
+Materialised tables. Ready for analysis and scouting — no raw match rows.  
+**Type: tables** — refreshed after silver completes in `run_refresh_processed.sh`.
 
-Ready for analysis. No raw match rows.
-
-| View | Grain | Primary use |
-|---|---|---|
-| `gold_player_season` | `(player_id, team_name, league_name, season_id)` | Scout queries, player comparisons |
-| `gold_team_season` | `(team_id, team_name, league_name, season_id)` | League benchmarking, team style |
-| `gold_zaragoza_matches` | `match_id` | Form analysis, W/D/L by season |
+| Table | SQL file | Grain | Primary use |
+|---|---|---|---|
+| `gold_player_season` | `gold/gold_player_season.sql` | `(player_id, team_name, league_name, season_id)` | Scout queries, player comparisons |
+| `gold_team_season` | `gold/gold_team_season.sql` | `(team_id, team_name, league_name, season_id)` | League benchmarking, team style |
+| `gold_zaragoza_matches` | `gold/gold_zaragoza_matches.sql` | `match_id` | Form analysis, W/D/L by season |
 
 `gold_player_season` includes: `primary_position` (ANY_VALUE), `matches`, `total_minutes`, `avg_rating`, goals/assists/shots + per-90s, pass acc %, long ball acc %, cross acc %, tackle/aerial/duel win %, interceptions/p90, touches/p90, yellows/p90.
 
 `gold_zaragoza_matches` joins `silver_team_stats` for Zaragoza's match-level metrics and derives `result` (W/D/L), `venue` (home/away), `opponent`, `rz_goals`, `opponent_goals`. Filtered to `team_id = "2815"`.
 
+### Refresh cadence
+
+```
+09:00  extraction slot 1 (run_next_from_queue.sh)
+11:00  refresh slot 1   (run_refresh_processed.sh) — 2h buffer for extraction to complete
+18:00  extraction slot 2 (run_next_from_queue.sh)
+20:00  refresh slot 2   (run_refresh_processed.sh)
+```
+
+Bronze views need no refresh (they're live views over rz_raw/WC_26). Silver and gold are fully rebuilt on each refresh run. Full rebuild takes ~30s for the current data volume.
+
 **Known data quality issue:** WC_26 rows ingested before 2026-07-05 have `league_name = "tournament_16"` instead of `"FIFA World Cup"` (LEAGUE_NAMES dict was fixed mid-backfill). Filter by `tournament_id = "16"` rather than `league_name` when querying WC data.
+
+**Legacy dataset:** `rz_processed` contains the original views and can be deleted once all agents and queries are confirmed pointing at the new datasets.
 
 ---
 

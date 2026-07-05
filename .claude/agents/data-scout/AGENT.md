@@ -26,7 +26,7 @@ SELECT
   interceptions, clearances, aerials_won, aerial_win_pct,
   duels_won, duel_win_pct, interceptions_p90, tackles_p90,
   touches_p90, fouls_committed, fouls_won, yellows, reds, yellows_p90
-FROM `real-zaragoza-500608.rz_processed.gold_player_season`
+FROM `real-zaragoza-500608.rz_gold.gold_player_season`
 WHERE LOWER(player_name) LIKE LOWER('%{PLAYER_NAME}%')
 ORDER BY season_id DESC, total_minutes DESC
 ```
@@ -36,7 +36,7 @@ Note: WC data appears here alongside league data. Filter `dataset_source = 'wc_2
 ### 2. Origin team metrics (last full season)
 ```sql
 SELECT *
-FROM `real-zaragoza-500608.rz_processed.gold_team_season`
+FROM `real-zaragoza-500608.rz_gold.gold_team_season`
 WHERE LOWER(team_name) LIKE LOWER('%{ORIGIN_TEAM}%')
 ORDER BY season_id DESC
 ```
@@ -51,7 +51,7 @@ SELECT league_name, season_id,
   ROUND(AVG(avg_shots), 1)        AS avg_shots,
   ROUND(AVG(avg_fouls), 1)        AS avg_fouls,
   ROUND(AVG(avg_yellows), 2)      AS avg_yellows
-FROM `real-zaragoza-500608.rz_processed.gold_team_season`
+FROM `real-zaragoza-500608.rz_gold.gold_team_season`
 WHERE league_name IN ('{ORIGIN_LEAGUE}', '{DEST_LEAGUE}')
 GROUP BY 1,2
 ORDER BY 2 DESC, 1
@@ -63,7 +63,7 @@ SELECT
   player_name, team_name, primary_position,
   matches, total_minutes AS minutes, goals, assists, avg_rating,
   shots, key_passes_p90, pass_acc_pct
-FROM `real-zaragoza-500608.rz_processed.gold_player_season`
+FROM `real-zaragoza-500608.rz_gold.gold_player_season`
 WHERE LOWER(team_name) LIKE LOWER('%{DEST_TEAM}%')
   AND primary_position = '{POSITION_CODE}'    -- G / D / M / F
 ORDER BY total_minutes DESC
@@ -72,7 +72,7 @@ ORDER BY total_minutes DESC
 ### 6. Transfermarkt data
 ```sql
 SELECT *
-FROM `real-zaragoza-500608.rz_processed.silver_squad`
+FROM `real-zaragoza-500608.rz_silver.silver_squad`
 WHERE LOWER(name) LIKE LOWER('%{PLAYER_NAME}%')
 ```
 
