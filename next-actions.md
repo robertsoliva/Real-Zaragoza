@@ -7,7 +7,7 @@ Forward-looking only — pending items by category. Completed items graduate to 
 ## Active
 
 - **Backfill cadence** — 1 season/slot × 2/day via `run_next_from_queue.sh` (launchd 09:00 + 18:00). Remaining queue: Ligue 2 × 2, Romanian SuperLiga × 2, J1 × 2, 1RFEF 2025-26, Turkish × 2, Norwegian × 2, Austrian × 2, Korean × 2 (15 seasons).
-- **WC 2026 daily incremental** — `com.realzaragoza.wc26-daily.plist` should be registered to keep WC data current through July 19. Full backfill + July 5 gap fill already complete.
+- **WC 2026 daily incremental** — `com.realzaragoza.wc26-daily.plist` needs to be registered to keep WC data current through July 19. Full backfill + July 5 gap fill already complete. Register: `cp pipeline/cloud-run/schedules/com.realzaragoza.wc26-daily.plist ~/Library/LaunchAgents/ && launchctl load ~/Library/LaunchAgents/com.realzaragoza.wc26-daily.plist`
 
 ---
 
@@ -18,8 +18,8 @@ Forward-looking only — pending items by category. Completed items graduate to 
 - **1RFEF 2026-27** — season ID not yet on SofaScore (~July 2026). When available: add to queue and weekly script.
 - **1RFEF 2024-25 anomaly** — only 100 matches loaded (expected ~380+). Likely SofaScore exposes only playoff rounds for this season via the rounds API. Investigate before deciding whether to re-backfill.
 - **WC league_name fix** — rows from the initial WC backfill (before 2026-07-05) have `league_name = "tournament_16"` not `"FIFA World Cup"`. Fix: either re-backfill or normalise in `bronze_matches` with a CASE on `tournament_id`. Until then, always filter WC data by `tournament_id = "16"`.
-- **`rz_processed.season_results`** — W/D/L, GD, cumulative points per team per season. Starting point: `gold_zaragoza_matches` + `silver_team_stats` for all teams.
-- **`rz_processed.player_valuations`** — time series of market value from `transfermarkt_squad`; add after second weekly scrape.
+- **`rz_gold.season_results`** — W/D/L, GD, cumulative points per team per season. Starting point: `rz_gold.gold_zaragoza_matches` + `rz_silver.silver_team_stats` for all teams. Add SQL to `pipeline/sql/gold/`.
+- **`rz_silver.player_valuations`** — time series of market value from `rz_bronze.bronze_squad`; add after second weekly scrape. Add SQL to `pipeline/sql/silver/`.
 - **Cloud Function** — `rz-bq-loader` Pub/Sub subscriber; deferred until fan-out is needed.
 
 ---
