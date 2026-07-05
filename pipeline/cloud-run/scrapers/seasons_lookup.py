@@ -30,12 +30,11 @@ LEAGUE_NAMES = {
     "182":   "Ligue 2",
     "152":   "Romanian SuperLiga",
     "196":   "J1 League",
-    "17":    "FIFA World Cup",
-    # IDs below are best-guess — verify by running this script
+    "16":    "FIFA World Cup",
     "52":    "Turkish Süper Lig",
-    "57":    "Norwegian Eliteserien",
+    "20":    "Norwegian Eliteserien",
     "45":    "Austrian Bundesliga",
-    "55":    "Korean K League 1",
+    "410":   "Korean K League 1",
 }
 
 

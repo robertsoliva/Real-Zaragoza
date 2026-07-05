@@ -3,9 +3,9 @@
 # Fetches rounds containing matches from the last 2 days (INCREMENTAL=true).
 # Runs until the tournament ends (final: ~2026-07-19).
 #
-# Tournament IDs (confirm with: python3 seasons_lookup.py <tournament_id>):
-#   WC 2026 tournament ID: 17 (confirmed in LEAGUE_NAMES in scraper_sofascore.py)
-#   WC 2026 season ID:     TODO — run: python3 seasons_lookup.py 17
+# Tournament IDs (confirmed 2026-07-05 via seasons_lookup.py):
+#   WC 2026 tournament ID: 16
+#   WC 2026 season ID:     58210
 #
 # launchd fires this at 09:00 daily via com.realzaragoza.wc26-daily.plist
 #
@@ -20,9 +20,8 @@ LOG=/tmp/sofascore_wc26_$(date +%Y%m%d).log
 PYTHON=/opt/anaconda3/bin/python3
 SCRAPER=/Users/robertsoliva/Desktop/Projects/Real-Zaragoza/pipeline/cloud-run/scrapers/scraper_sofascore.py
 
-# TODO: fill in once IP is clear and seasons_lookup.py confirms these IDs
-WC_TOURNAMENT_ID=17  # confirmed
-WC_SEASON_ID=TODO    # run: python3 seasons_lookup.py 17
+WC_TOURNAMENT_ID=16   # confirmed 2026-07-05
+WC_SEASON_ID=58210    # confirmed 2026-07-05
 
 echo "=== WC26 daily run: $(date) ===" | tee -a "$LOG"
 

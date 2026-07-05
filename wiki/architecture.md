@@ -1,6 +1,6 @@
 # Architecture — Data sources, pipeline, and BigQuery
 
-> **Status:** living document, last updated 2026-07-03. Transfermarkt + SofaScore pipelines live. SofaScore covers 6 leagues (4 more pending backfill). 2-season/day extraction cadence in place via launchd queue. Agent ecosystem (data-lead, data-engineer, data-scout, match-analyst) in place.
+> **Status:** living document, last updated 2026-07-05. Transfermarkt + SofaScore pipelines live. SofaScore covers 6 leagues (4 more pending backfill). 2-season/day extraction cadence in place via launchd queue. Agent ecosystem (data-lead, data-engineer, data-scout, match-analyst) in place.
 
 ## Goal
 
@@ -32,11 +32,11 @@ Build a data foundation to:
 | Ligue 2 (France) | 182 | 61737 | 77357 | pending backfill; 2026-27 = 96109 |
 | Romanian SuperLiga | 152 | 62837 | 77312 | pending backfill; 2026-27 = 97124 |
 | J1 League (Japan) | 196 | 2025 = 69871 | 2026 = 87931 | pending backfill; calendar-year |
-| FIFA World Cup 2026 | 17 | — | TBD | separate dataset `WC_26`; season_id via seasons_lookup.py |
-| Turkish Süper Lig | TBD | TBD | TBD | tournament_id unconfirmed; verify with seasons_lookup.py |
-| Norwegian Eliteserien | TBD | 2024 = TBD | 2025 = TBD | calendar-year; verify with seasons_lookup.py |
-| Austrian Bundesliga | TBD | TBD | TBD | verify with seasons_lookup.py |
-| Korean K League 1 | TBD | 2024 = TBD | 2025 = TBD | calendar-year; verify with seasons_lookup.py |
+| FIFA World Cup 2026 | 16 | — | 58210 | separate dataset `WC_26`; daily incremental via `run_daily_wc26.sh` |
+| Turkish Süper Lig | 52 | 63814 | 77805 | pending backfill |
+| Norwegian Eliteserien | 20 | 2024 = 57322 | 2025 = 70174 | calendar-year; pending backfill |
+| Austrian Bundesliga | 45 | 62629 | 77382 | pending backfill |
+| Korean K League 1 | 410 | 2024 = 57878 | 2025 = 70830 | calendar-year; pending backfill |
 
 Real Zaragoza team ID: **2815**. Run `python seasons_lookup.py <tournament_id>` to discover future season IDs.
 

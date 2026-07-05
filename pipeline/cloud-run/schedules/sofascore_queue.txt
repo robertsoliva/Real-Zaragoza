@@ -1,14 +1,13 @@
 # sofascore_queue.txt — SofaScore backfill extraction queue
 # Format: TOURNAMENT_ID  SEASON_ID  LABEL
-# Lines starting with # are comments (skipped). SEASON_ID=TODO means season ID
-# not yet confirmed — run `python3 seasons_lookup.py <TOURNAMENT_ID>` to resolve.
+# Lines starting with # are comments (skipped).
 #
 # Cadence: 2 seasons/day — 09:00 and 18:00 via launchd.
 # After each successful run, run_next_from_queue.sh removes that line.
-# Last updated: 2026-07-03
+# Last updated: 2026-07-05
 #
 # NOTE: WC 2026 is a SEPARATE workflow (incremental, BQ_DATASET=WC_26).
-# See run_daily_wc26.sh. Resolve its season_id first with: python3 seasons_lookup.py 17
+# See run_daily_wc26.sh — tournament_id=16, season_id=58210.
 # -------------------------------------------------------------------------
 # PRIORITY 1 — Remaining standard backfill (failed 2026-07-03 due to IP ban)
 182  61737  Ligue2_2024-25
@@ -19,12 +18,12 @@
 196  87931  J1_2026
 17073  77727  1RFEF_2025-26
 # -------------------------------------------------------------------------
-# PRIORITY 2 — New leagues (tournament IDs are best-guess; verify all via seasons_lookup.py)
-52   TODO  TurkishSuperLig_2024-25
-52   TODO  TurkishSuperLig_2025-26
-57   TODO  NorwegianEliteserien_2024
-57   TODO  NorwegianEliteserien_2025
-45   TODO  AustrianBundesliga_2024-25
-45   TODO  AustrianBundesliga_2025-26
-55   TODO  KoreanKLeague1_2024
-55   TODO  KoreanKLeague1_2025
+# PRIORITY 2 — New leagues (all IDs confirmed via seasons_lookup.py 2026-07-05)
+52   63814  TurkishSuperLig_2024-25
+52   77805  TurkishSuperLig_2025-26
+20   57322  NorwegianEliteserien_2024
+20   70174  NorwegianEliteserien_2025
+45   62629  AustrianBundesliga_2024-25
+45   77382  AustrianBundesliga_2025-26
+410  57878  KoreanKLeague1_2024
+410  70830  KoreanKLeague1_2025

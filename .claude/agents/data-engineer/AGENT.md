@@ -46,11 +46,11 @@ Do not guess at column names. If unsure, check the schema file.
 | Ligue 2 | 182 | 77357 (25/26) | pending backfill |
 | Romanian SuperLiga | 152 | 77312 (25/26) | pending backfill |
 | J1 League | 196 | 87931 (2026) | pending backfill |
-| FIFA World Cup 2026 | 17 | TBD | separate dataset: `WC_26`; incremental only |
-| Turkish Süper Lig | TBD | TBD | tournament_id unconfirmed — run seasons_lookup.py |
-| Norwegian Eliteserien | TBD | TBD | calendar-year seasons (2024, 2025); run seasons_lookup.py |
-| Austrian Bundesliga | TBD | TBD | run seasons_lookup.py |
-| Korean K League 1 | TBD | TBD | calendar-year seasons (2024, 2025); run seasons_lookup.py |
+| FIFA World Cup 2026 | 16 | 58210 | separate dataset: `WC_26`; incremental only via `run_daily_wc26.sh` |
+| Turkish Süper Lig | 52 | 77805 (25/26) | backfill also: 63814 (24/25) |
+| Norwegian Eliteserien | 20 | 70174 (2025) | calendar-year seasons; backfill also: 57322 (2024) |
+| Austrian Bundesliga | 45 | 77382 (25/26) | backfill also: 62629 (24/25) |
+| Korean K League 1 | 410 | 70830 (2025) | calendar-year seasons; backfill also: 57878 (2024) |
 
 **Extraction cadence (backfill phase):** 2 seasons/day via `run_next_from_queue.sh` — launchd fires at 09:00 and 18:00. Queue order in `sofascore_queue.txt`. WC 2026 runs separately via `run_daily_wc26.sh` (incremental, `WC_26` dataset).
 
