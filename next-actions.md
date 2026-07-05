@@ -7,7 +7,7 @@ Forward-looking only — pending items by category. Completed items graduate to 
 ## Active
 
 - **Backfill cadence** — 1 season/slot × 2/day via `run_next_from_queue.sh` (launchd 09:00 + 18:00). Remaining queue: Ligue 2 × 2, Romanian SuperLiga × 2, J1 × 2, 1RFEF 2025-26, Turkish × 2, Norwegian × 2, Austrian × 2, Korean × 2 (15 seasons).
-- **WC 2026 daily incremental** — `com.realzaragoza.wc26-daily.plist` needs to be registered to keep WC data current through July 19. Full backfill + July 5 gap fill already complete. Register: `cp pipeline/cloud-run/schedules/com.realzaragoza.wc26-daily.plist ~/Library/LaunchAgents/ && launchctl load ~/Library/LaunchAgents/com.realzaragoza.wc26-daily.plist`
+- **WC 2026 daily incremental** — `com.realzaragoza.wc26-daily.plist` registered 2026-07-05. Fires daily at 09:00 through July 19 (WC final).
 
 ---
 
