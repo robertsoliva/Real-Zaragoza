@@ -17,6 +17,9 @@ LOCKFILE=/tmp/sofascore_queue.lock
 
 export GCP_PROJECT_ID=real-zaragoza-500608
 
+# Prevent the machine from sleeping during the scrape
+caffeinate -i -w $$ &
+
 # Bail out if another run is still in progress
 if [ -f "$LOCKFILE" ]; then
     LOCK_PID=$(cat "$LOCKFILE" 2>/dev/null || true)
