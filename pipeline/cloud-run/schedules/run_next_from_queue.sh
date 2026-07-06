@@ -1,7 +1,8 @@
 #!/bin/bash
 # Run the next season from sofascore_queue.txt and remove it from the queue.
 # Skips comment lines and lines with SEASON_ID=TODO.
-# Fired twice daily by launchd: 09:00 and 18:00.
+# Fired 4x daily by launchd: 00:00, 06:00, 12:00, and 18:00.
+# Uses a lock file to prevent concurrent runs if a scrape overruns its slot.
 #
 # Usage:
 #   bash run_next_from_queue.sh
@@ -12,8 +13,21 @@ set -euo pipefail
 QUEUE=/Users/robertsoliva/Desktop/Projects/Real-Zaragoza/pipeline/cloud-run/schedules/sofascore_queue.txt
 PYTHON=/opt/anaconda3/bin/python3
 SCRAPER=/Users/robertsoliva/Desktop/Projects/Real-Zaragoza/pipeline/cloud-run/scrapers/scraper_sofascore.py
+LOCKFILE=/tmp/sofascore_queue.lock
 
 export GCP_PROJECT_ID=real-zaragoza-500608
+
+# Bail out if another run is still in progress
+if [ -f "$LOCKFILE" ]; then
+    LOCK_PID=$(cat "$LOCKFILE" 2>/dev/null || true)
+    if [ -n "$LOCK_PID" ] && kill -0 "$LOCK_PID" 2>/dev/null; then
+        echo "$(date): Another scrape is running (PID $LOCK_PID). Skipping this slot."
+        exit 0
+    else
+        echo "$(date): Stale lock file found (PID $LOCK_PID no longer running). Removing."
+        rm -f "$LOCKFILE"
+    fi
+fi
 
 # Find first runnable line: not a comment, not blank, not TODO
 NEXT=$(grep -v '^\s*#' "$QUEUE" | grep -v '^\s*$' | grep -v 'TODO' | head -1 || true)
@@ -26,6 +40,10 @@ fi
 TOURNAMENT_ID=$(echo "$NEXT" | awk '{print $1}')
 SEASON_ID=$(echo "$NEXT"     | awk '{print $2}')
 LABEL=$(echo "$NEXT"         | awk '{print $3}')
+
+# Acquire lock
+echo $$ > "$LOCKFILE"
+trap 'rm -f "$LOCKFILE"' EXIT
 
 echo ""
 echo "========================================"
