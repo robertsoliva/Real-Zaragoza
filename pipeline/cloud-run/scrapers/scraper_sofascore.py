@@ -103,7 +103,10 @@ class NetworkClient:
         url = f"{BASE_URL}{endpoint}"
         for attempt in range(retries):
             try:
-                resp = await self._session.get(url, headers=HEADERS, timeout=30)
+                resp = await asyncio.wait_for(
+                    self._session.get(url, headers=HEADERS, timeout=30),
+                    timeout=60,
+                )
                 if resp.status_code == 200:
                     return resp.json()
                 if resp.status_code in (429, 503):
@@ -112,6 +115,12 @@ class NetworkClient:
                     await asyncio.sleep(wait)
                     continue
                 log.debug(f"{endpoint} → {resp.status_code}")
+                return None
+            except asyncio.TimeoutError:
+                log.warning(f"Hard timeout (60s) on {endpoint} — attempt {attempt + 1}/{retries}")
+                if attempt < retries - 1:
+                    await asyncio.sleep(2 ** attempt)
+                    continue
                 return None
             except Exception as e:
                 if attempt < retries - 1:
