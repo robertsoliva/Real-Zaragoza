@@ -60,6 +60,7 @@ LEAGUE_NAMES: dict[str, str] = {
     "210":   "Mozzart Bet Superliga",
     "242":   "MLS",
     "40":    "Allsvenskan",
+    "131":   "Eerste Divisie",
 }
 
 # Stat fields used to detect whether SofaScore returned real player stats.

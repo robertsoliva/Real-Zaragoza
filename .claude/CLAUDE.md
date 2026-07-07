@@ -24,7 +24,7 @@ An ongoing analysis project on Real Zaragoza CF, covering both sporting (players
 
 The pipeline is live. SofaScore match/player/team/shot data and Transfermarkt squad data are loaded into BigQuery (`real-zaragoza-500608.rz_raw`). Raw data lives in `data/` and BQ — not in `wiki/`. Wiki pages may summarise or reference data findings but should never contain raw tables.
 
-Active leagues (all IDs confirmed 2026-07-05): LaLiga2 (54), 1RFEF (17073), Serie B (53), Ligue 2 (182), Romanian SuperLiga (152), J1 League (196), Turkish Süper Lig (52), Norwegian Eliteserien (20), Austrian Bundesliga (45), Korean K League 1 (410), Brasileirao Serie B (390), Mozzart Bet Superliga (210), MLS (242), Allsvenskan (40). WC 2026 in separate dataset `WC_26` (tournament_id=16, season_id=58210). Season IDs and full backfill queue in `.claude/agents/data-engineer/AGENT.md`.
+Active leagues (all IDs confirmed 2026-07-05): LaLiga2 (54), 1RFEF (17073), Serie B (53), Ligue 2 (182), Romanian SuperLiga (152), J1 League (196), Turkish Süper Lig (52), Norwegian Eliteserien (20), Austrian Bundesliga (45), Korean K League 1 (410), Brasileirao Serie B (390), Mozzart Bet Superliga (210), MLS (242), Allsvenskan (40), Eerste Divisie (131). WC 2026 in separate dataset `WC_26` (tournament_id=16, season_id=58210). Season IDs and full backfill queue in `.claude/agents/data-engineer/AGENT.md`.
 
 **Processed layers:** Raw data in `rz_raw`/`WC_26`. Processed data in three datasets: `rz_bronze` (views, union + normalise), `rz_silver` (tables, dedup + fixes), `rz_gold` (tables, aggregated). SQL definitions in `pipeline/sql/{bronze,silver,gold}/`. Always query `rz_silver` or `rz_gold` — never `rz_raw` directly.
 

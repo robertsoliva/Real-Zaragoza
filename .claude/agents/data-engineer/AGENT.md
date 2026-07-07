@@ -55,6 +55,7 @@ Do not guess at column names. If unsure, check the schema file.
 | Mozzart Bet Superliga | 210 | 76909 (25/26) | backfill also: 61448 (24/25) |
 | MLS | 242 | 86668 (2026) | calendar-year seasons; backfill also: 70158 (2025) |
 | Allsvenskan | 40 | 87925 (2026) | calendar-year seasons; backfill also: 69956 (2025) |
+| Eerste Divisie | 131 | 77156 (25/26) | Netherlands 2nd div; backfill also: 61667 (24/25) |
 
 **Extraction cadence (backfill phase):** 4 seasons/day via `run_next_from_queue.sh` — launchd fires at 00:00, 06:00, 12:00, and 18:00. Queue order in `sofascore_queue.txt`. WC 2026 runs separately via `run_daily_wc26.sh` (incremental, `WC_26` dataset).
 

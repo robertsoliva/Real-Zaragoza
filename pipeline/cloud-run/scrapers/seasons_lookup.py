@@ -39,6 +39,7 @@ LEAGUE_NAMES = {
     "210":   "Mozzart Bet Superliga",
     "242":   "MLS",
     "40":    "Allsvenskan",
+    "131":   "Eerste Divisie",
 }
 
 
