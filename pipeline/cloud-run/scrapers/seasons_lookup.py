@@ -40,6 +40,7 @@ LEAGUE_NAMES = {
     "242":   "MLS",
     "40":    "Allsvenskan",
     "131":   "Eerste Divisie",
+    "685":   "Moldovan Super Liga",
 }
 
 

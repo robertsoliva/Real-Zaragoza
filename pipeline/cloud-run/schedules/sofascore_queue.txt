@@ -10,7 +10,6 @@
 # See run_daily_wc26.sh — tournament_id=16, season_id=58210.
 # -------------------------------------------------------------------------
 # PRIORITY 1 — Remaining standard backfill (failed 2026-07-03 due to IP ban)
-152  77312  RomanianSuperLiga_2025-26
 196  69871  J1_2025
 196  87931  J1_2026
 17073  77727  1RFEF_2025-26
@@ -36,3 +35,5 @@
 40   87925  Allsvenskan_2026
 131  61667  EersteDivisie_2024-25
 131  77156  EersteDivisie_2025-26
+685  63546  MoldovanSuperLiga_2024-25
+685  76499  MoldovanSuperLiga_2025-26
