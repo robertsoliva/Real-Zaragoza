@@ -6,7 +6,7 @@ Forward-looking only — pending items by category. Completed items graduate to 
 
 ## Active
 
-- **Backfill cadence** — 1 season/slot × 4/day via `run_next_from_queue.sh` (launchd 00:00 + 06:00 + 12:00 + 18:00). Remaining queue (as of 2026-07-05): Ligue 2 × 2, Romanian SuperLiga × 2, J1 × 2, 1RFEF 2025-26, Turkish × 2, Norwegian × 2, Austrian × 2, Korean × 2, Brasileirao Serie B × 2, Mozzart Bet Superliga × 2, MLS × 2, Allsvenskan × 2 (23 seasons — ~6 days at current cadence).
+- **Backfill cadence** — 1 season/slot × 4/day via `run_next_from_queue.sh` (launchd 00:00 + 06:00 + 12:00 + 18:00). Remaining queue (as of 2026-07-07): J1 × 2, 1RFEF 2025-26, Turkish × 2, Norwegian × 2, Austrian × 2, Korean × 2, Brasileirao Serie B × 2, Mozzart Bet Superliga × 2, MLS × 2, Allsvenskan × 2, Eerste Divisie × 2, Moldovan Super Liga × 2 (21 seasons — ~5 days at current cadence). Completed: LaLiga2 × 2, 1RFEF 2024-25, Serie B × 2, Ligue 2 × 2, Romanian SuperLiga × 2.
 - **WC 2026 daily incremental** — `com.realzaragoza.wc26-daily.plist` registered 2026-07-05. Fires daily at 09:00 through July 19 (WC final).
 
 ---

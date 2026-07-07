@@ -32,20 +32,21 @@ next-actions.md    Backlog of planned data work and analysis
 
 Tables are **append-only, partitioned by match date, clustered by jornada** — past seasons stay queryable alongside the current one.
 
-Current coverage: **LaLiga2 2024-25 and 2025-26 + 1RFEF 2024-25 and 2025-26**.
+Current coverage: **16 leagues** — LaLiga2, 1RFEF, Serie B, Ligue 2, Romanian SuperLiga, J1 League, Turkish Süper Lig, Norwegian Eliteserien, Austrian Bundesliga, Korean K League 1, Brasileirao Serie B, Mozzart Bet Superliga, MLS, Allsvenskan, Eerste Divisie, Moldovan Super Liga. WC 2026 in a separate dataset (`WC_26`). Backfill in progress; see `pipeline/cloud-run/schedules/sofascore_queue.txt`.
 
 ---
 
 ## Pipeline
 
 ```
-Cloud Scheduler (Tuesdays)
-  ├── 06:00 CET → Cloud Run: rz-scraper-transfermarkt → rz_raw.transfermarkt_squad
-  └── local cron → scraper_sofascore.py (INCREMENTAL=true) → rz_raw.sofascore_*
+launchd (macOS, local machine)
+  ├── 00:00 / 06:00 / 12:00 / 18:00 → run_next_from_queue.sh → scraper_sofascore.py → rz_raw.sofascore_*
+  ├── 09:00 daily → run_daily_wc26.sh (incremental, WC_26 dataset)
+  └── 11:00 / 20:00 → run_refresh_processed.sh → rz_bronze / rz_silver / rz_gold
 ```
 
-- **Historical backfill**: run once per season locally — `INCREMENTAL=false`, set `TOURNAMENT_ID` + `SEASON_ID`
-- **Weekly incremental**: `INCREMENTAL=true` — scrapes last 14 days only (SofaScore blocks GCP IPs; runs locally)
+- **Backfill**: queue-driven via `sofascore_queue.txt`, 4 seasons/day, lock file prevents concurrent runs
+- **Weekly incremental** (post-backfill): `INCREMENTAL=true` — scrapes last 14 days only (SofaScore blocks GCP IPs; runs locally)
 
 Full technical reference: [`wiki/architecture.md`](wiki/architecture.md)
 

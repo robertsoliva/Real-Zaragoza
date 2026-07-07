@@ -1,8 +1,8 @@
 # Real-Zaragoza repo — instructions for Claude
 
-## README.md is frozen
+## README.md
 
-As of 2026-06-24, the user has explicitly locked `README.md` — **do not edit it**, for any reason, even as a side effect of other work (new wiki pages, restructuring, etc.), unless the user explicitly asks to lift this freeze in that conversation. It's intentionally short; don't "helpfully" expand it back out.
+Keep it short and accurate. Updated 2026-07-07 to reflect launchd pipeline and 16-league coverage. Don't expand it into a full technical reference — that lives in `wiki/architecture.md`.
 
 ## What this repo is
 
