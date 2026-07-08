@@ -41,11 +41,11 @@ Do not guess at column names. If unsure, check the schema file.
 | League | `tournament_id` | Current season_id | Notes |
 |---|---|---|---|
 | LaLiga2 | 54 | 77558 (25/26) | ✅ in BQ |
-| 1RFEF | 17073 | 77727 (25/26) | 24-25 in BQ; 25-26 pending backfill |
+| 1RFEF | 17073 | 77727 (25/26) | ✅ both seasons in BQ (24-25 partial — only playoff rounds) |
 | Serie B | 53 | 79502 (25/26) | ✅ both seasons in BQ |
-| Ligue 2 | 182 | 77357 (25/26) | pending backfill |
-| Romanian SuperLiga | 152 | 77312 (25/26) | pending backfill |
-| J1 League | 196 | 87931 (2026) | pending backfill |
+| Ligue 2 | 182 | 77357 (25/26) | ✅ both seasons in BQ |
+| Romanian SuperLiga | 152 | 77312 (25/26) | ✅ both seasons in BQ |
+| J1 League | 196 | 87931 (2026) | ✅ both seasons in BQ |
 | FIFA World Cup 2026 | 16 | 58210 | separate dataset: `WC_26`; incremental only via `run_daily_wc26.sh` |
 | Turkish Süper Lig | 52 | 77805 (25/26) | backfill also: 63814 (24/25) |
 | Norwegian Eliteserien | 20 | 70174 (2025) | calendar-year seasons; backfill also: 57322 (2024) |

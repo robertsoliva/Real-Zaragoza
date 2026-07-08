@@ -6,7 +6,7 @@ Forward-looking only — pending items by category. Completed items graduate to 
 
 ## Active
 
-- **Backfill cadence** — 1 season/slot × 4/day via `run_next_from_queue.sh` (launchd 00:00 + 06:00 + 12:00 + 18:00). Remaining queue (as of 2026-07-07): J1 × 2, 1RFEF 2025-26, Turkish × 2, Norwegian × 2, Austrian × 2, Korean × 2, Brasileirao Serie B × 2, Mozzart Bet Superliga × 2, MLS × 2, Allsvenskan × 2, Eerste Divisie × 2, Moldovan Super Liga × 2 (21 seasons — ~5 days at current cadence). Completed: LaLiga2 × 2, 1RFEF 2024-25, Serie B × 2, Ligue 2 × 2, Romanian SuperLiga × 2.
+- **Backfill cadence** — 1 season/slot × 4/day via `run_next_from_queue.sh` (launchd 00:00 + 06:00 + 12:00 + 18:00). Remaining queue (as of 2026-07-08): Turkish × 2, Norwegian × 2, Austrian × 2, Korean × 2, Brasileirao Serie B × 2, Mozzart Bet Superliga × 2, MLS × 2, Allsvenskan × 2, Eerste Divisie × 2, Moldovan Super Liga × 2 (20 seasons — ~5 days at current cadence). Next up: TurkishSuperLig_2024-25 at 18:00. Completed: LaLiga2 × 2, 1RFEF × 2, Serie B × 2, Ligue 2 × 2, Romanian SuperLiga × 2, J1 × 2.
 - **WC 2026 daily incremental** — `com.realzaragoza.wc26-daily.plist` registered 2026-07-05. Fires daily at 09:00 through July 19 (WC final).
 
 ---
@@ -47,8 +47,10 @@ Forward-looking only — pending items by category. Completed items graduate to 
 
 ---
 
-## Website (long-term)
+## Website
 
-**Prerequisite: data layer must be stable** — backfills complete, weekly automation running, at least one full season of player/team stats queryable.
+Local demo built 2026-07-08: Flask + BQ + Claude API. Lives in `website/`. Launch with `bash website/start.sh` (requires `ANTHROPIC_API_KEY` in env).
 
-- **Real Zaragoza stats website** — public-facing web app modelled on [atleticostats.com](https://atleticostats.com/home). Covers all club dimensions: match results and stats, player profiles and season stats, squad overview, scouting/comparison views, and institutional info from the wiki. Reads from BQ via a backend API layer. Scope and tech stack TBD once data is ready.
+- **Squad page** — Transfermarkt cards with hover (nationality, position, age, height). Needs new Transfermarkt pull to include summer 2026 signings.
+- **Match calculator** — player selector from gold_player_season → numeric fit score + Claude-generated scouting verdict. Working end-to-end.
+- **Next for the site** — add match results page (from gold_zaragoza_matches), player detail pages, league comparison views. Deploy publicly once backfills are stable.
