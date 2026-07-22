@@ -106,9 +106,24 @@ Use the template at `.claude/agents/data-scout/report_template.html` as your bas
   - 5.5–6.5 → `"MONITOR"` / `"pill-caution"`
   - 5.0–5.5 → `"PROBABLY PASS"` / `"pill-probably"`
   - <5.0 → `"PASS"` / `"pill-pass"`
-- **Squad rows**: include the new signing as a highlighted row (`highlight: true`) when comparing against existing squad players
+- **Squad rows**: include the target as a highlighted row (`highlight: true`). Only include **confirmed or likely 2026-27 Zaragoza squad members** (per `wiki/squad.md`) — never include other scouting targets or departed players.
 - **Missing data**: if a BQ stat is NULL/absent, use `"N/A"` as the display value and `0` as the barPct; note in `dataCoverageNote`
 - **Team fit**: use the most recent season available for both teams; if destination has no BQ data, use 1RFEF benchmark from season 64430 (possession: 50.1%, passes: 375, shots: 10.7, fouls: 13.6, aerial: ~13)
+
+### Positional Need — formation-aware scoring
+
+Real Zaragoza play **4-2-3-1**. When scoring the Positional Need dimension, account for how many players at that role are required in the XI and the squad:
+
+| Role in 4-2-3-1 | XI slots | Typical squad need | How to score Positional Need |
+|---|---|---|---|
+| GK | 1 | 2 | 1 free slot left → 8-9 if uncovered, 4-5 if 2 already confirmed |
+| CB | 2 | 4 | Each CB slot counts; 2 confirmed = still medium need |
+| RB / LB | 1 each | 2 | With 2 confirmed RBs, a 3rd is low need (4-5) unless one is sub-backup quality |
+| CM / DM (the "2") | 2 | 3-4 | Even with 2 signed, need 1-2 more for rotation → score 7-8 |
+| LW / RW / CAM (the "3") | 3 | 5-6 | High multiplicity; 3rd or 4th option still scores 6-7 need |
+| CF (the "1") | 1 | 2 | Similar to fullback: 2 confirmed = low need |
+
+Also distinguish **sub-roles within position**: a scoring AM (Sato) and a defensive CM (Herrera) both code as "M" in SofaScore but fill different slots in the 4-2-3-1. A squad with 3 DMs and no CAM still has high need for a CAM even though midfield "headcount" looks adequate. Call this out explicitly in the squad assessment.
 
 After producing the artifact, output a **one-paragraph plain-text summary** of the verdict for the coordinator to relay to the user.
 
