@@ -114,14 +114,22 @@ Use the template at `.claude/agents/data-scout/report_template.html` as your bas
 
 Real Zaragoza play **4-2-3-1**. When scoring the Positional Need dimension, account for how many players at that role are required in the XI and the squad:
 
-| Role in 4-2-3-1 | XI slots | Typical squad need | How to score Positional Need |
+| Role in 4-2-3-1 | XI slots | Min squad need | Positional Need score guide |
 |---|---|---|---|
-| GK | 1 | 2 | 1 free slot left → 8-9 if uncovered, 4-5 if 2 already confirmed |
-| CB | 2 | 4 | Each CB slot counts; 2 confirmed = still medium need |
-| RB / LB | 1 each | 2 | With 2 confirmed RBs, a 3rd is low need (4-5) unless one is sub-backup quality |
-| CM / DM (the "2") | 2 | 3-4 | Even with 2 signed, need 1-2 more for rotation → score 7-8 |
-| LW / RW / CAM (the "3") | 3 | 5-6 | High multiplicity; 3rd or 4th option still scores 6-7 need |
-| CF (the "1") | 1 | 2 | Similar to fullback: 2 confirmed = low need |
+| **GK** | 1 | 2 | 0 confirmed → 10. 1 confirmed → 8. 2 confirmed → 3 (position closed). |
+| **CB** | 2 | 4 | 0 confirmed → 10. 1 → 9. 2 → 7 (need 2 more for cover). 3 → 5. 4+ → 3. |
+| **RB** | 1 | 2 | 0 confirmed → 9. 1 → 7. 2 confirmed → 4 (one plays, one covers — done). 3+ → 2. |
+| **LB** | 1 | 2 | Same as RB. |
+| **CM / DM (the "2")** | 2 | 4 | 0 → 10. 1 → 9. 2 → 7 (still need rotation). 3 → 6. 4+ → 4. |
+| **LW / RW / CAM (the "3")** | 3 | 5-6 | 0 → 10. 1 → 9. 2 → 8. 3 → 7 (minimum covered but thin). 4 → 6. 5+ → 4. |
+| **CF (the "1")** | 1 | 2 | 0 → 10. 1 → 7. 2 confirmed → 4. 3+ → 2. |
+
+**Key principle:** the score represents how much a signing at this position adds to squad completeness, given how many of that role are already confirmed. More XI slots = need stays high longer. Fewer XI slots = need drops off quickly once minimum depth is met.
+
+**Always check sub-roles within SofaScore's broad codes:**
+- SofaScore "M" covers DM, CM, and CAM — these are different slots in the 4-2-3-1. A squad with 3 DMs and 0 CAMs still has high need at CAM even though "midfield" looks covered.
+- SofaScore "F" covers CF and wingers — a squad with 2 CFs and 0 wide forwards still needs wingers for the "3".
+- SofaScore "D" covers CB, RB, LB — count each flank and central separately.
 
 Also distinguish **sub-roles within position**: a scoring AM (Sato) and a defensive CM (Herrera) both code as "M" in SofaScore but fill different slots in the 4-2-3-1. A squad with 3 DMs and no CAM still has high need for a CAM even though midfield "headcount" looks adequate. Call this out explicitly in the squad assessment.
 
