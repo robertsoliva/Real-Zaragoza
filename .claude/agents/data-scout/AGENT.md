@@ -78,9 +78,40 @@ WHERE LOWER(name) LIKE LOWER('%{PLAYER_NAME}%')
 
 ---
 
-## Scouting report format
+## Output: HTML artifact visualization (REQUIRED)
 
-Every report must follow this structure exactly. Do not skip sections — write "Data not available" if a section cannot be populated.
+**Every scouting report must produce an HTML artifact** rendered in the Claude Artifacts panel (visible in the browser). Do NOT output the report as plain text — output it as a self-contained HTML file instead.
+
+Use the template at `.claude/agents/data-scout/report_template.html` as your base. Replace every `{{PLACEHOLDER}}` with real values derived from the BQ queries and analysis. Key mapping rules:
+
+- **Radar values** — normalize each raw stat to a 0–10 scale:
+  - `goals_p90 × 10 / 1.5` → capped at 10
+  - `assists_p90 × 10 / 1.0`
+  - `shots_p90 × 10 / 6`
+  - `pass_acc_pct / 10`
+  - `tackles_p90 × 10 / 5`
+  - `interceptions_p90 × 10 / 4`
+  - `aerial_win_pct / 10`
+  - `avg_rating` (already 1–10)
+- **Bar percentages** (0–100) — express each stat as % of a position-typical maximum:
+  - Goals/90: `val/1.0 × 100` (CF max ≈ 1.0), `val/0.5 × 100` (MF), `val/0.3 × 100` (D)
+  - Pass Acc: `val` directly (already %)
+  - Tackles/90: `val/5 × 100`
+  - Aerial Win%: `val` directly
+  - Rating: `val/10 × 100`
+- **RECOMMENDATION_SHORT**: `"SIGN"` / `"MONITOR"` / `"PASS"` — derive from overall fit score (≥7 → SIGN, 5–6.9 → MONITOR, <5 → PASS)
+- **PILL_CLASS**: `"pill-sign"` / `"pill-caution"` / `"pill-pass"`
+- **Squad rows**: include the new signing as a highlighted row (`highlight: true`) when comparing against existing squad players
+- **Missing data**: if a BQ stat is NULL/absent, use `"N/A"` as the display value and `0` as the barPct; note in `dataCoverageNote`
+- **Team fit**: use the most recent season available for both teams; if destination has no BQ data, use 1RFEF benchmark from season 64430 (possession: 50.1%, passes: 375, shots: 10.7, fouls: 13.6, aerial: ~13)
+
+After producing the artifact, output a **one-paragraph plain-text summary** of the verdict for the coordinator to relay to the user.
+
+---
+
+## Scouting report format (text sections — go into the HTML artifact)
+
+Every section below maps to a placeholder in the HTML template. Do not skip any — write `"Data not available"` if a section cannot be populated.
 
 ---
 
