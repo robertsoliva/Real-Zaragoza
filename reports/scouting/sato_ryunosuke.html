@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scout Report — Ryunosuke Sato</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --rz-blue: #003087;
+    --rz-blue-mid: #0050b3;
+    --rz-blue-light: #e8f0fb;
+    --rz-white: #ffffff;
+    --rz-gold: #c8a000;
+    --rz-green: #1a7a3a;
+    --rz-amber: #c85000;
+    --rz-red: #b00020;
+    --text-primary: #0d1b2a;
+    --text-secondary: #4a5568;
+    --border: #d1dce8;
+    --bg: #f0f4fa;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: linear-gradient(135deg, var(--rz-blue) 0%, var(--rz-blue-mid) 100%);
+    color: var(--rz-white);
+    padding: 20px 28px 16px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    align-items: start;
+  }
+  .player-name { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
+  .player-meta { font-size: 12px; opacity: 0.85; margin-top: 4px; display: flex; gap: 16px; flex-wrap: wrap; }
+  .player-meta span { display: flex; align-items: center; gap: 4px; }
+  .verdict-badge {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 10px;
+    padding: 10px 16px;
+    text-align: center;
+    min-width: 90px;
+  }
+  .verdict-score { font-size: 32px; font-weight: 800; line-height: 1; }
+  .verdict-label { font-size: 10px; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+  .recommendation-pill {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .pill-sign-now { background: #00952a; color: #fff; }        /* >=8.5 SIGN NOW */
+  .pill-sign     { background: var(--rz-green); color: #fff; } /* 7.0-8.4 SIGN */
+  .pill-rotation { background: #1e6eb5; color: #fff; }         /* 6.5-7.0 ROTATION */
+  .pill-caution  { background: var(--rz-gold);  color: #fff; } /* 5.5-6.5 MONITOR */
+  .pill-probably { background: var(--rz-amber); color: #fff; } /* 5.0-5.5 PROBABLY PASS */
+  .pill-pass     { background: var(--rz-red);   color: #fff; } /* <5.0 PASS */
+
+  /* ── Layout ── */
+  .body { padding: 16px 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .full-width { grid-column: 1 / -1; }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--rz-white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .card-header {
+    background: var(--rz-blue);
+    color: var(--rz-white);
+    padding: 7px 14px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+  .card-body { padding: 12px 14px; }
+
+  /* ── Radar chart ── */
+  .radar-wrap { height: 230px; display: flex; align-items: center; justify-content: center; }
+
+  /* ── Stat grid ── */
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .stat-item { display: flex; flex-direction: column; gap: 2px; }
+  .stat-label { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.4px; }
+  .stat-value { font-size: 18px; font-weight: 700; color: var(--rz-blue); line-height: 1; }
+  .stat-context { font-size: 10px; color: var(--text-secondary); }
+  .stat-bar-wrap { height: 3px; background: #e2e8f0; border-radius: 2px; margin-top: 2px; }
+  .stat-bar { height: 100%; border-radius: 2px; background: var(--rz-blue-mid); }
+
+  /* ── Bucket headers ── */
+  .bucket-title {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  .buckets { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* ── Comparison bars ── */
+  .cmp-row { margin-bottom: 8px; }
+  .cmp-label { font-size: 10px; color: var(--text-secondary); margin-bottom: 3px; display: flex; justify-content: space-between; }
+  .cmp-bars { display: flex; gap: 4px; align-items: center; }
+  .cmp-bar-group { flex: 1; }
+  .cmp-bar-track { height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+  .cmp-bar-fill { height: 100%; border-radius: 4px; }
+  .bar-origin { background: #64748b; }
+  .bar-dest   { background: var(--rz-blue-mid); }
+  .cmp-val { font-size: 10px; font-weight: 700; min-width: 28px; text-align: right; }
+  .cmp-legend { display: flex; gap: 12px; margin-bottom: 10px; font-size: 10px; color: var(--text-secondary); align-items: center; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+  /* ── Squad table ── */
+  .squad-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  .squad-table th { font-size: 9px; text-transform: uppercase; color: var(--text-secondary); padding: 4px 6px; text-align: right; border-bottom: 1px solid var(--border); font-weight: 600; }
+  .squad-table th:first-child { text-align: left; }
+  .squad-table td { padding: 5px 6px; border-bottom: 1px solid #f0f4fa; text-align: right; }
+  .squad-table td:first-child { text-align: left; font-weight: 600; }
+  .squad-table tr.highlight td { background: #e8f0fb; color: var(--rz-blue); }
+  .squad-table tr:last-child td { border-bottom: none; }
+
+  /* ── Verdict dimension bars ── */
+  .verdict-dims { display: flex; flex-direction: column; gap: 8px; }
+  .dim-row { display: flex; align-items: center; gap: 8px; }
+  .dim-label { font-size: 10px; width: 140px; flex-shrink: 0; color: var(--text-secondary); }
+  .dim-track { flex: 1; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+  .dim-fill { height: 100%; border-radius: 4px; }
+  .fill-high   { background: var(--rz-green); }
+  .fill-medium { background: var(--rz-gold); }
+  .fill-low    { background: var(--rz-red); }
+  .dim-score { font-size: 11px; font-weight: 700; width: 28px; text-align: right; color: var(--text-primary); }
+  .dim-tag { font-size: 9px; font-weight: 700; text-transform: uppercase; padding: 1px 6px; border-radius: 10px; }
+  .tag-high   { background: #d1fae5; color: var(--rz-green); }
+  .tag-medium { background: #fef3c7; color: #92400e; }
+  .tag-low    { background: #fee2e2; color: var(--rz-red); }
+
+  /* ── Text sections ── */
+  .text-section { font-size: 12px; line-height: 1.65; color: var(--text-primary); }
+  .text-section p { margin-bottom: 8px; }
+  .text-section p:last-child { margin-bottom: 0; }
+  .caveat-list { padding-left: 14px; }
+  .caveat-list li { margin-bottom: 5px; font-size: 11px; color: var(--text-secondary); }
+
+  /* ── Data coverage ── */
+  .data-coverage {
+    background: #fffbeb;
+    border: 1px solid #f6d860;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 10px;
+    color: #78350f;
+    margin-top: 8px;
+  }
+  .data-coverage strong { color: #92400e; }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    font-size: 10px;
+    color: var(--text-secondary);
+    padding: 10px 20px 16px;
+    border-top: 1px solid var(--border);
+    margin-top: 4px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ======================================================
+     HEADER
+     ====================================================== -->
+<div class="header">
+  <div>
+    <div class="player-name">Ryunosuke Sato</div>
+    <div class="player-meta">
+      <span>&#128205; Midfielder (AM/CM)</span>
+      <span>&#127874; N/A yrs</span>
+      <span>&#127758; Japanese</span>
+      <span>&#127967; FC Tokyo</span>
+      <span>&#128197; 2026-07-22</span>
+    </div>
+    <div class="data-coverage"><strong>Data note:</strong> No Transfermarkt entry found in BQ silver_squad — age, market value and contract unknown. Two SofaScore seasons available (FC Tokyo 2025-26 primary; Fagiano Okayama 2024-25 reference).</div>
+  </div>
+  <div style="text-align:center;">
+    <div class="verdict-badge">
+      <div class="verdict-score">7.7</div>
+      <div class="verdict-label">Fit Score / 10</div>
+      <div class="recommendation-pill pill-sign">SIGN</div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================================================
+     MAIN BODY
+     ====================================================== -->
+<div class="body">
+
+  <!-- Radar chart -->
+  <div class="card">
+    <div class="card-header">Performance Radar — FC Tokyo J1 2025-26</div>
+    <div class="card-body">
+      <div class="radar-wrap">
+        <canvas id="radarChart" width="220" height="220"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Verdict dimensions -->
+  <div class="card">
+    <div class="card-header">Scout Verdict</div>
+    <div class="card-body">
+      <div class="verdict-dims" id="verdictDims"></div>
+      <div style="margin-top: 14px;" class="text-section">
+        <p>Sato is the rarest commodity in a midfield recruitment window: a midfielder who reliably scores. His 5G in 17 J1 appearances at 7.12 rating puts him at striker-level output while SofaScore codes him as M. At FC Tokyo he operates in a more advanced role than at Okayama, which explains the defensive volume drop — his interceptions and tackles fell sharply but his goal and chance-creation numbers rose in kind. Zaragoza's confirmed 2026-27 midfield has no player close to replicating this. Sign.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistical buckets -->
+  <div class="card full-width">
+    <div class="card-header">Statistical Analysis — per 90 min (FC Tokyo J1 2025-26 · 17 apps · 1,123 min)</div>
+    <div class="card-body">
+      <div class="buckets">
+        <div>
+          <div class="bucket-title">&#9917; Attacking</div>
+          <div class="stat-grid" id="attackingStats"></div>
+        </div>
+        <div>
+          <div class="bucket-title">&#128260; Passing</div>
+          <div class="stat-grid" id="passingStats"></div>
+        </div>
+        <div>
+          <div class="bucket-title">&#128737; Defensive</div>
+          <div class="stat-grid" id="defensiveStats"></div>
+        </div>
+        <div>
+          <div class="bucket-title">&#128170; Physical / Discipline</div>
+          <div class="stat-grid" id="physicalStats"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Team fit comparison -->
+  <div class="card">
+    <div class="card-header">Team Fit — Style Comparison</div>
+    <div class="card-body">
+      <div class="cmp-legend">
+        <span><span class="dot" style="background:#64748b"></span> FC Tokyo (J1 2025-26)</span>
+        <span><span class="dot" style="background:var(--rz-blue-mid)"></span> Real Zaragoza (LaLiga2 2024-25)</span>
+      </div>
+      <div id="teamFitRows"></div>
+      <div style="margin-top:10px; font-size:11px; color:var(--text-secondary);">
+        <strong>Stylistic fit:</strong> <span id="styleFitLabel"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- League context -->
+  <div class="card">
+    <div class="card-header">League Context</div>
+    <div class="card-body">
+      <div id="leagueComparisonChart" style="height:160px;">
+        <canvas id="leagueChart"></canvas>
+      </div>
+      <div style="margin-top:10px; font-size:11px; color:var(--text-secondary);">
+        <strong>Level:</strong> <span id="levelAdjLabel"></span><br>
+        <strong>Adjustment:</strong> <span id="leagueAdjText"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Squad analysis -->
+  <div class="card full-width">
+    <div class="card-header">Squad Analysis — Real Zaragoza · Midfield 2026-27 (Confirmed / Likely)</div>
+    <div class="card-body">
+      <table class="squad-table">
+        <thead>
+          <tr id="squadTableHead"></tr>
+        </thead>
+        <tbody id="squadTableBody"></tbody>
+      </table>
+      <div style="margin-top:10px; font-size:11px; color:var(--text-secondary);" id="squadAssessment"></div>
+    </div>
+  </div>
+
+  <!-- Player profile -->
+  <div class="card full-width">
+    <div class="card-header">Player Profile</div>
+    <div class="card-body text-section" id="playerProfile"></div>
+  </div>
+
+  <!-- Market intelligence -->
+  <div class="card">
+    <div class="card-header">Market Intelligence</div>
+    <div class="card-body text-section" id="marketIntel"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">Caveats &amp; Data Gaps</div>
+    <div class="card-body">
+      <ul class="caveat-list" id="caveatList"></ul>
+      <div class="data-coverage" id="dataCoverageNote" style="display:none;"></div>
+    </div>
+  </div>
+
+</div><!-- /body -->
+
+<div class="footer">
+  Real Zaragoza CF &middot; Data Scout &middot; 2026-07-22 &middot; Data: SofaScore via rz_gold &middot; Seasons 87931 (primary) + 69871 (reference)
+</div>
+
+<!-- ======================================================
+     DATA
+     ====================================================== -->
+<script>
+const REPORT = {
+  player:      "Ryunosuke Sato",
+  position:    "Midfielder (AM/CM)",
+  age:         "N/A",
+  nationality: "Japanese",
+  currentClub: "FC Tokyo",
+  reportDate:  "2026-07-22",
+
+  overallScore: 7.7,
+  recommendationShort: "SIGN",
+
+  // Radar — values 0-10
+  // Goals/90:      0.40 × 10 / 1.5  = 2.67
+  // Assists/90:    0.08 × 10 / 1.0  = 0.80
+  // Shots/90:      2.32 × 10 / 6    = 3.87
+  // Pass Acc%:     81.2 / 10        = 8.12
+  // Tackles/90:    1.60 × 10 / 5    = 3.20
+  // Interc./90:    0.16 × 10 / 4    = 0.40
+  // Aerial Win%:   35.7 / 10        = 3.57
+  // Rating:        7.12             (direct)
+  radar: {
+    labels: ["Goals/90","Assists/90","Shots/90","Pass Acc%","Tackles/90","Interceptions/90","Aerial Win%","Rating"],
+    values: [2.67, 0.80, 3.87, 8.12, 3.20, 0.40, 3.57, 7.12]
+  },
+
+  // Stat buckets
+  attacking: [
+    { label:"Goals/90",      value:"0.40",   context:"5 goals total",          barPct:50 },
+    { label:"Assists/90",    value:"0.08",   context:"1 assist",               barPct:16 },
+    { label:"Shots/90",      value:"2.32",   context:"29 total shots",         barPct:46 },
+    { label:"Conversion %",  value:"17.2%",  context:"on target: 15",          barPct:57 },
+    { label:"xG/match",      value:"N/A",    context:"not available in BQ",    barPct:0  },
+    { label:"Key passes/90", value:"1.68",   context:"chance creation",        barPct:56 },
+  ],
+  passing: [
+    { label:"Pass Acc %",    value:"81.2%",  context:"46.7% long ball",        barPct:81 },
+    { label:"Touches/90",    value:"51.45",  context:"involvement",            barPct:64 },
+    { label:"Long ball Acc", value:"46.7%",  context:"long passes",            barPct:47 },
+    { label:"Cross Acc %",   value:"29.2%",  context:"crossing",               barPct:49 },
+  ],
+  defensive: [
+    { label:"Tackles/90",    value:"1.60",   context:"60.0% won",              barPct:40 },
+    { label:"Interc./90",    value:"0.16",   context:"advanced role — expected", barPct:8 },
+    { label:"Aerial Win %",  value:"35.7%",  context:"14 contested",           barPct:36 },
+    { label:"Duel Win %",    value:"43.1%",  context:"all duels",              barPct:43 },
+  ],
+  physical: [
+    { label:"Avg Rating",    value:"7.12",   context:"SofaScore",              barPct:71 },
+    { label:"Fouls Won/90",  value:"0.56",   context:"17 committed",           barPct:28 },
+    { label:"Yellows",       value:"N/A",    context:"not in BQ",              barPct:0  },
+    { label:"Minutes",       value:"1,123",  context:"17 apps",                barPct:56 },
+  ],
+
+  // Team fit comparison
+  originTeam: "FC Tokyo (J1 2025-26)",
+  destTeam:   "Real Zaragoza (LaLiga2 2024-25)",
+  teamFit: [
+    { label:"Possession %",      origin:52.7, dest:48.6, max:65 },
+    { label:"Passes/match",      origin:456,  dest:376,  max:550 },
+    { label:"Shots/match",       origin:15.7, dest:12.1, max:20 },
+    { label:"Fouls/match",       origin:11.1, dest:13.1, max:20 },
+    { label:"Aerial won/match",  origin:14.0, dest:13.9, max:25 },
+  ],
+  styleFitScore: "Medium",
+  styleFitNote: "FC Tokyo plays with more possession and volume (456 vs 376 passes/match, 52.7% vs 48.6% possession). Sato will see fewer touches per match at Zaragoza and must adapt to a more direct, lower-possession environment. The gap is meaningful but not extreme — J1 and 1RFEF are comparably physical, and Sato's pass accuracy (81.2%) suggests he can operate comfortably under a tighter tempo.",
+
+  // League context
+  originLeague: "J1 League",
+  destLeague:   "1RFEF",
+  leagueData: {
+    labels:    ["Possession %", "Passes/match ÷10", "Shots/match", "Fouls/match"],
+    origin:    [50.0, 42.2, 12.2, 10.7],
+    dest:      [50.0, 37.0, 10.9, 13.4],
+  },
+  levelAdjustment: "Downgrade",
+  leagueAdjText:   "J1 League to 1RFEF (Spain's 3rd tier) is a moderate step down in overall quality. J1 is broadly comparable to the top of Europe's second tiers, while 1RFEF sits a half-level below. Sato's output at FC Tokyo — a competitive, possession-oriented J1 club — should translate with minimal discount. His prior Okayama season at a lower-resource J1 club also demonstrated consistent output across different contexts.",
+
+  // Squad analysis
+  squadHeaders: ["Player","Apps","Mins","G","A","Rating","KP/90","Tackles/90"],
+  squadRows: [
+    { name:"Ander Herrera",  highlight:false, cols:["—",    "—",     "—", "—", "—",    "—",    "—"   ] },
+    { name:"Rubén Díez",     highlight:false, cols:["29",   "2,194", "5", "2", "7.04", "1.72", "1.64"] },
+    { name:"Francho Serrano",highlight:false, cols:["34",   "2,874", "1", "6", "6.83", "1.32", "0.91"] },
+    { name:"Peter Ademo",    highlight:false, cols:["6",    "230",   "0", "0", "6.63", "—",    "—"   ] },
+    { name:"Efe Akman",      highlight:false, cols:["22",   "1,467", "1", "1", "6.68", "0.86", "1.60"] },
+    { name:"Ryunosuke Sato", highlight:true,  cols:["17",   "1,123", "5", "1", "7.12", "1.68", "1.60"] },
+  ],
+  squadAssessment: "Sato (highlighted) is the only midfielder in Zaragoza's confirmed 2026-27 group posting meaningful goal threat. Francho Serrano managed 1G in 34 apps; Díez offers creativity but not goals; Ademo is unproven; Herrera (no BQ data) is a distributor past his peak goal-scoring years. Sato's 5G in 17 apps introduces a profile the current squad genuinely lacks. His KP/90 (1.68) also competes with Díez (1.72) — the top creative rate in the group — so he is not merely a striker-substitute; he creates too. Note: Ander Herrera's 2026-27 data not yet in BQ.",
+
+  // Verdict dimensions
+  verdictDims: [
+    { label:"Player Quality / Level", score:8, tier:"High"   },
+    { label:"Positional Need",        score:7, tier:"High"   },
+    { label:"Style Compatibility",    score:7, tier:"High"   },
+    { label:"Level Adjustment",       score:8, tier:"High"   },
+    { label:"Form / Fitness",         score:8, tier:"High"   },
+    { label:"Financial Risk",         score:8, tier:"High"   },
+  ],
+  verdictText: "Sato is the rarest commodity in a midfield recruitment window: a midfielder who reliably scores. His 5G in 17 J1 appearances at 7.12 rating puts him at striker-level output while SofaScore codes him as M. At FC Tokyo he operates in a more advanced role than at Okayama, which explains the defensive volume drop — his interceptions and tackles fell sharply but his goal and chance-creation numbers rose in kind. Zaragoza's confirmed 2026-27 midfield has no player close to replicating this. Sign.",
+
+  // Text sections
+  playerProfile: `<p><strong>Profile: Goal-threat attacking midfielder.</strong> Ryunosuke Sato is a Japanese midfielder who has progressively moved into more advanced positions as his club quality has risen. At Fagiano Okayama in 2024-25 he operated in a deeper, more balanced role — 63 tackles, 12 interceptions, 2.77 tackles/90 — producing 5G across 28 apps (0.22 goals/90). After moving to FC Tokyo, a better-resourced J1 side playing with more possession (52.7%), he has been deployed further forward. The results are striking: 5G in just 17 apps (0.40/90), 2.32 shots/90, 1.68 key passes/90, and a 7.12 SofaScore average rating.</p>
+<p><strong>Goalscoring instinct.</strong> His 17.2% conversion rate (5G from 29 shots, 15 on target) is solid rather than clinical, but the volume of shots — 2.32/90 — is striker-level from a midfielder. In the Okayama season he managed 15.2% from 33 shots over 28 apps. The consistency of that output across two clubs and two seasons, despite a shifting positional role, suggests a genuine goalscoring profile rather than noise.</p>
+<p><strong>Passing and creation.</strong> His pass accuracy improved sharply from Okayama (75.7%) to FC Tokyo (81.2%), reflecting both the higher-quality environment and his more controlled, shorter-passing role in a possession team. Long-ball accuracy jumped from 25.9% to 46.7% — a significant improvement. Key passes/90 rose from 1.14 to 1.68. He is not just a finisher; he is a creator who also finishes.</p>
+<p><strong>Defensive contribution (context-dependent).</strong> His defensive numbers at FC Tokyo (1.60 tackles/90, 0.16 interceptions/90) look low relative to his Okayama numbers, but this is role-driven, not a regression. FC Tokyo uses him higher up the pitch in a possession system where defensive work is shared differently. At 1RFEF level, where Zaragoza tend to allow more counter-attacking space, he may be asked to do slightly more defensive work — his Okayama season proves he is capable of it when required.</p>`,
+
+  marketIntel: `<p><strong>No Transfermarkt entry found</strong> in BQ silver_squad — age, market value, and contract expiry are unknown. This is a genuine data gap that must be resolved before any approach. Likely possibilities: the player appears under a romanisation variant, or has no Transfermarkt profile (relatively common for J1 players outside the top scouted tier).</p>
+<p><strong>Fee expectation.</strong> J1 League players at mid-table clubs without an established Transfermarkt profile typically command modest fees — likely in the low six-figure to low seven-figure euro range unless there is significant domestic interest. FC Tokyo is a well-run club and will seek a fair price, but this is not a marquee Japanese export requiring premium outlay.</p>
+<p><strong>Competition risk.</strong> Unknown. No reports of European interest were available at report date. If Sato's current-season output (5G, 7.12 rating) is visible to European scouts, competition may emerge quickly — especially from other Spanish, Portuguese, or Belgian clubs that actively recruit from J1. The lack of a Transfermarkt profile may be temporarily suppressing visibility.</p>
+<p><strong>Recommended next step:</strong> Identify correct Transfermarkt profile and contract status; request SofaScore match-video access for at least 5 recent FC Tokyo appearances to assess positional movement, pressing triggers, and set-piece involvement.</p>`,
+
+  caveats: [
+    "Age and contract expiry unknown — no Transfermarkt entry found in BQ silver_squad. Must be resolved before any formal approach.",
+    "xG data not available in BQ for either Sato season — conversion quality cannot be assessed against expected output.",
+    "Yellows not populated in BQ for either season — discipline and card risk cannot be evaluated.",
+    "FC Tokyo aerial won/match estimated at 14.0 (J1 average approximation) — not available in team stats data.",
+    "Only 2 seasons of SofaScore data available (17 apps primary, 28 apps reference). Broader career arc — earlier clubs, youth career, injury history — is unknown.",
+    "Defensive numbers at FC Tokyo (0.16 interceptions/90) reflect an advanced positional role, not a ceiling. Okayama season (0.53/90) provides the defensive baseline. Do not use FC Tokyo figures to assess defensive work rate.",
+    "Style mismatch is moderate: FC Tokyo plays 456 passes/match vs Zaragoza's 376 — a 17% volume reduction. Adaptation period expected.",
+    "No video or qualitative scouting data included. Statistical profile should be supplemented with match footage before final recommendation."
+  ],
+  dataCoverageNote: "No Transfermarkt data in BQ silver_squad. Age, market value and contract unknown. Two SofaScore seasons available — FC Tokyo 2025-26 (primary, 17 apps) and Fagiano Okayama 2024-25 (reference, 28 apps).",
+};
+</script>
+
+<script>
+// ── Helpers ──────────────────────────────────────────────────────────────
+const RZ_BLUE = '#003087';
+const RZ_BLUE_MID = '#0050b3';
+const GREY = '#64748b';
+
+function tierClass(t) {
+  if (t === 'High')   return 'fill-high';
+  if (t === 'Medium') return 'fill-medium';
+  return 'fill-low';
+}
+function tagClass(t) {
+  if (t === 'High')   return 'tag-high';
+  if (t === 'Medium') return 'tag-medium';
+  return 'tag-low';
+}
+
+// ── Radar chart ──────────────────────────────────────────────────────────
+new Chart(document.getElementById('radarChart'), {
+  type: 'radar',
+  data: {
+    labels: REPORT.radar.labels,
+    datasets: [{
+      label: REPORT.player,
+      data: REPORT.radar.values,
+      backgroundColor: 'rgba(0,80,179,0.15)',
+      borderColor: RZ_BLUE_MID,
+      borderWidth: 2,
+      pointBackgroundColor: RZ_BLUE_MID,
+      pointRadius: 4,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: true,
+    scales: {
+      r: {
+        min: 0, max: 10,
+        ticks: { display: false, stepSize: 2 },
+        grid: { color: '#d1dce8' },
+        pointLabels: { font: { size: 10 }, color: '#4a5568' },
+        angleLines: { color: '#d1dce8' },
+      }
+    },
+    plugins: { legend: { display: false } }
+  }
+});
+
+// ── Stat buckets ─────────────────────────────────────────────────────────
+function renderStatGrid(containerId, items) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = items.map(s => `
+    <div class="stat-item">
+      <div class="stat-label">${s.label}</div>
+      <div class="stat-value">${s.value}</div>
+      <div class="stat-context">${s.context}</div>
+      <div class="stat-bar-wrap"><div class="stat-bar" style="width:${Math.min(s.barPct,100)}%"></div></div>
+    </div>`).join('');
+}
+renderStatGrid('attackingStats', REPORT.attacking);
+renderStatGrid('passingStats',   REPORT.passing);
+renderStatGrid('defensiveStats', REPORT.defensive);
+renderStatGrid('physicalStats',  REPORT.physical);
+
+// ── Team fit rows ─────────────────────────────────────────────────────────
+const tfEl = document.getElementById('teamFitRows');
+tfEl.innerHTML = REPORT.teamFit.map(r => {
+  const op = Math.round(r.origin / r.max * 100);
+  const dp = Math.round(r.dest   / r.max * 100);
+  return `
+  <div class="cmp-row">
+    <div class="cmp-label"><span>${r.label}</span><span></span></div>
+    <div class="cmp-bars">
+      <div class="cmp-bar-group">
+        <div class="cmp-bar-track"><div class="cmp-bar-fill bar-origin" style="width:${op}%"></div></div>
+      </div>
+      <div style="font-size:9px;color:#94a3b8;width:16px;text-align:center;">vs</div>
+      <div class="cmp-bar-group">
+        <div class="cmp-bar-track"><div class="cmp-bar-fill bar-dest" style="width:${dp}%"></div></div>
+      </div>
+      <div class="cmp-val" style="color:${GREY}">${r.origin}</div>
+      <div style="font-size:9px;color:#94a3b8;width:8px;text-align:center;">&middot;</div>
+      <div class="cmp-val" style="color:${RZ_BLUE_MID}">${r.dest}</div>
+    </div>
+  </div>`;
+}).join('');
+const sfEl = document.getElementById('styleFitLabel');
+sfEl.innerHTML = `<strong class="${tagClass(REPORT.styleFitScore)}" style="padding:1px 6px;border-radius:4px;">${REPORT.styleFitScore}</strong> — ${REPORT.styleFitNote}`;
+
+// ── League chart ─────────────────────────────────────────────────────────
+new Chart(document.getElementById('leagueChart'), {
+  type: 'bar',
+  data: {
+    labels: REPORT.leagueData.labels,
+    datasets: [
+      { label: REPORT.originLeague, data: REPORT.leagueData.origin, backgroundColor: GREY + 'cc', borderRadius: 3 },
+      { label: REPORT.destLeague,   data: REPORT.leagueData.dest,   backgroundColor: RZ_BLUE_MID + 'cc', borderRadius: 3 },
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { font: { size: 10 }, boxWidth: 10 } } },
+    scales: {
+      x: { ticks: { font: { size: 9 } }, grid: { display: false } },
+      y: { ticks: { font: { size: 9 } }, grid: { color: '#e2e8f0' } }
+    }
+  }
+});
+document.getElementById('levelAdjLabel').innerHTML = `<strong>${REPORT.levelAdjustment}</strong>`;
+document.getElementById('leagueAdjText').textContent = REPORT.leagueAdjText;
+
+// ── Squad table ───────────────────────────────────────────────────────────
+const thead = document.getElementById('squadTableHead');
+const tbody = document.getElementById('squadTableBody');
+thead.innerHTML = REPORT.squadHeaders.map((h,i) => `<th${i===0?' style="text-align:left"':''}>${h}</th>`).join('');
+tbody.innerHTML = REPORT.squadRows.map(r =>
+  `<tr${r.highlight?' class="highlight"':''}>
+    <td>${r.name}</td>
+    ${r.cols.map(c=>`<td>${c}</td>`).join('')}
+  </tr>`
+).join('') || '<tr><td colspan="8" style="color:#94a3b8;padding:10px 6px;text-align:center;">No data in current BQ coverage</td></tr>';
+document.getElementById('squadAssessment').textContent = REPORT.squadAssessment;
+
+// ── Verdict dimensions ────────────────────────────────────────────────────
+const vdEl = document.getElementById('verdictDims');
+vdEl.innerHTML = REPORT.verdictDims.map(d => `
+  <div class="dim-row">
+    <div class="dim-label">${d.label}</div>
+    <div class="dim-track"><div class="dim-fill ${tierClass(d.tier)}" style="width:${d.score*10}%"></div></div>
+    <div class="dim-score">${d.score}</div>
+    <span class="dim-tag ${tagClass(d.tier)}">${d.tier}</span>
+  </div>`).join('');
+
+// ── Text sections ─────────────────────────────────────────────────────────
+document.getElementById('playerProfile').innerHTML = REPORT.playerProfile;
+document.getElementById('marketIntel').innerHTML   = REPORT.marketIntel;
+document.getElementById('squadAssessment').textContent = REPORT.squadAssessment;
+
+const cl = document.getElementById('caveatList');
+cl.innerHTML = REPORT.caveats.map(c => `<li>${c}</li>`).join('');
+
+if (REPORT.dataCoverageNote) {
+  const dc = document.getElementById('dataCoverageNote');
+  dc.style.display = 'block';
+  dc.innerHTML = `<strong>Data coverage:</strong> ${REPORT.dataCoverageNote}`;
+}
+</script>
+</body>
+</html>
