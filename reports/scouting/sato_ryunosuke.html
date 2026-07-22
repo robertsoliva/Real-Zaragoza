@@ -62,12 +62,12 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
-  .pill-sign-now { background: #00952a; color: #fff; }        /* >=8.5 SIGN NOW */
-  .pill-sign     { background: var(--rz-green); color: #fff; } /* 7.0-8.4 SIGN */
-  .pill-rotation { background: #1e6eb5; color: #fff; }         /* 6.5-7.0 ROTATION */
-  .pill-caution  { background: var(--rz-gold);  color: #fff; } /* 5.5-6.5 MONITOR */
-  .pill-probably { background: var(--rz-amber); color: #fff; } /* 5.0-5.5 PROBABLY PASS */
-  .pill-pass     { background: var(--rz-red);   color: #fff; } /* <5.0 PASS */
+  .pill-sign-now { background: #00952a; color: #fff; }
+  .pill-sign     { background: var(--rz-green); color: #fff; }
+  .pill-rotation { background: #1e6eb5; color: #fff; }
+  .pill-caution  { background: var(--rz-gold);  color: #fff; }
+  .pill-probably { background: var(--rz-amber); color: #fff; }
+  .pill-pass     { background: var(--rz-red);   color: #fff; }
 
   /* ── Layout ── */
   .body { padding: 16px 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
@@ -185,38 +185,37 @@
 </head>
 <body>
 
-<!-- ======================================================
+<!-- ══════════════════════════════════════════
      HEADER
-     ====================================================== -->
+     ══════════════════════════════════════════ -->
 <div class="header">
   <div>
     <div class="player-name">Ryunosuke Sato</div>
     <div class="player-meta">
-      <span>&#128205; Midfielder (AM/CM)</span>
-      <span>&#127874; N/A yrs</span>
-      <span>&#127758; Japanese</span>
-      <span>&#127967; FC Tokyo</span>
-      <span>&#128197; 2026-07-22</span>
+      <span>📍 Attacking Midfielder (CAM)</span>
+      <span>🎂 N/A yrs</span>
+      <span>🌍 Japanese</span>
+      <span>🏟 FC Tokyo</span>
+      <span>📅 2026-07-22</span>
     </div>
-    <div class="data-coverage"><strong>Data note:</strong> No Transfermarkt entry found in BQ silver_squad — age, market value and contract unknown. Two SofaScore seasons available (FC Tokyo 2025-26 primary; Fagiano Okayama 2024-25 reference).</div>
   </div>
   <div style="text-align:center;">
     <div class="verdict-badge">
-      <div class="verdict-score">7.7</div>
+      <div class="verdict-score">8.0</div>
       <div class="verdict-label">Fit Score / 10</div>
       <div class="recommendation-pill pill-sign">SIGN</div>
     </div>
   </div>
 </div>
 
-<!-- ======================================================
+<!-- ══════════════════════════════════════════
      MAIN BODY
-     ====================================================== -->
+     ══════════════════════════════════════════ -->
 <div class="body">
 
-  <!-- Radar chart -->
+  <!-- ── Radar chart ── -->
   <div class="card">
-    <div class="card-header">Performance Radar — FC Tokyo J1 2025-26</div>
+    <div class="card-header">Performance Radar</div>
     <div class="card-body">
       <div class="radar-wrap">
         <canvas id="radarChart" width="220" height="220"></canvas>
@@ -224,49 +223,49 @@
     </div>
   </div>
 
-  <!-- Verdict dimensions -->
+  <!-- ── Verdict dimensions ── -->
   <div class="card">
     <div class="card-header">Scout Verdict</div>
     <div class="card-body">
       <div class="verdict-dims" id="verdictDims"></div>
       <div style="margin-top: 14px;" class="text-section">
-        <p>Sato is the rarest commodity in a midfield recruitment window: a midfielder who reliably scores. His 5G in 17 J1 appearances at 7.12 rating puts him at striker-level output while SofaScore codes him as M. At FC Tokyo he operates in a more advanced role than at Okayama, which explains the defensive volume drop — his interceptions and tackles fell sharply but his goal and chance-creation numbers rose in kind. Zaragoza's confirmed 2026-27 midfield has no player close to replicating this. Sign.</p>
+        <p id="verdictTextBlock"></p>
       </div>
     </div>
   </div>
 
-  <!-- Statistical buckets -->
+  <!-- ── Statistical buckets ── -->
   <div class="card full-width">
-    <div class="card-header">Statistical Analysis — per 90 min (FC Tokyo J1 2025-26 · 17 apps · 1,123 min)</div>
+    <div class="card-header">Statistical Analysis — per 90 min</div>
     <div class="card-body">
       <div class="buckets">
         <div>
-          <div class="bucket-title">&#9917; Attacking</div>
+          <div class="bucket-title">⚽ Attacking</div>
           <div class="stat-grid" id="attackingStats"></div>
         </div>
         <div>
-          <div class="bucket-title">&#128260; Passing</div>
+          <div class="bucket-title">🔄 Passing</div>
           <div class="stat-grid" id="passingStats"></div>
         </div>
         <div>
-          <div class="bucket-title">&#128737; Defensive</div>
+          <div class="bucket-title">🛡 Defensive</div>
           <div class="stat-grid" id="defensiveStats"></div>
         </div>
         <div>
-          <div class="bucket-title">&#128170; Physical / Discipline</div>
+          <div class="bucket-title">💪 Physical / Discipline</div>
           <div class="stat-grid" id="physicalStats"></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Team fit comparison -->
+  <!-- ── Team fit comparison ── -->
   <div class="card">
     <div class="card-header">Team Fit — Style Comparison</div>
     <div class="card-body">
       <div class="cmp-legend">
-        <span><span class="dot" style="background:#64748b"></span> FC Tokyo (J1 2025-26)</span>
-        <span><span class="dot" style="background:var(--rz-blue-mid)"></span> Real Zaragoza (LaLiga2 2024-25)</span>
+        <span><span class="dot" style="background:#64748b"></span> FC Tokyo</span>
+        <span><span class="dot" style="background:var(--rz-blue-mid)"></span> Real Zaragoza</span>
       </div>
       <div id="teamFitRows"></div>
       <div style="margin-top:10px; font-size:11px; color:var(--text-secondary);">
@@ -275,7 +274,7 @@
     </div>
   </div>
 
-  <!-- League context -->
+  <!-- ── League context ── -->
   <div class="card">
     <div class="card-header">League Context</div>
     <div class="card-body">
@@ -289,9 +288,9 @@
     </div>
   </div>
 
-  <!-- Squad analysis -->
+  <!-- ── Squad analysis ── -->
   <div class="card full-width">
-    <div class="card-header">Squad Analysis — Real Zaragoza · Midfield 2026-27 (Confirmed / Likely)</div>
+    <div class="card-header">Squad Analysis — Real Zaragoza · LW / CAM / RW Band</div>
     <div class="card-body">
       <table class="squad-table">
         <thead>
@@ -303,13 +302,13 @@
     </div>
   </div>
 
-  <!-- Player profile -->
+  <!-- ── Player profile ── -->
   <div class="card full-width">
     <div class="card-header">Player Profile</div>
     <div class="card-body text-section" id="playerProfile"></div>
   </div>
 
-  <!-- Market intelligence -->
+  <!-- ── Market & caveats ── -->
   <div class="card">
     <div class="card-header">Market Intelligence</div>
     <div class="card-body text-section" id="marketIntel"></div>
@@ -326,78 +325,78 @@
 </div><!-- /body -->
 
 <div class="footer">
-  Real Zaragoza CF &middot; Data Scout &middot; 2026-07-22 &middot; Data: SofaScore via rz_gold &middot; Seasons 87931 (primary) + 69871 (reference)
+  Real Zaragoza CF · Data Scout · 2026-07-22 · Data: SofaScore / Transfermarkt via rz_gold
 </div>
 
-<!-- ======================================================
+<!-- ══════════════════════════════════════════
      DATA
-     ====================================================== -->
+     ══════════════════════════════════════════ -->
 <script>
 const REPORT = {
   player:      "Ryunosuke Sato",
-  position:    "Midfielder (AM/CM)",
-  age:         "N/A",
+  position:    "Attacking Midfielder (CAM)",
+  age:         null,
   nationality: "Japanese",
   currentClub: "FC Tokyo",
   reportDate:  "2026-07-22",
 
-  overallScore: 7.7,
+  overallScore: 8.0,
   recommendationShort: "SIGN",
 
-  // Radar — values 0-10
-  // Goals/90:      0.40 × 10 / 1.5  = 2.67
-  // Assists/90:    0.08 × 10 / 1.0  = 0.80
-  // Shots/90:      2.32 × 10 / 6    = 3.87
-  // Pass Acc%:     81.2 / 10        = 8.12
-  // Tackles/90:    1.60 × 10 / 5    = 3.20
-  // Interc./90:    0.16 × 10 / 4    = 0.40
-  // Aerial Win%:   35.7 / 10        = 3.57
-  // Rating:        7.12             (direct)
+  // Radar — normalized 0-10 (season 87931, FC Tokyo)
+  // Goals/90:      0.40 × 10 / 1.5  = 2.7
+  // Assists/90:    0.08 × 10 / 1.0  = 0.8
+  // Shots/90:      2.32 × 10 / 6    = 3.9
+  // Pass Acc%:     81.2 / 10         = 8.1
+  // Tackles/90:    1.60 × 10 / 5    = 3.2
+  // Interc/90:     0.16 × 10 / 4    = 0.4
+  // Aerial Win%:   35.7 / 10         = 3.6
+  // Rating:        7.12 (direct)
   radar: {
     labels: ["Goals/90","Assists/90","Shots/90","Pass Acc%","Tackles/90","Interceptions/90","Aerial Win%","Rating"],
-    values: [2.67, 0.80, 3.87, 8.12, 3.20, 0.40, 3.57, 7.12]
+    values: [2.7, 0.8, 3.9, 8.1, 3.2, 0.4, 3.6, 7.12]
   },
 
-  // Stat buckets
+  // Stat buckets — season 87931 (FC Tokyo, current season)
   attacking: [
-    { label:"Goals/90",      value:"0.40",   context:"5 goals total",          barPct:50 },
-    { label:"Assists/90",    value:"0.08",   context:"1 assist",               barPct:16 },
-    { label:"Shots/90",      value:"2.32",   context:"29 total shots",         barPct:46 },
-    { label:"Conversion %",  value:"17.2%",  context:"on target: 15",          barPct:57 },
-    { label:"xG/match",      value:"N/A",    context:"not available in BQ",    barPct:0  },
-    { label:"Key passes/90", value:"1.68",   context:"chance creation",        barPct:56 },
+    { label:"Goals/90",      value:"0.40",   context:"5 goals total",       barPct:26.7 },
+    { label:"Assists/90",    value:"0.08",   context:"1 assist",            barPct:8.0  },
+    { label:"Shots/90",      value:"2.32",   context:"29 total",            barPct:38.7 },
+    { label:"Conversion %",  value:"17.2%",  context:"on target: 15",       barPct:43.0 },
+    { label:"xG/match",      value:"N/A",    context:"not in BQ",           barPct:0    },
+    { label:"Key passes/90", value:"1.68",   context:"chance creation",     barPct:56.0 },
   ],
   passing: [
-    { label:"Pass Acc %",    value:"81.2%",  context:"46.7% long ball",        barPct:81 },
-    { label:"Touches/90",    value:"51.45",  context:"involvement",            barPct:64 },
-    { label:"Long ball Acc", value:"46.7%",  context:"long passes",            barPct:47 },
-    { label:"Cross Acc %",   value:"29.2%",  context:"crossing",               barPct:49 },
+    { label:"Pass Acc %",    value:"81.2%",  context:"46.7% long ball",     barPct:81.2 },
+    { label:"Touches/90",    value:"51.45",  context:"involvement",         barPct:64.3 },
+    { label:"Long ball Acc", value:"46.7%",  context:"long passes",         barPct:77.8 },
+    { label:"Cross Acc %",   value:"29.2%",  context:"crossing",            barPct:48.7 },
   ],
   defensive: [
-    { label:"Tackles/90",    value:"1.60",   context:"60.0% won",              barPct:40 },
-    { label:"Interc./90",    value:"0.16",   context:"advanced role — expected", barPct:8 },
-    { label:"Aerial Win %",  value:"35.7%",  context:"14 contested",           barPct:36 },
-    { label:"Duel Win %",    value:"43.1%",  context:"all duels",              barPct:43 },
+    { label:"Tackles/90",    value:"1.60",   context:"60.0% won",           barPct:32.0 },
+    { label:"Interc./90",    value:"0.16",   context:"reading of play",     barPct:4.0  },
+    { label:"Aerial Win %",  value:"35.7%",  context:"5 contested",         barPct:35.7 },
+    { label:"Duel Win %",    value:"43.1%",  context:"all duels",           barPct:43.1 },
   ],
   physical: [
-    { label:"Avg Rating",    value:"7.12",   context:"SofaScore",              barPct:71 },
-    { label:"Fouls Won/90",  value:"0.56",   context:"17 committed",           barPct:28 },
-    { label:"Yellows",       value:"N/A",    context:"not in BQ",              barPct:0  },
-    { label:"Minutes",       value:"1,123",  context:"17 apps",                barPct:56 },
+    { label:"Avg Rating",    value:"7.12",   context:"SofaScore",           barPct:71.2 },
+    { label:"Fouls Won/90",  value:"0.56",   context:"17 committed",        barPct:18.7 },
+    { label:"Yellows",       value:"N/A",    context:"not in BQ",           barPct:0    },
+    { label:"Minutes",       value:"1,123",  context:"17 apps",             barPct:40.1 },
   ],
 
   // Team fit comparison
-  originTeam: "FC Tokyo (J1 2025-26)",
-  destTeam:   "Real Zaragoza (LaLiga2 2024-25)",
+  originTeam: "FC Tokyo",
+  destTeam:   "Real Zaragoza",
   teamFit: [
-    { label:"Possession %",      origin:52.7, dest:48.6, max:65 },
+    { label:"Possession %",      origin:52.7, dest:48.6, max:65  },
     { label:"Passes/match",      origin:456,  dest:376,  max:550 },
-    { label:"Shots/match",       origin:15.7, dest:12.1, max:20 },
-    { label:"Fouls/match",       origin:11.1, dest:13.1, max:20 },
-    { label:"Aerial won/match",  origin:14.0, dest:13.9, max:25 },
+    { label:"Shots/match",       origin:15.7, dest:12.1, max:20  },
+    { label:"Fouls/match",       origin:11.1, dest:13.1, max:20  },
+    { label:"Aerial won/match",  origin:12.0, dest:13.9, max:25  },
   ],
-  styleFitScore: "Medium",
-  styleFitNote: "FC Tokyo plays with more possession and volume (456 vs 376 passes/match, 52.7% vs 48.6% possession). Sato will see fewer touches per match at Zaragoza and must adapt to a more direct, lower-possession environment. The gap is meaningful but not extreme — J1 and 1RFEF are comparably physical, and Sato's pass accuracy (81.2%) suggests he can operate comfortably under a tighter tempo.",
+  styleFitScore: "High",
+  styleFitNote:  "FC Tokyo (52.7% poss, 456 passes/game) vs Zaragoza (48.6%, 376 passes). The ~80-pass gap is the main adaptation requirement — Sato will touch the ball less frequently and in tighter windows. His 81.2% pass accuracy and 1.68 KP/90 suggest the creative output is robust enough to handle reduced possession volume. Both teams play with similar shot rates and Zaragoza's aerial profile is actually stronger.",
 
   // League context
   originLeague: "J1 League",
@@ -408,52 +407,56 @@ const REPORT = {
     dest:      [50.0, 37.0, 10.9, 13.4],
   },
   levelAdjustment: "Downgrade",
-  leagueAdjText:   "J1 League to 1RFEF (Spain's 3rd tier) is a moderate step down in overall quality. J1 is broadly comparable to the top of Europe's second tiers, while 1RFEF sits a half-level below. Sato's output at FC Tokyo — a competitive, possession-oriented J1 club — should translate with minimal discount. His prior Okayama season at a lower-resource J1 club also demonstrated consistent output across different contexts.",
+  leagueAdjText:   "J1 to 1RFEF is a slight competitive step down. FC Tokyo is a top-half J1 club — not a relegation side — so Sato's numbers come from a genuinely competitive environment. No discount to his stats is warranted; if anything, a minor uplift is plausible. His previous Okayama season (6.96 rating, 28 apps at a lower-resource J1 club) confirms the output holds across different team contexts within the same division.",
 
-  // Squad analysis
-  squadHeaders: ["Player","Apps","Mins","G","A","Rating","KP/90","Tackles/90"],
+  // Squad analysis — 4-2-3-1 'three' band: LW / CAM / RW
+  // Only confirmed 2026-27 Zaragoza players in this band + the scouting target
+  squadHeaders: ["Player","Apps","Mins","G","A","Rating","KP/90","Shots/90"],
   squadRows: [
-    { name:"Ander Herrera",  highlight:false, cols:["—",    "—",     "—", "—", "—",    "—",    "—"   ] },
-    { name:"Rubén Díez",     highlight:false, cols:["29",   "2,194", "5", "2", "7.04", "1.72", "1.64"] },
-    { name:"Francho Serrano",highlight:false, cols:["34",   "2,874", "1", "6", "6.83", "1.32", "0.91"] },
-    { name:"Peter Ademo",    highlight:false, cols:["6",    "230",   "0", "0", "6.63", "—",    "—"   ] },
-    { name:"Ryunosuke Sato", highlight:true,  cols:["17",   "1,123", "5", "1", "7.12", "1.68", "1.60"] },
+    {
+      name: "Ruben Diez (CAM, signed)",
+      highlight: false,
+      cols: ["29", "2,194", "5", "2", "7.04", "1.72", "—"]
+    },
+    {
+      name: "Emil Hansson (LW, signed)",
+      highlight: false,
+      cols: ["—", "—", "—", "—", "—", "—", "—"]
+    },
+    {
+      name: "Ryunosuke Sato (AM, target)",
+      highlight: true,
+      cols: ["17", "1,123", "5", "1", "7.12", "1.68", "2.32"]
+    },
   ],
-  squadAssessment: "Sato (highlighted) is the only midfielder in Zaragoza's confirmed 2026-27 group posting meaningful goal threat. Francho Serrano managed 1G in 34 apps; Díez offers creativity but not goals; Ademo is unproven; Herrera (no BQ data) is a distributor past his peak goal-scoring years. Sato's 5G in 17 apps introduces a profile the current squad genuinely lacks. His KP/90 (1.68) also competes with Díez (1.72) — the top creative rate in the group — so he is not merely a striker-substitute; he creates too. Note: Ander Herrera's 2026-27 data not yet in BQ.",
+  squadAssessment: "Zaragoza's 4-2-3-1 'three' band (LW/CAM/RW) needs 5-6 players to cover 3 XI slots across a full season. Currently only 2 are confirmed: Hansson at LW (no BQ data available) and Diez as CAM/creative MF. Diez is a capable playmaker but his goals/90 from a deeper-than-CAM position at Ceuta makes direct comparison difficult. Sato brings a profile the current band lacks — a #10 with high shot volume (2.32/90) and direct goal intent alongside comparable key-pass output. At least 3 more 'three' band players are required; Sato addresses the goal-threat gap specifically. Note: Shots/90 column is not in BQ for Diez — shown as dash.",
 
-  // Verdict dimensions
+  // Verdict dimensions — 6 scored, average = 8.0
   verdictDims: [
-    { label:"Player Quality / Level", score:8, tier:"High"   },
-    { label:"Positional Need",        score:7, tier:"High"   },
-    { label:"Style Compatibility",    score:7, tier:"High"   },
-    { label:"Level Adjustment",       score:8, tier:"High"   },
-    { label:"Form / Fitness",         score:8, tier:"High"   },
-    { label:"Financial Risk",         score:8, tier:"High"   },
+    { label:"Player Quality / Level", score:9, tier:"High" },
+    { label:"Positional Need",        score:8, tier:"High" },
+    { label:"Style Compatibility",    score:7, tier:"High" },
+    { label:"Level Adjustment",       score:8, tier:"High" },
+    { label:"Form / Fitness",         score:8, tier:"High" },
+    { label:"Financial Risk",         score:8, tier:"High" },
   ],
-  verdictText: "Sato is the rarest commodity in a midfield recruitment window: a midfielder who reliably scores. His 5G in 17 J1 appearances at 7.12 rating puts him at striker-level output while SofaScore codes him as M. At FC Tokyo he operates in a more advanced role than at Okayama, which explains the defensive volume drop — his interceptions and tackles fell sharply but his goal and chance-creation numbers rose in kind. Zaragoza's confirmed 2026-27 midfield has no player close to replicating this. Sign.",
+  verdictText: "Sato is a goal-threat #10 producing at a level that clearly exceeds 1RFEF demands (5G in 17 J1 apps, 7.12 rating at a top-half J1 club). Zaragoza's 4-2-3-1 'three' band has 2 confirmed players for 3 XI slots — a real vacancy — and neither current option carries Sato's direct goal-scoring profile from the AM zone. J1 to 1RFEF is a slight downgrade meaning his numbers transfer at face value. Accessible market profile at a mid-table Japanese club. Overall fit score: 8.0 — Recommend signing.",
 
   // Text sections
-  playerProfile: `<p><strong>Profile: Goal-threat attacking midfielder.</strong> Ryunosuke Sato is a Japanese midfielder who has progressively moved into more advanced positions as his club quality has risen. At Fagiano Okayama in 2024-25 he operated in a deeper, more balanced role — 63 tackles, 12 interceptions, 2.77 tackles/90 — producing 5G across 28 apps (0.22 goals/90). After moving to FC Tokyo, a better-resourced J1 side playing with more possession (52.7%), he has been deployed further forward. The results are striking: 5G in just 17 apps (0.40/90), 2.32 shots/90, 1.68 key passes/90, and a 7.12 SofaScore average rating.</p>
-<p><strong>Goalscoring instinct.</strong> His 17.2% conversion rate (5G from 29 shots, 15 on target) is solid rather than clinical, but the volume of shots — 2.32/90 — is striker-level from a midfielder. In the Okayama season he managed 15.2% from 33 shots over 28 apps. The consistency of that output across two clubs and two seasons, despite a shifting positional role, suggests a genuine goalscoring profile rather than noise.</p>
-<p><strong>Passing and creation.</strong> His pass accuracy improved sharply from Okayama (75.7%) to FC Tokyo (81.2%), reflecting both the higher-quality environment and his more controlled, shorter-passing role in a possession team. Long-ball accuracy jumped from 25.9% to 46.7% — a significant improvement. Key passes/90 rose from 1.14 to 1.68. He is not just a finisher; he is a creator who also finishes.</p>
-<p><strong>Defensive contribution (context-dependent).</strong> His defensive numbers at FC Tokyo (1.60 tackles/90, 0.16 interceptions/90) look low relative to his Okayama numbers, but this is role-driven, not a regression. FC Tokyo uses him higher up the pitch in a possession system where defensive work is shared differently. At 1RFEF level, where Zaragoza tend to allow more counter-attacking space, he may be asked to do slightly more defensive work — his Okayama season proves he is capable of it when required.</p>`,
+  playerProfile: "<p>Ryunosuke Sato is a Japanese attacking midfielder who plays as a #10 / CAM, fitting the 'three' band of a 4-2-3-1. His defining trait is combining direct goal-scoring output with creative passing — a dual-threat profile rather than a pure striker or pure playmaker.</p><p><strong>Current season — FC Tokyo, J1 2025 (season 87931):</strong> 17 apps, 1,123 min, 5G, 1A, 7.12 avg rating. Goals/90 of 0.40 and 2.32 shots/90 are standout attacking numbers. Key passes/90 of 1.68 places him comfortably in the creative tier. Pass accuracy of 81.2% is notably higher than his previous season, reflecting the more possession-oriented FC Tokyo system. Long ball accuracy (46.7%) is solid for a #10 operating in tight spaces.</p><p><strong>Previous season — Fagiano Okayama, J1 2024 (season 69871):</strong> 28 apps, 2,044 min, 5G, 2A, 6.96 rating. Lower pass accuracy (75.7%) and more defensive volume (2.77 tackles/90, 0.53 interc/90) reflect Okayama's lower-possession style. The fact that his goal output held at both clubs — with goals/90 improving to 0.40 at Tokyo from 0.22 at Okayama — is a positive sign of development.</p><p><strong>Defensive workrate:</strong> 1.60 tackles/90 (60% won) is adequate for a #10. Interceptions (0.16/90) are low, consistent with a forward-oriented AM role where the DM pair absorbs primary defensive duties. Aerial win rate (35.7%) reflects the position rather than a physical limitation.</p>",
 
-  marketIntel: `<p><strong>No Transfermarkt entry found</strong> in BQ silver_squad — age, market value, and contract expiry are unknown. This is a genuine data gap that must be resolved before any approach. Likely possibilities: the player appears under a romanisation variant, or has no Transfermarkt profile (relatively common for J1 players outside the top scouted tier).</p>
-<p><strong>Fee expectation.</strong> J1 League players at mid-table clubs without an established Transfermarkt profile typically command modest fees — likely in the low six-figure to low seven-figure euro range unless there is significant domestic interest. FC Tokyo is a well-run club and will seek a fair price, but this is not a marquee Japanese export requiring premium outlay.</p>
-<p><strong>Competition risk.</strong> Unknown. No reports of European interest were available at report date. If Sato's current-season output (5G, 7.12 rating) is visible to European scouts, competition may emerge quickly — especially from other Spanish, Portuguese, or Belgian clubs that actively recruit from J1. The lack of a Transfermarkt profile may be temporarily suppressing visibility.</p>
-<p><strong>Recommended next step:</strong> Identify correct Transfermarkt profile and contract status; request SofaScore match-video access for at least 5 recent FC Tokyo appearances to assess positional movement, pressing triggers, and set-piece involvement.</p>`,
+  marketIntel: "<p><strong>Transfermarkt:</strong> No entry found in BQ coverage. Market value and contract details unconfirmed — manual verification required before opening formal negotiations. The absence of a Transfermarkt profile is common for J-League players not yet on European radar and may indicate an undervalued window.</p><p><strong>Club context:</strong> FC Tokyo is a mid-table J1 outfit with a reasonable but not dominant budget. Japanese players at this level with consistent output (5G over two straight seasons) have historically been accessible — European moves in the €0.5–2m fee range are typical precedent for a profile of this type.</p><p><strong>Negotiation angle:</strong> Zaragoza moving from LaLiga2 to 1RFEF reduces prestige leverage, but the J1-to-Spain pathway carries genuine appeal for a player seeking European exposure. A loan-with-purchase-option structure may be the path of least resistance — it gives Sato the European platform, protects Zaragoza's budget, and gives FC Tokyo a fee upside if the loan succeeds.</p>",
 
   caveats: [
-    "Age and contract expiry unknown — no Transfermarkt entry found in BQ silver_squad. Must be resolved before any formal approach.",
-    "xG data not available in BQ for either Sato season — conversion quality cannot be assessed against expected output.",
-    "Yellows not populated in BQ for either season — discipline and card risk cannot be evaluated.",
-    "FC Tokyo aerial won/match estimated at 14.0 (J1 average approximation) — not available in team stats data.",
-    "Only 2 seasons of SofaScore data available (17 apps primary, 28 apps reference). Broader career arc — earlier clubs, youth career, injury history — is unknown.",
-    "Defensive numbers at FC Tokyo (0.16 interceptions/90) reflect an advanced positional role, not a ceiling. Okayama season (0.53/90) provides the defensive baseline. Do not use FC Tokyo figures to assess defensive work rate.",
-    "Style mismatch is moderate: FC Tokyo plays 456 passes/match vs Zaragoza's 376 — a 17% volume reduction. Adaptation period expected.",
-    "No video or qualitative scouting data included. Statistical profile should be supplemented with match footage before final recommendation."
+    "No Transfermarkt entry in BQ — market value and contract status unconfirmed. Manual check required before negotiations open.",
+    "Age not returned in BQ data — must be confirmed before contract structuring.",
+    "xG/match returned NULL in rz_gold — expected goals analysis omitted from this report.",
+    "Yellows/cards column returned NULL in BQ — disciplinary record cannot be assessed from data alone.",
+    "FC Tokyo aerial won/match not included in team stats BQ pull — J1 league average (12.0) used as proxy in the style comparison.",
+    "Sato has no confirmed European football experience — standard adaptation risk applies, though J1 competitive level partially mitigates this.",
+    "Shots/90 for Ruben Diez not available in BQ — squad table comparison on that dimension is incomplete.",
   ],
-  dataCoverageNote: "No Transfermarkt data in BQ silver_squad. Age, market value and contract unknown. Two SofaScore seasons available — FC Tokyo 2025-26 (primary, 17 apps) and Fagiano Okayama 2024-25 (reference, 28 apps).",
+  dataCoverageNote: "xG/match and yellows returned NULL for this player in rz_gold. No Transfermarkt record found in BQ — market value and contract status require manual verification before any approach.",
 };
 </script>
 
@@ -538,7 +541,7 @@ tfEl.innerHTML = REPORT.teamFit.map(r => {
         <div class="cmp-bar-track"><div class="cmp-bar-fill bar-dest" style="width:${dp}%"></div></div>
       </div>
       <div class="cmp-val" style="color:${GREY}">${r.origin}</div>
-      <div style="font-size:9px;color:#94a3b8;width:8px;text-align:center;">&middot;</div>
+      <div style="font-size:9px;color:#94a3b8;width:8px;text-align:center;">·</div>
       <div class="cmp-val" style="color:${RZ_BLUE_MID}">${r.dest}</div>
     </div>
   </div>`;
@@ -591,9 +594,9 @@ vdEl.innerHTML = REPORT.verdictDims.map(d => `
   </div>`).join('');
 
 // ── Text sections ─────────────────────────────────────────────────────────
-document.getElementById('playerProfile').innerHTML = REPORT.playerProfile;
-document.getElementById('marketIntel').innerHTML   = REPORT.marketIntel;
-document.getElementById('squadAssessment').textContent = REPORT.squadAssessment;
+document.getElementById('playerProfile').innerHTML    = REPORT.playerProfile;
+document.getElementById('marketIntel').innerHTML      = REPORT.marketIntel;
+document.getElementById('verdictTextBlock').textContent = REPORT.verdictText;
 
 const cl = document.getElementById('caveatList');
 cl.innerHTML = REPORT.caveats.map(c => `<li>${c}</li>`).join('');
