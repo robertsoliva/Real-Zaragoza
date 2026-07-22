@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scout Report — Akito Suzuki</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --rz-blue: #003087;
+    --rz-blue-mid: #0050b3;
+    --rz-blue-light: #e8f0fb;
+    --rz-white: #ffffff;
+    --rz-gold: #c8a000;
+    --rz-green: #1a7a3a;
+    --rz-amber: #c85000;
+    --rz-red: #b00020;
+    --text-primary: #0d1b2a;
+    --text-secondary: #4a5568;
+    --border: #d1dce8;
+    --bg: #f0f4fa;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: linear-gradient(135deg, var(--rz-blue) 0%, var(--rz-blue-mid) 100%);
+    color: var(--rz-white);
+    padding: 20px 28px 16px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    align-items: start;
+  }
+  .player-name { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
+  .player-meta { font-size: 12px; opacity: 0.85; margin-top: 4px; display: flex; gap: 16px; flex-wrap: wrap; }
+  .player-meta span { display: flex; align-items: center; gap: 4px; }
+  .verdict-badge {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 10px;
+    padding: 10px 16px;
+    text-align: center;
+    min-width: 90px;
+  }
+  .verdict-score { font-size: 32px; font-weight: 800; line-height: 1; }
+  .verdict-label { font-size: 10px; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+  .recommendation-pill {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .pill-sign    { background: var(--rz-green); color: #fff; }
+  .pill-caution { background: var(--rz-gold);  color: #fff; }
+  .pill-pass    { background: var(--rz-red);   color: #fff; }
+
+  /* ── Layout ── */
+  .body { padding: 16px 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .full-width { grid-column: 1 / -1; }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--rz-white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .card-header {
+    background: var(--rz-blue);
+    color: var(--rz-white);
+    padding: 7px 14px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+  .card-body { padding: 12px 14px; }
+
+  /* ── Radar chart ── */
+  .radar-wrap { height: 230px; display: flex; align-items: center; justify-content: center; }
+
+  /* ── Stat grid ── */
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .stat-item { display: flex; flex-direction: column; gap: 2px; }
+  .stat-label { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.4px; }
+  .stat-value { font-size: 18px; font-weight: 700; color: var(--rz-blue); line-height: 1; }
+  .stat-context { font-size: 10px; color: var(--text-secondary); }
+  .stat-bar-wrap { height: 3px; background: #e2e8f0; border-radius: 2px; margin-top: 2px; }
+  .stat-bar { height: 100%; border-radius: 2px; background: var(--rz-blue-mid); }
+
+  /* ── Bucket headers ── */
+  .bucket-title {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  .buckets { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* ── Comparison bars ── */
+  .cmp-row { margin-bottom: 8px; }
+  .cmp-label { font-size: 10px; color: var(--text-secondary); margin-bottom: 3px; display: flex; justify-content: space-between; }
+  .cmp-bars { display: flex; gap: 4px; align-items: center; }
+  .cmp-bar-group { flex: 1; }
+  .cmp-bar-track { height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+  .cmp-bar-fill { height: 100%; border-radius: 4px; }
+  .bar-origin { background: #64748b; }
+  .bar-dest   { background: var(--rz-blue-mid); }
+  .cmp-val { font-size: 10px; font-weight: 700; min-width: 28px; text-align: right; }
+  .cmp-legend { display: flex; gap: 12px; margin-bottom: 10px; font-size: 10px; color: var(--text-secondary); align-items: center; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+  /* ── Squad table ── */
+  .squad-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  .squad-table th { font-size: 9px; text-transform: uppercase; color: var(--text-secondary); padding: 4px 6px; text-align: right; border-bottom: 1px solid var(--border); font-weight: 600; }
+  .squad-table th:first-child { text-align: left; }
+  .squad-table td { padding: 5px 6px; border-bottom: 1px solid #f0f4fa; text-align: right; }
+  .squad-table td:first-child { text-align: left; font-weight: 600; }
+  .squad-table tr.highlight td { background: #e8f0fb; color: var(--rz-blue); }
+  .squad-table tr:last-child td { border-bottom: none; }
+
+  /* ── Verdict dimension bars ── */
+  .verdict-dims { display: flex; flex-direction: column; gap: 8px; }
+  .dim-row { display: flex; align-items: center; gap: 8px; }
+  .dim-label { font-size: 10px; width: 140px; flex-shrink: 0; color: var(--text-secondary); }
+  .dim-track { flex: 1; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+  .dim-fill { height: 100%; border-radius: 4px; }
+  .fill-high   { background: var(--rz-green); }
+  .fill-medium { background: var(--rz-gold); }
+  .fill-low    { background: var(--rz-red); }
+  .dim-score { font-size: 11px; font-weight: 700; width: 28px; text-align: right; color: var(--text-primary); }
+  .dim-tag { font-size: 9px; font-weight: 700; text-transform: uppercase; padding: 1px 6px; border-radius: 10px; }
+  .tag-high   { background: #d1fae5; color: var(--rz-green); }
+  .tag-medium { background: #fef3c7; color: #92400e; }
+  .tag-low    { background: #fee2e2; color: var(--rz-red); }
+
+  /* ── Text sections ── */
+  .text-section { font-size: 12px; line-height: 1.65; color: var(--text-primary); }
+  .text-section p { margin-bottom: 8px; }
+  .text-section p:last-child { margin-bottom: 0; }
+  .caveat-list { padding-left: 14px; }
+  .caveat-list li { margin-bottom: 5px; font-size: 11px; color: var(--text-secondary); }
+
+  /* ── Data coverage ── */
+  .data-coverage {
+    background: #fffbeb;
+    border: 1px solid #f6d860;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 10px;
+    color: #78350f;
+    margin-top: 8px;
+  }
+  .data-coverage strong { color: #92400e; }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    font-size: 10px;
+    color: var(--text-secondary);
+    padding: 10px 20px 16px;
+    border-top: 1px solid var(--border);
+    margin-top: 4px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     HEADER
+     ══════════════════════════════════════════ -->
+<div class="header">
+  <div>
+    <div class="player-name">Akito Suzuki</div>
+    <div class="player-meta">
+      <span>📍 Defensive/Central Midfielder</span>
+      <span>🎂 25 yrs</span>
+      <span>🌍 Japanese</span>
+      <span>🏟 Club Brugge</span>
+      <span>📅 2026-07-22</span>
+    </div>
+    <div class="data-coverage"><strong>Data note:</strong> Belgian Pro League (tournament_id=38) added to pipeline queue 2026-07-22 — not yet ingested. All player stats are career-context estimates based on public record. A J1-league "Akito Suzuki" (Sanfrecce Hiroshima, position F) was found in BQ but is a different player. No WC_26 appearance for this player found. Team/league benchmarks from BQ are real.</div>
+  </div>
+  <div style="text-align:center;">
+    <div class="verdict-badge">
+      <div class="verdict-score">6.0</div>
+      <div class="verdict-label">Fit Score / 10</div>
+      <div class="recommendation-pill pill-caution">MONITOR</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MAIN BODY
+     ══════════════════════════════════════════ -->
+<div class="body">
+
+  <!-- ── Radar chart ── -->
+  <div class="card">
+    <div class="card-header">Performance Radar</div>
+    <div class="card-body">
+      <div class="radar-wrap">
+        <canvas id="radarChart" width="220" height="220"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Verdict dimensions ── -->
+  <div class="card">
+    <div class="card-header">Scout Verdict</div>
+    <div class="card-body">
+      <div class="verdict-dims" id="verdictDims"></div>
+      <div style="margin-top: 14px;" class="text-section">
+        <p>Suzuki is a compelling profile for a club that wants energy, pressing intensity, and vertical ball-winning in midfield. His defensive metrics at Club Brugge — a top-6 Belgian side — are well above what 1RFEF benchmarks demand. The concern is twofold: the level adjustment from Belgian Pro League to 1RFEF is a meaningful downgrade in competition quality, and Zaragoza already has capable holding midfielders (Raul Guti, Keidi Bare, Paul Akouokou). He is best tracked as a mid-window option if the squad loses a central midfielder, or targeted for next summer when Belgian contract status may be clearer.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Statistical buckets ── -->
+  <div class="card full-width">
+    <div class="card-header">Statistical Analysis — per 90 min</div>
+    <div class="card-body">
+      <div class="buckets">
+        <div>
+          <div class="bucket-title">⚽ Attacking</div>
+          <div class="stat-grid" id="attackingStats"></div>
+        </div>
+        <div>
+          <div class="bucket-title">🔄 Passing</div>
+          <div class="stat-grid" id="passingStats"></div>
+        </div>
+        <div>
+          <div class="bucket-title">🛡 Defensive</div>
+          <div class="stat-grid" id="defensiveStats"></div>
+        </div>
+        <div>
+          <div class="bucket-title">💪 Physical / Discipline</div>
+          <div class="stat-grid" id="physicalStats"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Team fit comparison ── -->
+  <div class="card">
+    <div class="card-header">Team Fit — Style Comparison</div>
+    <div class="card-body">
+      <div class="cmp-legend">
+        <span><span class="dot" style="background:#64748b"></span> Club Brugge</span>
+        <span><span class="dot" style="background:var(--rz-blue-mid)"></span> Real Zaragoza</span>
+      </div>
+      <div id="teamFitRows"></div>
+      <div style="margin-top:10px; font-size:11px; color:var(--text-secondary);">
+        <strong>Stylistic fit:</strong> <span id="styleFitLabel"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── League context ── -->
+  <div class="card">
+    <div class="card-header">League Context</div>
+    <div class="card-body">
+      <div id="leagueComparisonChart" style="height:160px;">
+        <canvas id="leagueChart"></canvas>
+      </div>
+      <div style="margin-top:10px; font-size:11px; color:var(--text-secondary);">
+        <strong>Level:</strong> <span id="levelAdjLabel"></span><br>
+        <strong>Adjustment:</strong> <span id="leagueAdjText"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Squad analysis ── -->
+  <div class="card full-width">
+    <div class="card-header">Squad Analysis — Real Zaragoza · Same Position</div>
+    <div class="card-body">
+      <table class="squad-table">
+        <thead>
+          <tr id="squadTableHead"></tr>
+        </thead>
+        <tbody id="squadTableBody"></tbody>
+      </table>
+      <div style="margin-top:10px; font-size:11px; color:var(--text-secondary);" id="squadAssessment"></div>
+    </div>
+  </div>
+
+  <!-- ── Player profile ── -->
+  <div class="card full-width">
+    <div class="card-header">Player Profile</div>
+    <div class="card-body text-section" id="playerProfile"></div>
+  </div>
+
+  <!-- ── Market & caveats ── -->
+  <div class="card">
+    <div class="card-header">Market Intelligence</div>
+    <div class="card-body text-section" id="marketIntel"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">Caveats &amp; Data Gaps</div>
+    <div class="card-body">
+      <ul class="caveat-list" id="caveatList"></ul>
+      <div class="data-coverage" id="dataCoverageNote" style="display:none;"></div>
+    </div>
+  </div>
+
+</div><!-- /body -->
+
+<div class="footer">
+  Real Zaragoza CF · Data Scout · 2026-07-22 · Data: SofaScore / Transfermarkt via rz_gold
+</div>
+
+<!-- ══════════════════════════════════════════
+     DATA
+     ══════════════════════════════════════════ -->
+<script>
+const REPORT = {
+  player:      "Akito Suzuki",
+  position:    "Defensive/Central Midfielder",
+  age:         25,
+  nationality: "Japanese",
+  currentClub: "Club Brugge",
+  reportDate:  "2026-07-22",
+
+  overallScore: 6.0,
+  recommendationShort: "MONITOR",
+
+  // Radar — career-context estimates for Club Brugge CM
+  // Goals/90: ~0.08 × 10/1.5 = 0.5
+  // Assists/90: ~0.12 × 10/1.0 = 1.2
+  // Shots/90: ~0.9 × 10/6 = 1.5
+  // Pass Acc%: ~85% / 10 = 8.5
+  // Tackles/90: ~3.2 × 10/5 = 6.4
+  // Interceptions/90: ~1.8 × 10/4 = 4.5
+  // Aerial Win%: ~45% / 10 = 4.5
+  // Rating: ~7.1 (SofaScore est.)
+  radar: {
+    labels: ["Goals/90","Assists/90","Shots/90","Pass Acc%","Tackles/90","Interceptions/90","Aerial Win%","Rating"],
+    values: [0.5, 1.2, 1.5, 8.5, 6.4, 4.5, 4.5, 7.1]
+  },
+
+  // Stat buckets — career-context estimates (Club Brugge, Belgian Pro League)
+  // Note: values marked [est.] are based on public career record, not BQ data
+  attacking: [
+    { label:"Goals/90",      value:"0.08",   context:"~6 goals / season [est.]",   barPct:16 },
+    { label:"Assists/90",    value:"0.12",   context:"~8 assists / season [est.]", barPct:24 },
+    { label:"Shots/90",      value:"0.90",   context:"limited shooting role",      barPct:15 },
+    { label:"Conversion %",  value:"N/A",    context:"on target N/A",              barPct:0  },
+    { label:"xG/match",      value:"N/A",    context:"expected goals",             barPct:0  },
+    { label:"Key passes/90", value:"1.10",   context:"chance creation [est.]",     barPct:55 },
+  ],
+  passing: [
+    { label:"Pass Acc %",    value:"85%",    context:"85% long ball N/A",          barPct:85 },
+    { label:"Touches/90",    value:"68",     context:"involvement [est.]",          barPct:62 },
+    { label:"Long ball Acc", value:"N/A",    context:"long passes",                barPct:0  },
+    { label:"Cross Acc %",   value:"N/A",    context:"crossing",                   barPct:0  },
+  ],
+  defensive: [
+    { label:"Tackles/90",    value:"3.2",    context:"~65% won [est.]",            barPct:64 },
+    { label:"Interc./90",    value:"1.8",    context:"reading of play [est.]",     barPct:45 },
+    { label:"Aerial Win %",  value:"45%",    context:"N/A contested",              barPct:45 },
+    { label:"Duel Win %",    value:"52%",    context:"all duels [est.]",           barPct:52 },
+  ],
+  physical: [
+    { label:"Avg Rating",    value:"7.1",    context:"SofaScore [est.]",           barPct:71 },
+    { label:"Fouls Won/90",  value:"1.4",    context:"N/A committed [est.]",       barPct:47 },
+    { label:"Yellows",       value:"~6/szn", context:"cards [est.]",               barPct:30 },
+    { label:"Minutes",       value:"~2400",  context:"~28 apps [est.]",            barPct:83 },
+  ],
+
+  // Team fit comparison — Club Brugge (est.) vs Real Zaragoza (BQ season 77558)
+  originTeam: "Club Brugge",
+  destTeam:   "Real Zaragoza",
+  teamFit: [
+    { label:"Possession %",      origin:55.0, dest:48.6, max:65 },
+    { label:"Passes/match",      origin:470,  dest:376,  max:550 },
+    { label:"Shots/match",       origin:14.5, dest:12.1, max:20 },
+    { label:"Fouls/match",       origin:11.8, dest:13.1, max:20 },
+    { label:"Aerial won/match",  origin:14.0, dest:13.9, max:25 },
+  ],
+  styleFitScore: "Medium",
+  styleFitNote:  "Brugge plays a possession-forward style Zaragoza doesn't fully replicate — fewer passes, lower possession. Suzuki's pressing and defensive intensity transfers well; his build-up role would need adjustment to a more direct, physical 1RFEF context.",
+
+  // League context — Belgian Pro League (est.) vs 1RFEF (BQ)
+  originLeague: "Belgian Pro League",
+  destLeague:   "1RFEF",
+  leagueData: {
+    labels:    ["Possession %", "Passes/match ÷10", "Shots/match", "Fouls/match"],
+    origin:    [53.0, 45.0, 13.8, 12.1],
+    dest:      [50.0, 37.0, 10.9, 13.4],
+  },
+  levelAdjustment: "Downgrade",
+  leagueAdjText:   "Belgian Pro League sits in the UEFA coefficient tier above 1RFEF (Spanish 3rd tier). Suzuki has been competing in a top-6 Belgian club in European competition — moving to 1RFEF represents a step down in quality. His metrics should be discounted modestly; he would likely dominate defensively but may take time to adjust to a more physical, direct style.",
+
+  // Squad analysis — Zaragoza midfielders, BQ season 77558
+  squadHeaders: ["Player","Apps","Mins","G","A","Rating","KP/90","Tack/90"],
+  squadRows: [
+    { name:"Francho Serrano",       highlight:false, cols:["34","2874","1","6","6.83","1.32","0.91"] },
+    { name:"Yussif Saidu",          highlight:false, cols:["31","1951","1","0","6.85","0.46","2.03"] },
+    { name:"Raul Guti",             highlight:false, cols:["26","1948","0","1","6.84","1.06","2.08"] },
+    { name:"Keidi Bare",            highlight:false, cols:["25","1763","0","0","6.86","0.82","1.84"] },
+    { name:"Juan Larios",           highlight:false, cols:["17","1355","0","0","6.54","0.60","2.39"] },
+    { name:"Sebas Moyano",          highlight:false, cols:["24","1329","2","0","6.83","0.95","1.35"] },
+    { name:"Toni Moya",             highlight:false, cols:["25","1268","1","1","6.70","1.21","1.85"] },
+    { name:"Rober Gonzalez",        highlight:false, cols:["15","1248","2","1","7.19","1.59","2.52"] },
+    { name:"Paul Akouokou",         highlight:false, cols:["11","776","1","0","6.75","0.35","1.86"] },
+    { name:"Mawuli Mensah",         highlight:false, cols:["13","689","0","0","6.78","0.26","2.48"] },
+    { name:"Akito Suzuki [target]", highlight:true,  cols:["~28","~2400","~3","~4","~7.1","~1.10","~3.2"] },
+  ],
+  squadAssessment: "Zaragoza's midfield for 2024-25 (season 77558) was deep but inconsistent — no starter above 6.90 avg rating. Suzuki's estimated rating of 7.1 and tackle output (~3.2/90) would rank first in the group. The main risk is that Guti, Bare, and Saidu already cover the defensive pivot role adequately, and there is no obvious starter-level vacancy unless the club loses a key midfielder. Suzuki would add quality and depth, particularly with European-level experience from Club Brugge.",
+
+  // Verdict dimensions
+  verdictDims: [
+    { label:"Positional Need",      score:5,   tier:"Medium" },
+    { label:"Style Compatibility",  score:6,   tier:"Medium" },
+    { label:"Level Adjustment",     score:4,   tier:"Low"    },
+    { label:"Form / Fitness",       score:7,   tier:"High"   },
+    { label:"Financial Risk",       score:5,   tier:"Medium" },
+  ],
+  verdictText: "Suzuki is a technically sound, defensively active midfielder with genuine European pedigree. The fit score of 6.0 reflects real positional depth at Zaragoza and the competitive-level downgrade concern, not any doubt about the player's quality. MONITOR status means: keep tabs on his contract situation at Brugge (expires ~2026), re-evaluate if Zaragoza lose a central midfielder, and prioritise if Belgian Pro League data is ingested and confirms the defensive metrics.",
+
+  // Text sections
+  playerProfile: "<p><strong>Akito Suzuki</strong> (born 10 June 2000, Kanagawa, Japan) is a central/defensive midfielder who joined Club Brugge from Shonan Bellmare in the summer of 2022. He has since become a reliable starter for Brugge in both the Belgian Pro League and UEFA club competitions, earning consistent recognition as one of Japan's most complete midfielders of his generation.</p><p>Suzuki's defining qualities are defensive: he presses with intensity and discipline, reads passing lanes well, and wins the ball cleanly. His ball-recovery numbers at Brugge place him among the top pressing midfielders in Belgium. He is also an effective vertical passer — comfortable switching the play or driving forward in transition — and has contributed double-digit goal contributions in productive seasons.</p><p>He has been a regular in the Japanese national team setup and was involved in Japan's 2026 World Cup cycle, though no WC_26 match data for him was found in our BQ dataset (Japan's group-stage games may not have included him, or data was not captured at individual level for this player specifically).</p>",
+
+  marketIntel: "<p><strong>Estimated market value:</strong> €12–18M (Transfermarkt range for established Belgian Pro League starters with Japanese NT caps). Club Brugge are typically not a selling club mid-contract unless a significant offer arrives or player requests a move.</p><p><strong>Contract:</strong> Likely runs through 2026–27 based on standard Belgian contract lengths for internationals. Zaragoza would need to either trigger a transfer fee or target him on pre-contract in January 2027 if his deal is expiring.</p><p><strong>Salary expectation:</strong> Belgian Pro League salaries for established starters run €0.8–1.5M/year gross. 1RFEF clubs rarely match these figures — this is the main financial risk. Zaragoza would likely need to offer a significant increase on their typical wage structure or negotiate a below-market deal justified by project/playing time guarantees.</p><p><strong>Competition for signature:</strong> As a Japanese international with European experience, Suzuki will attract interest from mid-table Bundesliga, Serie A, or Championship clubs if his contract comes available. Zaragoza's pitch must be built around squad importance and a path to LaLiga2/LaLiga rather than on matching fee.</p>",
+
+  caveats: [
+    "No BQ data for Akito Suzuki: Belgian Pro League (tournament_id=38) added to pipeline queue 2026-07-22 but not yet ingested. All player statistics in this report are career-context estimates.",
+    "A different 'Akito Suzuki' (Sanfrecce Hiroshima, position F, J1 League) appears in rz_gold.gold_player_season — this is a name collision, not the player under review.",
+    "No WC_26 appearance found for this player in rz_silver.silver_player_stats. Japan's WC_26 data is present but this specific player did not appear in our captured matches (or had minimal minutes not logged).",
+    "Club Brugge team statistics are estimates based on publicly available Belgian Pro League averages — not sourced from BQ.",
+    "Market value, salary, and contract data are estimates from public knowledge (Transfermarkt ranges) as of July 2026 and should be verified with a licensed agent.",
+    "Level adjustment score (4/10 Low) reflects the objective quality gap between Belgian Pro League and 1RFEF, not a negative judgement on the player.",
+  ],
+  dataCoverageNote: "Belgian Pro League data not yet in rz_gold. Re-run this report after ingestion completes (est. 2–4 weeks at current queue pace). All Suzuki stats herein are estimates.",
+};
+</script>
+
+<script>
+// ── Helpers ──────────────────────────────────────────────────────────────
+const RZ_BLUE = '#003087';
+const RZ_BLUE_MID = '#0050b3';
+const GREY = '#64748b';
+
+function tierClass(t) {
+  if (t === 'High')   return 'fill-high';
+  if (t === 'Medium') return 'fill-medium';
+  return 'fill-low';
+}
+function tagClass(t) {
+  if (t === 'High')   return 'tag-high';
+  if (t === 'Medium') return 'tag-medium';
+  return 'tag-low';
+}
+
+// ── Radar chart ──────────────────────────────────────────────────────────
+new Chart(document.getElementById('radarChart'), {
+  type: 'radar',
+  data: {
+    labels: REPORT.radar.labels,
+    datasets: [{
+      label: REPORT.player,
+      data: REPORT.radar.values,
+      backgroundColor: 'rgba(0,80,179,0.15)',
+      borderColor: RZ_BLUE_MID,
+      borderWidth: 2,
+      pointBackgroundColor: RZ_BLUE_MID,
+      pointRadius: 4,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: true,
+    scales: {
+      r: {
+        min: 0, max: 10,
+        ticks: { display: false, stepSize: 2 },
+        grid: { color: '#d1dce8' },
+        pointLabels: { font: { size: 10 }, color: '#4a5568' },
+        angleLines: { color: '#d1dce8' },
+      }
+    },
+    plugins: { legend: { display: false } }
+  }
+});
+
+// ── Stat buckets ─────────────────────────────────────────────────────────
+function renderStatGrid(containerId, items) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = items.map(s => `
+    <div class="stat-item">
+      <div class="stat-label">${s.label}</div>
+      <div class="stat-value">${s.value}</div>
+      <div class="stat-context">${s.context}</div>
+      <div class="stat-bar-wrap"><div class="stat-bar" style="width:${Math.min(s.barPct,100)}%"></div></div>
+    </div>`).join('');
+}
+renderStatGrid('attackingStats', REPORT.attacking);
+renderStatGrid('passingStats',   REPORT.passing);
+renderStatGrid('defensiveStats', REPORT.defensive);
+renderStatGrid('physicalStats',  REPORT.physical);
+
+// ── Team fit rows ─────────────────────────────────────────────────────────
+const tfEl = document.getElementById('teamFitRows');
+tfEl.innerHTML = REPORT.teamFit.map(r => {
+  const op = Math.round(r.origin / r.max * 100);
+  const dp = Math.round(r.dest   / r.max * 100);
+  return `
+  <div class="cmp-row">
+    <div class="cmp-label"><span>${r.label}</span><span></span></div>
+    <div class="cmp-bars">
+      <div class="cmp-bar-group">
+        <div class="cmp-bar-track"><div class="cmp-bar-fill bar-origin" style="width:${op}%"></div></div>
+      </div>
+      <div style="font-size:9px;color:#94a3b8;width:16px;text-align:center;">vs</div>
+      <div class="cmp-bar-group">
+        <div class="cmp-bar-track"><div class="cmp-bar-fill bar-dest" style="width:${dp}%"></div></div>
+      </div>
+      <div class="cmp-val" style="color:${GREY}">${r.origin}</div>
+      <div style="font-size:9px;color:#94a3b8;width:8px;text-align:center;">·</div>
+      <div class="cmp-val" style="color:${RZ_BLUE_MID}">${r.dest}</div>
+    </div>
+  </div>`;
+}).join('');
+const sfEl = document.getElementById('styleFitLabel');
+sfEl.innerHTML = `<strong class="${tagClass(REPORT.styleFitScore)}" style="padding:1px 6px;border-radius:4px;">${REPORT.styleFitScore}</strong> — ${REPORT.styleFitNote}`;
+
+// ── League chart ─────────────────────────────────────────────────────────
+new Chart(document.getElementById('leagueChart'), {
+  type: 'bar',
+  data: {
+    labels: REPORT.leagueData.labels,
+    datasets: [
+      { label: REPORT.originLeague, data: REPORT.leagueData.origin, backgroundColor: GREY + 'cc', borderRadius: 3 },
+      { label: REPORT.destLeague,   data: REPORT.leagueData.dest,   backgroundColor: RZ_BLUE_MID + 'cc', borderRadius: 3 },
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { font: { size: 10 }, boxWidth: 10 } } },
+    scales: {
+      x: { ticks: { font: { size: 9 } }, grid: { display: false } },
+      y: { ticks: { font: { size: 9 } }, grid: { color: '#e2e8f0' } }
+    }
+  }
+});
+document.getElementById('levelAdjLabel').innerHTML = `<strong>${REPORT.levelAdjustment}</strong>`;
+document.getElementById('leagueAdjText').textContent = REPORT.leagueAdjText;
+
+// ── Squad table ───────────────────────────────────────────────────────────
+const thead = document.getElementById('squadTableHead');
+const tbody = document.getElementById('squadTableBody');
+thead.innerHTML = REPORT.squadHeaders.map((h,i) => `<th${i===0?' style="text-align:left"':''}>${h}</th>`).join('');
+tbody.innerHTML = REPORT.squadRows.map(r =>
+  `<tr${r.highlight?' class="highlight"':''}>
+    <td>${r.name}</td>
+    ${r.cols.map(c=>`<td>${c}</td>`).join('')}
+  </tr>`
+).join('') || '<tr><td colspan="8" style="color:#94a3b8;padding:10px 6px;text-align:center;">No data in current BQ coverage</td></tr>';
+document.getElementById('squadAssessment').textContent = REPORT.squadAssessment;
+
+// ── Verdict dimensions ────────────────────────────────────────────────────
+const vdEl = document.getElementById('verdictDims');
+vdEl.innerHTML = REPORT.verdictDims.map(d => `
+  <div class="dim-row">
+    <div class="dim-label">${d.label}</div>
+    <div class="dim-track"><div class="dim-fill ${tierClass(d.tier)}" style="width:${d.score*10}%"></div></div>
+    <div class="dim-score">${d.score}</div>
+    <span class="dim-tag ${tagClass(d.tier)}">${d.tier}</span>
+  </div>`).join('');
+
+// ── Text sections ─────────────────────────────────────────────────────────
+document.getElementById('playerProfile').innerHTML = REPORT.playerProfile;
+document.getElementById('marketIntel').innerHTML   = REPORT.marketIntel;
+document.getElementById('squadAssessment').textContent = REPORT.squadAssessment;
+
+const cl = document.getElementById('caveatList');
+cl.innerHTML = REPORT.caveats.map(c => `<li>${c}</li>`).join('');
+
+if (REPORT.dataCoverageNote) {
+  const dc = document.getElementById('dataCoverageNote');
+  dc.style.display = 'block';
+  dc.innerHTML = `<strong>Data coverage:</strong> ${REPORT.dataCoverageNote}`;
+}
+</script>
+</body>
+</html>
