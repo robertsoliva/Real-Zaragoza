@@ -62,9 +62,12 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
-  .pill-sign    { background: var(--rz-green); color: #fff; }
-  .pill-caution { background: var(--rz-gold);  color: #fff; }
-  .pill-pass    { background: var(--rz-red);   color: #fff; }
+  .pill-sign-now { background: #00952a; color: #fff; }        /* ≥8.5 SIGN NOW */
+  .pill-sign     { background: var(--rz-green); color: #fff; } /* 7.0–8.4 SIGN */
+  .pill-rotation { background: #1e6eb5; color: #fff; }         /* 6.5–7.0 ROTATION */
+  .pill-caution  { background: var(--rz-gold);  color: #fff; } /* 5.5–6.5 MONITOR */
+  .pill-probably { background: var(--rz-amber); color: #fff; } /* 5.0–5.5 PROBABLY PASS */
+  .pill-pass     { background: var(--rz-red);   color: #fff; } /* <5.0 PASS */
 
   /* ── Layout ── */
   .body { padding: 16px 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
@@ -339,8 +342,8 @@ const REPORT = {
   currentClub: "{{CURRENT_CLUB}}",
   reportDate:  "{{REPORT_DATE}}",
 
-  overallScore: {{OVERALL_SCORE}},           // e.g. 6.5
-  recommendationShort: "{{RECOMMENDATION_SHORT}}", // "SIGN" | "MONITOR" | "PASS"
+  overallScore: {{OVERALL_SCORE}},           // average of 6 verdictDims, rounded to 1dp
+  recommendationShort: "{{RECOMMENDATION_SHORT}}", // ≥8.5→"SIGN NOW" | 7.0-8.4→"SIGN" | 6.5-7.0→"ROTATION" | 5.5-6.5→"MONITOR" | 5.0-5.5→"PROBABLY PASS" | <5→"PASS"
 
   // Radar — labels and values 0-10 (normalize from raw stats)
   radar: {
@@ -418,12 +421,19 @@ const REPORT = {
   squadAssessment: "{{SQUAD_ASSESSMENT}}",
 
   // Verdict dimensions — score 1-10, tier "High"/"Medium"/"Low"
+  // Overall score = average of all 6 dimensions (round to 1dp)
+  // Positional Need: score the QUALITY GAP vs current squad option — not just vacancy.
+  //   A position that is filled but weakly = 7-8 (real upgrade available).
+  //   Genuinely empty = 9-10. Already have a clear starter of equal quality = 4-5.
+  // Player Quality / Level: how good is this player FOR 1RFEF specifically?
+  //   9-10 = clear starter, best-in-league ceiling; 7-8 = solid starter; 5-6 = rotation; <5 = below level
   verdictDims: [
-    { label:"Positional Need",      score:{{VD_NEED}},   tier:"{{VD_NEED_T}}" },
-    { label:"Style Compatibility",  score:{{VD_STYLE}},  tier:"{{VD_STYLE_T}}" },
-    { label:"Level Adjustment",     score:{{VD_LEVEL}},  tier:"{{VD_LEVEL_T}}" },
-    { label:"Form / Fitness",       score:{{VD_FORM}},   tier:"{{VD_FORM_T}}" },
-    { label:"Financial Risk",       score:{{VD_FIN}},    tier:"{{VD_FIN_T}}" },
+    { label:"Player Quality / Level", score:{{VD_QUALITY}}, tier:"{{VD_QUALITY_T}}" },
+    { label:"Positional Need",        score:{{VD_NEED}},    tier:"{{VD_NEED_T}}" },
+    { label:"Style Compatibility",    score:{{VD_STYLE}},   tier:"{{VD_STYLE_T}}" },
+    { label:"Level Adjustment",       score:{{VD_LEVEL}},   tier:"{{VD_LEVEL_T}}" },
+    { label:"Form / Fitness",         score:{{VD_FORM}},    tier:"{{VD_FORM_T}}" },
+    { label:"Financial Risk",         score:{{VD_FIN}},     tier:"{{VD_FIN_T}}" },
   ],
   verdictText: "{{VERDICT_TEXT}}",
 

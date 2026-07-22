@@ -99,8 +99,13 @@ Use the template at `.claude/agents/data-scout/report_template.html` as your bas
   - Tackles/90: `val/5 × 100`
   - Aerial Win%: `val` directly
   - Rating: `val/10 × 100`
-- **RECOMMENDATION_SHORT**: `"SIGN"` / `"MONITOR"` / `"PASS"` — derive from overall fit score (≥7 → SIGN, 5–6.9 → MONITOR, <5 → PASS)
-- **PILL_CLASS**: `"pill-sign"` / `"pill-caution"` / `"pill-pass"`
+- **RECOMMENDATION_SHORT** and **PILL_CLASS** — derive from overall fit score:
+  - ≥8.5 → `"SIGN NOW"` / `"pill-sign-now"`
+  - 7.0–8.4 → `"SIGN"` / `"pill-sign"`
+  - 6.5–7.0 → `"ROTATION"` / `"pill-rotation"`
+  - 5.5–6.5 → `"MONITOR"` / `"pill-caution"`
+  - 5.0–5.5 → `"PROBABLY PASS"` / `"pill-probably"`
+  - <5.0 → `"PASS"` / `"pill-pass"`
 - **Squad rows**: include the new signing as a highlighted row (`highlight: true`) when comparing against existing squad players
 - **Missing data**: if a BQ stat is NULL/absent, use `"N/A"` as the display value and `0` as the barPct; note in `dataCoverageNote`
 - **Team fit**: use the most recent season available for both teams; if destination has no BQ data, use 1RFEF benchmark from season 64430 (possession: 50.1%, passes: 375, shots: 10.7, fouls: 13.6, aerial: ~13)
@@ -189,10 +194,13 @@ From Transfermarkt data + any known context:
 
 #### 7. Scout Verdict
 
-**Overall fit score:** X/10  
-**Positional need:** High / Medium / Low  
+**Overall fit score:** X/10 — average of the 6 verdict dimensions below  
+**Player Quality / Level:** 1–10 — how good is this player *for 1RFEF specifically*? (9-10 = clear starter, best-in-league quality; 7-8 = solid starter; 5-6 = rotation-level)  
+**Positional Need:** 1–10 — quality *gap* between target and current squad option. Score high even if the position is occupied — what matters is the upgrade margin, not just vacancy.  
 **Style compatibility:** High / Medium / Low  
 **Level adjustment:** Upgrade / Lateral / Downgrade  
+**Form / Fitness:** High / Medium / Low  
+**Financial Risk:** High (cheap) / Medium / Low (expensive)  
 
 **Recommendation:** 1–3 sentences. Direct and honest — if the fit is poor, say so and explain why. If data is insufficient to make a confident call, say that too.
 
