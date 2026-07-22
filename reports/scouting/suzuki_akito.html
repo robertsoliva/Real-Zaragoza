@@ -189,17 +189,17 @@
   <div>
     <div class="player-name">Akito Suzuki</div>
     <div class="player-meta">
-      <span>📍 Defensive/Central Midfielder</span>
-      <span>🎂 25 yrs</span>
-      <span>🌍 Japanese</span>
-      <span>🏟 Club Brugge</span>
-      <span>📅 2026-07-22</span>
+      <span>&#128205; Forward / Winger</span>
+      <span>&#127874; 24 yrs</span>
+      <span>&#127758; Japan</span>
+      <span>&#127967; Sanfrecce Hiroshima</span>
+      <span>&#128197; 2026-07-22</span>
     </div>
-    <div class="data-coverage"><strong>Data note:</strong> Belgian Pro League (tournament_id=38) added to pipeline queue 2026-07-22 — not yet ingested. All player stats are career-context estimates based on public record. A J1-league "Akito Suzuki" (Sanfrecce Hiroshima, position F) was found in BQ but is a different player. No WC_26 appearance for this player found. Team/league benchmarks from BQ are real.</div>
+    <div class="data-coverage"><strong>Data note:</strong> Primary data: Hiroshima 2025 (J1, 18 apps). Secondary: Shonan Bellmare 2024 (J1, 37 apps). No Transfermarkt valuation found. No WC 2026 data found.</div>
   </div>
   <div style="text-align:center;">
     <div class="verdict-badge">
-      <div class="verdict-score">6.0</div>
+      <div class="verdict-score">7.2</div>
       <div class="verdict-label">Fit Score / 10</div>
       <div class="recommendation-pill pill-caution">MONITOR</div>
     </div>
@@ -227,7 +227,7 @@
     <div class="card-body">
       <div class="verdict-dims" id="verdictDims"></div>
       <div style="margin-top: 14px;" class="text-section">
-        <p>Suzuki is a compelling profile for a club that wants energy, pressing intensity, and vertical ball-winning in midfield. His defensive metrics at Club Brugge — a top-6 Belgian side — are well above what 1RFEF benchmarks demand. Against the confirmed 2026-27 Zaragoza midfield (Herrera, Rubén Díez, Francho, Ademo), he would be the only high-intensity ball-winner — a genuine gap. The main caveat remains the competition-level downgrade (Belgian Pro League to 1RFEF) and the absence of BQ data until the Belgian pipeline ingests. He is best targeted once contract status at Brugge is clear, or pursued for next summer.</p>
+        <p id="verdictPara"></p>
       </div>
     </div>
   </div>
@@ -238,19 +238,19 @@
     <div class="card-body">
       <div class="buckets">
         <div>
-          <div class="bucket-title">⚽ Attacking</div>
+          <div class="bucket-title">Attacking</div>
           <div class="stat-grid" id="attackingStats"></div>
         </div>
         <div>
-          <div class="bucket-title">🔄 Passing</div>
+          <div class="bucket-title">Passing</div>
           <div class="stat-grid" id="passingStats"></div>
         </div>
         <div>
-          <div class="bucket-title">🛡 Defensive</div>
+          <div class="bucket-title">Defensive</div>
           <div class="stat-grid" id="defensiveStats"></div>
         </div>
         <div>
-          <div class="bucket-title">💪 Physical / Discipline</div>
+          <div class="bucket-title">Physical / Discipline</div>
           <div class="stat-grid" id="physicalStats"></div>
         </div>
       </div>
@@ -262,7 +262,7 @@
     <div class="card-header">Team Fit — Style Comparison</div>
     <div class="card-body">
       <div class="cmp-legend">
-        <span><span class="dot" style="background:#64748b"></span> Club Brugge</span>
+        <span><span class="dot" style="background:#64748b"></span> Sanfrecce Hiroshima</span>
         <span><span class="dot" style="background:var(--rz-blue-mid)"></span> Real Zaragoza</span>
       </div>
       <div id="teamFitRows"></div>
@@ -288,7 +288,7 @@
 
   <!-- ── Squad analysis ── -->
   <div class="card full-width">
-    <div class="card-header">Squad Analysis — Real Zaragoza · Same Position</div>
+    <div class="card-header">Squad Analysis — Real Zaragoza · Forwards &amp; Wingers (2026-27 confirmed)</div>
     <div class="card-body">
       <table class="squad-table">
         <thead>
@@ -332,117 +332,116 @@
 <script>
 const REPORT = {
   player:      "Akito Suzuki",
-  position:    "Defensive/Central Midfielder",
-  age:         25,
-  nationality: "Japanese",
-  currentClub: "Club Brugge",
+  position:    "Forward / Winger",
+  age:         24,
+  nationality: "Japan",
+  currentClub: "Sanfrecce Hiroshima",
   reportDate:  "2026-07-22",
 
-  overallScore: 6.0,
+  overallScore: 7.2,
   recommendationShort: "MONITOR",
 
-  // Radar — career-context estimates for Club Brugge CM
-  // Goals/90: ~0.08 × 10/1.5 = 0.5
-  // Assists/90: ~0.12 × 10/1.0 = 1.2
-  // Shots/90: ~0.9 × 10/6 = 1.5
-  // Pass Acc%: ~85% / 10 = 8.5
-  // Tackles/90: ~3.2 × 10/5 = 6.4
-  // Interceptions/90: ~1.8 × 10/4 = 4.5
-  // Aerial Win%: ~45% / 10 = 4.5
-  // Rating: ~7.1 (SofaScore est.)
+  // Radar normalized 0-10 (Hiroshima 2025)
+  // Goals/90: 0.40 x 10/1.5 = 2.7
+  // Assists/90: 0.32 x 10/1.0 = 3.2
+  // Shots/90: 2.73 x 10/6 = 4.6
+  // Pass Acc%: 74.4/10 = 7.4
+  // Tackles/90: 0.88 x 10/5 = 1.8
+  // Interceptions/90: 0.32 x 10/4 = 0.8
+  // Aerial Win%: 26.7/10 = 2.7
+  // Rating: 6.92
   radar: {
     labels: ["Goals/90","Assists/90","Shots/90","Pass Acc%","Tackles/90","Interceptions/90","Aerial Win%","Rating"],
-    values: [0.5, 1.2, 1.5, 8.5, 6.4, 4.5, 4.5, 7.1]
+    values: [2.7, 3.2, 4.6, 7.4, 1.8, 0.8, 2.7, 6.9]
   },
 
-  // Stat buckets — career-context estimates (Club Brugge, Belgian Pro League)
-  // Note: values marked [est.] are based on public career record, not BQ data
   attacking: [
-    { label:"Goals/90",      value:"0.08",   context:"~6 goals / season [est.]",   barPct:16 },
-    { label:"Assists/90",    value:"0.12",   context:"~8 assists / season [est.]", barPct:24 },
-    { label:"Shots/90",      value:"0.90",   context:"limited shooting role",      barPct:15 },
-    { label:"Conversion %",  value:"N/A",    context:"on target N/A",              barPct:0  },
-    { label:"xG/match",      value:"N/A",    context:"expected goals",             barPct:0  },
-    { label:"Key passes/90", value:"1.10",   context:"chance creation [est.]",     barPct:55 },
+    { label:"Goals/90",      value:"0.40",    context:"5 goals total",        barPct:27 },
+    { label:"Assists/90",    value:"0.32",    context:"4 assists",            barPct:32 },
+    { label:"Shots/90",      value:"2.73",    context:"34 total",             barPct:46 },
+    { label:"Conversion %",  value:"14.7%",   context:"on target 13",         barPct:49 },
+    { label:"xG/match",      value:"N/A",     context:"not available",        barPct:0  },
+    { label:"Key passes/90", value:"1.68",    context:"chance creation",      barPct:56 },
   ],
   passing: [
-    { label:"Pass Acc %",    value:"85%",    context:"85% long ball N/A",          barPct:85 },
-    { label:"Touches/90",    value:"68",     context:"involvement [est.]",          barPct:62 },
-    { label:"Long ball Acc", value:"N/A",    context:"long passes",                barPct:0  },
-    { label:"Cross Acc %",   value:"N/A",    context:"crossing",                   barPct:0  },
+    { label:"Pass Acc %",    value:"74.4%",   context:"72.7% long ball",      barPct:74 },
+    { label:"Touches/90",    value:"37.94",   context:"involvement",          barPct:63 },
+    { label:"Long ball Acc", value:"72.7%",   context:"long passes",          barPct:73 },
+    { label:"Cross Acc %",   value:"N/A",     context:"not available",        barPct:0  },
   ],
   defensive: [
-    { label:"Tackles/90",    value:"3.2",    context:"~65% won [est.]",            barPct:64 },
-    { label:"Interc./90",    value:"1.8",    context:"reading of play [est.]",     barPct:45 },
-    { label:"Aerial Win %",  value:"45%",    context:"N/A contested",              barPct:45 },
-    { label:"Duel Win %",    value:"52%",    context:"all duels [est.]",           barPct:52 },
+    { label:"Tackles/90",    value:"0.88",    context:"45.5% won",            barPct:18 },
+    { label:"Interc./90",    value:"0.32",    context:"reading of play",      barPct:8  },
+    { label:"Aerial Win %",  value:"26.7%",   context:"12 won / ~45 contest.",barPct:27 },
+    { label:"Duel Win %",    value:"35.7%",   context:"all duels",            barPct:36 },
   ],
   physical: [
-    { label:"Avg Rating",    value:"7.1",    context:"SofaScore [est.]",           barPct:71 },
-    { label:"Fouls Won/90",  value:"1.4",    context:"N/A committed [est.]",       barPct:47 },
-    { label:"Yellows",       value:"~6/szn", context:"cards [est.]",               barPct:30 },
-    { label:"Minutes",       value:"~2400",  context:"~28 apps [est.]",            barPct:83 },
+    { label:"Avg Rating",    value:"6.92",    context:"SofaScore",            barPct:69 },
+    { label:"Fouls Won/90",  value:"1.28",    context:"22 committed",         barPct:43 },
+    { label:"Yellows",       value:"N/A",     context:"not recorded",         barPct:0  },
+    { label:"Minutes",       value:"1,122",   context:"18 apps",              barPct:49 },
   ],
 
-  // Team fit comparison — Club Brugge (est.) vs Real Zaragoza (BQ season 77558)
-  originTeam: "Club Brugge",
+  // Team fit — Hiroshima 2025 vs Zaragoza 2024-25
+  originTeam: "Sanfrecce Hiroshima",
   destTeam:   "Real Zaragoza",
   teamFit: [
-    { label:"Possession %",      origin:55.0, dest:48.6, max:65 },
-    { label:"Passes/match",      origin:470,  dest:376,  max:550 },
-    { label:"Shots/match",       origin:14.5, dest:12.1, max:20 },
-    { label:"Fouls/match",       origin:11.8, dest:13.1, max:20 },
-    { label:"Aerial won/match",  origin:14.0, dest:13.9, max:25 },
+    { label:"Possession %",      origin:54.0, dest:48.6, max:65 },
+    { label:"Passes/match",      origin:432,  dest:376,  max:550 },
+    { label:"Shots/match",       origin:16.2, dest:12.1, max:20 },
+    { label:"Fouls/match",       origin:11.1, dest:13.1, max:20 },
+    { label:"Aerial won/match",  origin:21.6, dest:13.9, max:25 },
   ],
   styleFitScore: "Medium",
-  styleFitNote:  "Brugge plays a possession-forward style Zaragoza doesn't fully replicate — fewer passes, lower possession. Suzuki's pressing and defensive intensity transfers well; his build-up role would need adjustment to a more direct, physical 1RFEF context.",
+  styleFitNote:  "Hiroshima's possession-heavy, high-shot system (54% poss, 16.2 shots/game) is a different environment from Zaragoza's more direct profile (48.6%, 12.1 shots). Suzuki is used to more ball time and a higher-tempo press. Transition is feasible for a technical winger but the adjustment is real.",
 
-  // League context — Belgian Pro League (est.) vs 1RFEF (BQ)
-  originLeague: "Belgian Pro League",
+  // League context — J1 vs 1RFEF averages from rz_gold
+  originLeague: "J1 League",
   destLeague:   "1RFEF",
   leagueData: {
-    labels:    ["Possession %", "Passes/match ÷10", "Shots/match", "Fouls/match"],
-    origin:    [53.0, 45.0, 13.8, 12.1],
+    labels:    ["Possession %", "Passes/match /10", "Shots/match", "Fouls/match"],
+    origin:    [50.0, 42.2, 12.2, 10.7],
     dest:      [50.0, 37.0, 10.9, 13.4],
   },
-  levelAdjustment: "Downgrade",
-  leagueAdjText:   "Belgian Pro League sits in the UEFA coefficient tier above 1RFEF (Spanish 3rd tier). Suzuki has been competing in a top-6 Belgian club in European competition — moving to 1RFEF represents a step down in quality. His metrics should be discounted modestly; he would likely dominate defensively but may take time to adjust to a more physical, direct style.",
+  levelAdjustment: "Downgrade (slight)",
+  leagueAdjText:   "J1 is broadly comparable to LaLiga2 / mid-table European second tier. The move to 1RFEF (Spanish third tier) is a slight step down in competition — favourable for Zaragoza on fee and adaptation risk. His 2024 Shonan season (9G/37 apps) and 2025 Hiroshima return (5G/18 apps) suggest output above what 1RFEF demands.",
 
-  // Squad analysis — Zaragoza midfielders, BQ season 77558
-  squadHeaders: ["Player","Apps","Mins","G","A","Rating","KP/90","Tack/90"],
+  // Squad — confirmed 2026-27 only (Dani Gomez / Kodro excluded)
+  squadHeaders: ["Player","Apps","Mins","G","A","Rating","KP/90","Pass%"],
   squadRows: [
-    { name:"Ander Herrera (signed)",   highlight:false, cols:["—","—","—","—","N/A","N/A","N/A"] },
-    { name:"Rubén Díez (signed)",      highlight:false, cols:["29","2,194","5","2","7.04","1.72","1.64"] },
-    { name:"Francho Serrano (likely)", highlight:false, cols:["34","2,874","1","6","6.83","1.32","0.91"] },
-    { name:"Peter Ademo (signed)",     highlight:false, cols:["6*","230*","—","0","6.63*","1.17*","1.96*"] },
-    { name:"Akito Suzuki (target)",    highlight:true,  cols:["~28","~2400","~3","~4","~7.1","~1.10","~3.2"] },
+    { name:"Akito Suzuki (target)",    highlight:true,  cols:["18","1,122","5","4","6.92","1.68","74.4%"] },
+    { name:"Edu Espiau (CF, signed)",  highlight:false, cols:["41","1,913","3","0","6.68","0.38","65.6%"] },
+    { name:"Emil Hansson (LW, signed)",highlight:false, cols:["--","--","--","--","--","--","--"] },
+    { name:"Samed Bazdar (status TBC)",highlight:false, cols:["8","236","1","0","6.64","0.38","60.0%"] },
+    { name:"Pau Sans (returning loan)",highlight:false, cols:["11","392","0","1","6.49","1.61","80.7%"] },
   ],
-  squadAssessment: "Confirmed 2026-27 midfield: Herrera (leader/no BQ), Rubén Díez (7.04 rating from Ceuta, box-to-box), Francho Serrano (likely retained, academy captain), Peter Ademo (Nigerian DM, 6-app sample only). Suzuki's estimated 7.1 rating leads the group and his defensive output (~3.2 tackles/90) exceeds everyone confirmed. Critically, none of the four signed midfielders is a true high-intensity ball-winner — Suzuki fills a genuine gap. This raises his positional need vs the old squad-comparison. (* = Ademo at Rapid Bucharest, small sample)",
+  squadAssessment: "Zaragoza's 2026-27 confirmed attacking options are thin on output: Espiau managed 3G in 41 apps, Hansson's form is unquantified, and Bazdar/Sans are depth-level contributors. Suzuki's 5G+4A in 18 Hiroshima appearances already exceeds Espiau's full-season return. If he can adapt to a right-winger or second-forward role, he addresses a genuine goal-threat gap the confirmed squad currently cannot fill.",
 
-  // Verdict dimensions
+  // Verdict dimensions — score 1-10
   verdictDims: [
-    { label:"Positional Need",      score:5,   tier:"Medium" },
-    { label:"Style Compatibility",  score:6,   tier:"Medium" },
-    { label:"Level Adjustment",     score:4,   tier:"Low"    },
-    { label:"Form / Fitness",       score:7,   tier:"High"   },
-    { label:"Financial Risk",       score:5,   tier:"Medium" },
+    { label:"Positional Need",      score:8, tier:"High"   },
+    { label:"Style Compatibility",  score:6, tier:"Medium" },
+    { label:"Level Adjustment",     score:7, tier:"High"   },
+    { label:"Form / Fitness",       score:8, tier:"High"   },
+    { label:"Financial Risk",       score:7, tier:"Medium" },
   ],
-  verdictText: "Suzuki is a technically sound, defensively active midfielder with genuine European pedigree. The fit score of 6.0 reflects real positional depth at Zaragoza and the competitive-level downgrade concern, not any doubt about the player's quality. MONITOR status means: keep tabs on his contract situation at Brugge (expires ~2026), re-evaluate if Zaragoza lose a central midfielder, and prioritise if Belgian Pro League data is ingested and confirms the defensive metrics.",
+  verdictText: "Suzuki is a genuine goal threat in a possession-based J1 system. At Hiroshima in 2025 he produced 5G+4A in just 18 appearances — better output rate than any confirmed Zaragoza 2026-27 forward in comparable sample. The move to 1RFEF would be a slight level downgrade, working in Zaragoza's favour on fee and wage negotiations. Key reservations: pass accuracy (74.4%) sits below the 79% Zaragoza team average; aerial duel win rate (26.7%) is a structural weakness likely to be exposed in a physically combative 1RFEF environment; and no Transfermarkt valuation means financial risk is opaque. Worth a deeper look and ideally a live viewing before the window closes — not a lock-in yet.",
 
-  // Text sections
-  playerProfile: "<p><strong>Akito Suzuki</strong> (born 10 June 2000, Kanagawa, Japan) is a central/defensive midfielder who joined Club Brugge from Shonan Bellmare in the summer of 2022. He has since become a reliable starter for Brugge in both the Belgian Pro League and UEFA club competitions, earning consistent recognition as one of Japan's most complete midfielders of his generation.</p><p>Suzuki's defining qualities are defensive: he presses with intensity and discipline, reads passing lanes well, and wins the ball cleanly. His ball-recovery numbers at Brugge place him among the top pressing midfielders in Belgium. He is also an effective vertical passer — comfortable switching the play or driving forward in transition — and has contributed double-digit goal contributions in productive seasons.</p><p>He has been a regular in the Japanese national team setup and was involved in Japan's 2026 World Cup cycle, though no WC_26 match data for him was found in our BQ dataset (Japan's group-stage games may not have included him, or data was not captured at individual level for this player specifically).</p>",
+  playerProfile: "<p>Akito Suzuki is a Japanese forward/winger playing for Sanfrecce Hiroshima in the J1 League. SofaScore classifies him as 'F' — from his output profile (1.68 KP/90, 2.73 shots/90, low aerial win rate, low touches at 37.94/90), he functions as an attacking winger or second forward rather than a target striker.</p><p>In 2024 at Shonan Bellmare he was a full-season mainstay: 37 apps, 2,913 minutes, 9 goals, 4 assists, SofaScore rating 7.05. He moved to Sanfrecce Hiroshima for 2025 — a step up in J1 quality — and continued producing at a higher rate: 5G+4A in 18 appearances (1,122 min, rating 6.92). The fact that his output rate improved despite the club upgrade is a meaningful signal.</p><p>Hiroshima play high-possession football (54% poss, 432 passes/game in 2025) — arguably a closer match to a technical coaching style than the direct approach of recent Zaragoza squads. Suzuki's pass accuracy at Hiroshima (74.4%) is slightly below the team average (76.7%), suggesting he is a progressive carrier rather than a circulation player, consistent with the winger/forward profile.</p><p>Defensive contribution is limited and expected for the role: 0.88 tackles/90 at a 45.5% win rate, 0.32 interceptions/90. Aerial win rate of 26.7% (12 won from roughly 45 contested) is poor — not unusual for a technical wide forward, but worth flagging in the context of a more physical 1RFEF environment. Duel win rate of 35.7% similarly flags a physical limitation.</p>",
 
-  marketIntel: "<p><strong>Estimated market value:</strong> €12–18M (Transfermarkt range for established Belgian Pro League starters with Japanese NT caps). Club Brugge are typically not a selling club mid-contract unless a significant offer arrives or player requests a move.</p><p><strong>Contract:</strong> Likely runs through 2026–27 based on standard Belgian contract lengths for internationals. Zaragoza would need to either trigger a transfer fee or target him on pre-contract in January 2027 if his deal is expiring.</p><p><strong>Salary expectation:</strong> Belgian Pro League salaries for established starters run €0.8–1.5M/year gross. 1RFEF clubs rarely match these figures — this is the main financial risk. Zaragoza would likely need to offer a significant increase on their typical wage structure or negotiate a below-market deal justified by project/playing time guarantees.</p><p><strong>Competition for signature:</strong> As a Japanese international with European experience, Suzuki will attract interest from mid-table Bundesliga, Serie A, or Championship clubs if his contract comes available. Zaragoza's pitch must be built around squad importance and a path to LaLiga2/LaLiga rather than on matching fee.</p>",
+  marketIntel: "<p><strong>Transfermarkt:</strong> No record found in the rz_silver.silver_squad table. Either Suzuki is not tracked by Transfermarkt or the name variant differs. Market value is unknown — a direct agent inquiry is needed before a bid can be structured.</p><p><strong>Contract status:</strong> Unknown. Hiroshima are competing at the top of J1; if Suzuki is producing at this rate mid-season, they are unlikely to sell cheaply in-window. A winter approach or end-of-season move is more realistic unless a low release clause exists.</p><p><strong>Competing interest:</strong> A Japanese forward scoring and assisting at this rate in J1 will attract attention from J-League rivals and potentially mid-tier European clubs. Zaragoza's approach should be discreet and timely if pursued.</p><p><strong>Japan national team:</strong> No WC 2026 data found for Suzuki in the WC_26 dataset — he may not have been part of Japan's tournament squad. If correct, this keeps his international profile lower and reduces competition from bigger European clubs.</p>",
 
   caveats: [
-    "No BQ data for Akito Suzuki: Belgian Pro League (tournament_id=38) added to pipeline queue 2026-07-22 but not yet ingested. All player statistics in this report are career-context estimates.",
-    "A different 'Akito Suzuki' (Sanfrecce Hiroshima, position F, J1 League) appears in rz_gold.gold_player_season — this is a name collision, not the player under review.",
-    "No WC_26 appearance found for this player in rz_silver.silver_player_stats. Japan's WC_26 data is present but this specific player did not appear in our captured matches (or had minimal minutes not logged).",
-    "Club Brugge team statistics are estimates based on publicly available Belgian Pro League averages — not sourced from BQ.",
-    "Market value, salary, and contract data are estimates from public knowledge (Transfermarkt ranges) as of July 2026 and should be verified with a licensed agent.",
-    "Level adjustment score (4/10 Low) reflects the objective quality gap between Belgian Pro League and 1RFEF, not a negative judgement on the player.",
+    "Only 18 appearances (1,122 min) in the primary 2025 dataset — season is in progress; final numbers may shift.",
+    "Yellow cards field is NULL for 2025 — discipline profile incomplete. The 2024 Shonan season showed 59 fouls committed across 37 apps (high rate by position).",
+    "Cross accuracy is NULL for 2025 — cannot assess crossing quality, which matters if deployed as a wide winger.",
+    "xG data not available for either season — conversion rate (14.7% in 2025 vs 11.8% in 2024) may reflect genuine clinical improvement or small-sample variance.",
+    "No Transfermarkt entry found — market value, contract expiry, and agent details unknown; financial modelling is not possible from BQ data alone.",
+    "Aerial win rate (26.7%) is notably low; could be a persistent liability in 1RFEF's more physical contests.",
+    "No WC 2026 data found in the WC_26 dataset — either not in Japan's squad or name-matching failed; scout should verify.",
+    "Level adjustment: J1 to 1RFEF is a slight step down. Output should not be carried over at face value — projection should apply a modest discount (est. 10-15%) to goals/assists rates.",
   ],
-  dataCoverageNote: "Belgian Pro League data not yet in rz_gold. Re-run this report after ingestion completes (est. 2–4 weeks at current queue pace). All Suzuki stats herein are estimates.",
+  dataCoverageNote: "",
 };
 </script>
 
@@ -580,6 +579,7 @@ vdEl.innerHTML = REPORT.verdictDims.map(d => `
   </div>`).join('');
 
 // ── Text sections ─────────────────────────────────────────────────────────
+document.getElementById('verdictPara').textContent = REPORT.verdictText;
 document.getElementById('playerProfile').innerHTML = REPORT.playerProfile;
 document.getElementById('marketIntel').innerHTML   = REPORT.marketIntel;
 document.getElementById('squadAssessment').textContent = REPORT.squadAssessment;
