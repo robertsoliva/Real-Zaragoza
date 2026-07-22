@@ -4,36 +4,34 @@
 #
 # Cadence: 4 seasons/day — 00:00, 06:00, 12:00, and 18:00 via launchd.
 # After each successful run, run_next_from_queue.sh removes that line.
-# Last updated: 2026-07-05
+# Last updated: 2026-07-22
 #
 # NOTE: WC 2026 is a SEPARATE workflow (incremental, BQ_DATASET=WC_26).
 # See run_daily_wc26.sh — tournament_id=16, season_id=58210.
 # -------------------------------------------------------------------------
 # PRIORITY 1 — Remaining standard backfill (failed 2026-07-03 due to IP ban)
-196  69871  J1_2025
-196  87931  J1_2026
-17073  77727  1RFEF_2025-26
 # -------------------------------------------------------------------------
 # PRIORITY 2 — New leagues (all IDs confirmed via seasons_lookup.py 2026-07-05)
-52   63814  TurkishSuperLig_2024-25
-52   77805  TurkishSuperLig_2025-26
-20   57322  NorwegianEliteserien_2024
-20   70174  NorwegianEliteserien_2025
-45   62629  AustrianBundesliga_2024-25
-45   77382  AustrianBundesliga_2025-26
-410  57878  KoreanKLeague1_2024
-410  70830  KoreanKLeague1_2025
 # -------------------------------------------------------------------------
 # PRIORITY 3 — Additional leagues (all IDs confirmed via seasons_lookup.py 2026-07-05)
-390  72603  BrasileiraoSerieB_2025
-390  89840  BrasileiraoSerieB_2026
-210  61448  MozzartBetSuperliga_2024-25
-210  76909  MozzartBetSuperliga_2025-26
-242  70158  MLS_2025
-242  86668  MLS_2026
 40   69956  Allsvenskan_2025
 40   87925  Allsvenskan_2026
 131  61667  EersteDivisie_2024-25
 131  77156  EersteDivisie_2025-26
 685  63546  MoldovanSuperLiga_2024-25
 685  76499  MoldovanSuperLiga_2025-26
+# -------------------------------------------------------------------------
+# PRIORITY 4 — New leagues added 2026-07-22 (IDs confirmed via seasons_lookup.py)
+# Eredivisie (NL 1st): key for Dutch player scouting, covers Hansson's Heracles peak
+# Belgian Pro League: strong European mid-tier, many Spanish-adjacent transfer routes
+# Liga Portugal: high relevance for Spanish football ecosystem
+# 2. Bundesliga: one of Europe's strongest 2nd divisions, rich player pool
+# -------------------------------------------------------------------------
+37   61666  Eredivisie_2024-25
+37   77012  Eredivisie_2025-26
+38   61459  BelgianProLeague_2024-25
+38   77040  BelgianProLeague_2025-26
+238  63670  LigaPortugal_2024-25
+238  77806  LigaPortugal_2025-26
+35   63516  2Bundesliga_2024-25
+35   77333  2Bundesliga_2025-26

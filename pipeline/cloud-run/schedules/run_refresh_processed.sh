@@ -4,6 +4,9 @@
 # rz_bronze views are live — no refresh needed.
 # Order matters: silver_matches must finish before player_stats and shots.
 
+# launchd does not inherit the user's PATH — add homebrew and gcloud explicitly.
+export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
+
 set -euo pipefail
 
 REPO="$(cd "$(dirname "$0")/../../.." && pwd)"

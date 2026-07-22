@@ -7,7 +7,9 @@ SofaScore tournament IDs:
   Romanian SuperLiga = 152      J1 League (Japan)    = 196
   FIFA World Cup     = 16       Turkish Süper Lig    = 52
   Norwegian Elitser. = 20       Austrian Bundesliga  = 45
-  Korean K League 1  = 410
+  Korean K League 1  = 410      Eredivisie (NL 1st)  = 37
+  Belgian Pro League = 38       Liga Portugal        = 238
+  2. Bundesliga      = 35
   Real Zaragoza team_id = 2815
 
 Known season IDs (run seasons_lookup.py to discover others):
@@ -62,6 +64,10 @@ LEAGUE_NAMES: dict[str, str] = {
     "40":    "Allsvenskan",
     "131":   "Eerste Divisie",
     "685":   "Moldovan Super Liga",
+    "37":    "Eredivisie",
+    "38":    "Belgian Pro League",
+    "238":   "Liga Portugal",
+    "35":    "2. Bundesliga",
 }
 
 # Stat fields used to detect whether SofaScore returned real player stats.
@@ -458,6 +464,75 @@ def save_local(payload: dict[str, list[dict]]) -> None:
 # Main
 # ---------------------------------------------------------------------------
 
+async def _scrape_event(
+    client: "NetworkClient",
+    event: dict,
+    tournament_id: str,
+    season_id: str,
+    league_name: str,
+    ingested_date: date,
+    ingested_at: datetime,
+    r_matches: list,
+    r_players: list,
+    r_shots: list,
+    r_teams: list,
+) -> int:
+    """Scrape one finished event and append rows into the provided lists. Returns skipped player count."""
+    mid       = str(event["id"])
+    match_row = parse_match_row(event, tournament_id, season_id, league_name,
+                                ingested_date, ingested_at)
+    match_date  = match_row["match_date"]
+    match_round = match_row["match_round"]
+    home_id, home_name = match_row["home_team_id"], match_row["home_team_name"]
+    away_id, away_name = match_row["away_team_id"], match_row["away_team_name"]
+
+    log.info(f"  [{mid}] {home_name} vs {away_name} ({match_date})")
+    r_matches.append(match_row)
+    skipped = 0
+
+    lineup_data = await client.get(f"/api/v1/event/{mid}/lineups")
+    if lineup_data:
+        player_rows = parse_player_stats(
+            mid, match_date, match_round, lineup_data,
+            tournament_id, season_id, league_name,
+            ingested_date, ingested_at,
+        )
+        if player_rows and _player_rows_have_stats(player_rows):
+            r_players.extend(player_rows)
+            log.info(f"    {len(player_rows)} player rows")
+        elif player_rows:
+            skipped += len(player_rows)
+            log.warning(
+                f"    [{mid}] player stats all-null ({len(player_rows)} rows skipped) — "
+                f"SofaScore may not have processed this match yet or "
+                f"{league_name} lacks detailed coverage"
+            )
+    await asyncio.sleep(random.uniform(REQUEST_DELAY * 0.8, REQUEST_DELAY * 1.2))
+
+    stats_data = await client.get(f"/api/v1/event/{mid}/statistics")
+    if stats_data:
+        r_teams.extend(parse_team_stats(
+            mid, match_date, match_round,
+            home_id, home_name, away_id, away_name,
+            stats_data, tournament_id, season_id, league_name,
+            ingested_date, ingested_at,
+        ))
+    await asyncio.sleep(random.uniform(REQUEST_DELAY * 0.8, REQUEST_DELAY * 1.2))
+
+    shot_data = await client.get(f"/api/v1/event/{mid}/shotmap")
+    if shot_data:
+        rows = parse_shots(
+            mid, match_date, match_round,
+            shot_data.get("shotmap") or [],
+            tournament_id, season_id, league_name,
+            ingested_date, ingested_at,
+        )
+        r_shots.extend(rows)
+        log.info(f"    {len(rows)} shots")
+    await asyncio.sleep(random.uniform(REQUEST_DELAY * 0.8, REQUEST_DELAY * 1.2))
+    return skipped
+
+
 async def run_scrape() -> None:
     project_id    = os.environ.get("GCP_PROJECT_ID")
     bq_dataset    = os.environ.get("BQ_DATASET", "rz_raw")
@@ -523,62 +598,12 @@ async def run_scrape() -> None:
             r_teams:   list[dict] = []
 
             for event in finished:
-                mid       = str(event["id"])
-                match_row = parse_match_row(event, tournament_id, season_id, league_name,
-                                            ingested_date, ingested_at)
-                match_date  = match_row["match_date"]
-                match_round = match_row["match_round"]
-                home_id, home_name = match_row["home_team_id"], match_row["home_team_name"]
-                away_id, away_name = match_row["away_team_id"], match_row["away_team_name"]
-
-                log.info(f"  [{mid}] {home_name} vs {away_name} ({match_date})")
-                r_matches.append(match_row)
-
-                # 3. Player stats (lineups)
-                lineup_data = await client.get(f"/api/v1/event/{mid}/lineups")
-                if lineup_data:
-                    player_rows = parse_player_stats(
-                        mid, match_date, match_round, lineup_data,
-                        tournament_id, season_id, league_name,
-                        ingested_date, ingested_at,
-                    )
-                    if player_rows and _player_rows_have_stats(player_rows):
-                        r_players.extend(player_rows)
-                        log.info(f"    {len(player_rows)} player rows")
-                    elif player_rows:
-                        total_skipped_players += len(player_rows)
-                        log.warning(
-                            f"    [{mid}] player stats all-null ({len(player_rows)} rows skipped) — "
-                            f"SofaScore may not have processed this match yet or "
-                            f"{league_name} lacks detailed coverage"
-                        )
-                await asyncio.sleep(random.uniform(REQUEST_DELAY * 0.8, REQUEST_DELAY * 1.2))
-
-                # 4. Team stats
-                stats_data = await client.get(f"/api/v1/event/{mid}/statistics")
-                if stats_data:
-                    rows = parse_team_stats(
-                        mid, match_date, match_round,
-                        home_id, home_name, away_id, away_name,
-                        stats_data,
-                        tournament_id, season_id, league_name,
-                        ingested_date, ingested_at,
-                    )
-                    r_teams.extend(rows)
-                await asyncio.sleep(random.uniform(REQUEST_DELAY * 0.8, REQUEST_DELAY * 1.2))
-
-                # 5. Shot map
-                shot_data = await client.get(f"/api/v1/event/{mid}/shotmap")
-                if shot_data:
-                    rows = parse_shots(
-                        mid, match_date, match_round,
-                        shot_data.get("shotmap") or [],
-                        tournament_id, season_id, league_name,
-                        ingested_date, ingested_at,
-                    )
-                    r_shots.extend(rows)
-                    log.info(f"    {len(rows)} shots")
-                await asyncio.sleep(random.uniform(REQUEST_DELAY * 0.8, REQUEST_DELAY * 1.2))
+                skipped = await _scrape_event(
+                    client, event, tournament_id, season_id, league_name,
+                    ingested_date, ingested_at,
+                    r_matches, r_players, r_shots, r_teams,
+                )
+                total_skipped_players += skipped
 
             # Flush this round immediately — transient BQ errors only lose one round
             if project_id:
@@ -597,6 +622,60 @@ async def run_scrape() -> None:
             total_players += len(r_players)
             total_shots   += len(r_shots)
             total_team    += len(r_teams)
+
+        # 6. Cup/playoff rounds — only available via cuptrees, not the rounds endpoint
+        #    (e.g. WC knockout stage: R32, R16, QF, SF, Final)
+        cup_data = await client.get(
+            f"/api/v1/unique-tournament/{tournament_id}/season/{season_id}/cuptrees"
+        )
+        if cup_data:
+            cup_event_ids: list[int] = []
+            for tree in cup_data.get("cupTrees") or []:
+                for rnd in tree.get("rounds") or []:
+                    for block in rnd.get("blocks") or []:
+                        cup_event_ids.extend(block.get("events") or [])
+
+            if cup_event_ids:
+                log.info(f"Cup bracket: {len(cup_event_ids)} events to check")
+                cup_matches: list[dict] = []
+                cup_players: list[dict] = []
+                cup_shots:   list[dict] = []
+                cup_teams:   list[dict] = []
+
+                for eid in cup_event_ids:
+                    event_data = await client.get(f"/api/v1/event/{eid}")
+                    event = (event_data or {}).get("event") or {}
+                    if not event:
+                        continue
+                    if (event.get("status") or {}).get("type") != "finished":
+                        continue
+                    if cutoff_ts and (event.get("startTimestamp") or 0) < cutoff_ts:
+                        continue
+                    await asyncio.sleep(random.uniform(ROUND_DELAY * 0.8, ROUND_DELAY * 1.2))
+                    skipped = await _scrape_event(
+                        client, event, tournament_id, season_id, league_name,
+                        ingested_date, ingested_at,
+                        cup_matches, cup_players, cup_shots, cup_teams,
+                    )
+                    total_skipped_players += skipped
+
+                if cup_matches:
+                    if project_id:
+                        write_to_bq(cup_matches, "sofascore_matches",            project_id, bq_dataset)
+                        write_to_bq(cup_players, "sofascore_player_match_stats", project_id, bq_dataset)
+                        write_to_bq(cup_teams,   "sofascore_team_match_stats",   project_id, bq_dataset)
+                        write_to_bq(cup_shots,   "sofascore_shots",              project_id, bq_dataset)
+                    else:
+                        save_local({
+                            "sofascore_matches":            cup_matches,
+                            "sofascore_player_match_stats": cup_players,
+                            "sofascore_shots":              cup_shots,
+                            "sofascore_team_match_stats":   cup_teams,
+                        })
+                    total_matches += len(cup_matches)
+                    total_players += len(cup_players)
+                    total_shots   += len(cup_shots)
+                    total_team    += len(cup_teams)
 
     log.info(
         f"\nSummary: {total_matches} matches | "
