@@ -14,7 +14,7 @@ Before writing any scouting report, run the following BQ queries. Acknowledge wh
 
 All queries run against the `rz_processed` gold/silver layer — never `rz_raw` directly.
 
-### 1. Target player stats
+### 1. Target player stats (SofaScore)
 ```sql
 SELECT
   player_name, team_name, league_name, dataset_source, season_id,
@@ -26,54 +26,68 @@ SELECT
   interceptions, clearances, aerials_won, aerial_win_pct,
   duels_won, duel_win_pct, interceptions_p90, tackles_p90,
   touches_p90, fouls_committed, fouls_won, yellows, reds, yellows_p90
-FROM `real-zaragoza-500608.rz_gold.gold_player_season`
+FROM `real-zaragoza-500608.rz_gold.fct_player_season_stats`
 WHERE LOWER(player_name) LIKE LOWER('%{PLAYER_NAME}%')
 ORDER BY season_id DESC, total_minutes DESC
 ```
 
 Note: WC data appears here alongside league data. Filter `dataset_source = 'wc_26'` or `tournament_id = '16'` to separate WC rows.
 
-### 2. Origin team metrics (last full season)
+### 2. Target player Transfermarkt data (position + market value source of truth)
+```sql
+SELECT name, position, age, nationality, nationality_all, height, foot,
+       market_value_eur, contract_expiry, club_name, league_name, season_id
+FROM `real-zaragoza-500608.rz_gold.agg_player_market_values`
+WHERE LOWER(name) LIKE LOWER('%{PLAYER_NAME}%')
+ORDER BY season_id DESC
+```
+
+**TM position is the source of truth** — use it instead of SofaScore `primary_position`. TM positions are granular (e.g. "Centre-Back", "Left Winger", "Central Midfield") vs SofaScore broad codes (D/M/F). Use TM position to correctly map the player to their 4-2-3-1 slot.
+
+### 3. Origin team metrics (last full season)
 ```sql
 SELECT *
-FROM `real-zaragoza-500608.rz_gold.gold_team_season`
+FROM `real-zaragoza-500608.rz_gold.fct_team_season_stats`
 WHERE LOWER(team_name) LIKE LOWER('%{ORIGIN_TEAM}%')
 ORDER BY season_id DESC
 ```
 
-### 3. Destination team metrics (same query, swap team name)
+### 4. Destination team metrics (same query, swap team name)
 
-### 4. League context (both leagues)
+### 5. League benchmarks (position averages — for contextualising the player's numbers)
 ```sql
-SELECT league_name, season_id,
-  ROUND(AVG(avg_possession), 1)   AS avg_possession,
-  ROUND(AVG(avg_passes), 0)       AS avg_passes,
-  ROUND(AVG(avg_shots), 1)        AS avg_shots,
-  ROUND(AVG(avg_fouls), 1)        AS avg_fouls,
-  ROUND(AVG(avg_yellows), 2)      AS avg_yellows
-FROM `real-zaragoza-500608.rz_gold.gold_team_season`
+SELECT league_name, season_id, primary_position,
+  player_count, avg_rating, avg_goals_p90, avg_assists_p90, avg_shots_p90,
+  avg_key_passes_p90, avg_pass_acc_pct, avg_tackles_p90,
+  avg_interceptions_p90, avg_aerial_win_pct, avg_duel_win_pct
+FROM `real-zaragoza-500608.rz_gold.agg_league_player_benchmarks`
 WHERE league_name IN ('{ORIGIN_LEAGUE}', '{DEST_LEAGUE}')
-GROUP BY 1,2
-ORDER BY 2 DESC, 1
+  AND primary_position = '{SOFASCORE_POSITION_CODE}'   -- G / D / M / F
+ORDER BY season_id DESC, league_name
 ```
 
-### 5. Destination team's players in the same position
+### 6. Destination team's players at the **same primary position** (Zaragoza squad comparison)
 ```sql
 SELECT
   player_name, team_name, primary_position,
   matches, total_minutes AS minutes, goals, assists, avg_rating,
   shots, key_passes_p90, pass_acc_pct
-FROM `real-zaragoza-500608.rz_gold.gold_player_season`
-WHERE LOWER(team_name) LIKE LOWER('%{DEST_TEAM}%')
+FROM `real-zaragoza-500608.rz_gold.fct_player_season_stats`
+WHERE LOWER(team_name) LIKE LOWER('%Zaragoza%')
   AND primary_position = '{POSITION_CODE}'    -- G / D / M / F
 ORDER BY total_minutes DESC
 ```
 
-### 6. Transfermarkt data
+**Primary vs secondary position rule:**
+- **Squad comparison table must only include players whose primary position matches the target.** Do not include players who "can play there" as secondary.
+- After the table, add a separate note (not a row) listing any Zaragoza player who can cover the role as a secondary position — clearly labelled "can also play here (secondary)" with their actual primary position stated.
+- Source for primary position: `wiki/squad.md` for confirmed 2026-27 squad; always use TM position when available (more granular than SofaScore).
+
+### 7. Zaragoza Transfermarkt squad data (for Market Intelligence section)
 ```sql
-SELECT *
-FROM `real-zaragoza-500608.rz_silver.silver_squad`
-WHERE LOWER(name) LIKE LOWER('%{PLAYER_NAME}%')
+SELECT name, position, age, market_value_eur, contract_expiry, signed_from, nationality
+FROM `real-zaragoza-500608.rz_gold.agg_rz_squad_finances`
+ORDER BY market_value_eur DESC NULLS LAST
 ```
 
 ---

@@ -1,4 +1,5 @@
-CREATE OR REPLACE TABLE `real-zaragoza-500608.rz_gold.gold_team_season`
+CREATE OR REPLACE TABLE `real-zaragoza-500608.rz_gold.fct_team_season_stats`
+CLUSTER BY league_name, season_id
 AS
 SELECT
   team_id, team_name, league_name, dataset_source, tournament_id, season_id,
@@ -17,5 +18,5 @@ SELECT
   ROUND(AVG(dribbles_completed), 1)                                                           AS avg_dribbles_completed,
   ROUND(AVG(aerial_duels_won), 1)                                                             AS avg_aerial_won,
   ROUND(AVG(SAFE_DIVIDE(aerial_duels_won, total_aerial_duels)) * 100, 1)                     AS avg_aerial_win_pct
-FROM `real-zaragoza-500608.rz_silver.silver_team_stats`
+FROM `real-zaragoza-500608.rz_silver.team_stats`
 GROUP BY 1,2,3,4,5,6

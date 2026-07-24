@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW `real-zaragoza-500608.rz_bronze.bronze_team_stats` AS
+CREATE OR REPLACE VIEW `real-zaragoza-500608.rz_bronze.team_stats` AS
 SELECT
   match_id, match_date, match_round, tournament_id, season_id, league_name,
   team_id, team_name, side, possession_pct, total_shots, shots_on_target,

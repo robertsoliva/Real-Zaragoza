@@ -1,5 +1,6 @@
-CREATE OR REPLACE TABLE `real-zaragoza-500608.rz_gold.gold_zaragoza_matches`
+CREATE OR REPLACE TABLE `real-zaragoza-500608.rz_gold.fct_rz_matches`
 PARTITION BY match_date
+CLUSTER BY season_id, result
 AS
 SELECT
   m.match_id, m.match_date, m.match_round, m.league_name, m.season_id,
@@ -17,7 +18,7 @@ SELECT
   ts.possession_pct, ts.total_shots, ts.shots_on_target,
   ts.total_passes, ts.accurate_passes, ts.total_tackles, ts.interceptions, ts.fouls,
   ts.big_chances, ts.corners
-FROM `real-zaragoza-500608.rz_silver.silver_matches` m
-LEFT JOIN `real-zaragoza-500608.rz_silver.silver_team_stats` ts
+FROM `real-zaragoza-500608.rz_silver.matches` m
+LEFT JOIN `real-zaragoza-500608.rz_silver.team_stats` ts
   ON m.match_id = ts.match_id AND ts.team_id = "2815"
 WHERE m.home_team_id = "2815" OR m.away_team_id = "2815"

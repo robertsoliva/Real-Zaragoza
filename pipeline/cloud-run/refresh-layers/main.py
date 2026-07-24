@@ -20,25 +20,28 @@ SQL_DIR = Path("/app/sql")
 # Execution order matters: bronze (views) → silver (tables) → gold (tables).
 # Silver/gold models reference bronze via CREATE OR REPLACE, so bronze must run first.
 SQL_ORDER = [
-    # Bronze — lightweight views, always recreated first
-    "bronze/bronze_squad.sql",
-    "bronze/bronze_tm_players.sql",
-    "bronze/bronze_matches.sql",
-    "bronze/bronze_player_stats.sql",
-    "bronze/bronze_shots.sql",
-    "bronze/bronze_team_stats.sql",
+    # Bronze — lightweight views over rz_raw, always recreated first
+    "bronze/rz_squad.sql",
+    "bronze/tm_players.sql",
+    "bronze/matches.sql",
+    "bronze/player_stats.sql",
+    "bronze/shots.sql",
+    "bronze/team_stats.sql",
     # Silver — dedup tables (latest row per natural key)
-    "silver/silver_squad.sql",
-    "silver/silver_tm_players.sql",
-    "silver/silver_matches.sql",
-    "silver/silver_player_stats.sql",
-    "silver/silver_shots.sql",
-    "silver/silver_team_stats.sql",
-    # Gold — aggregated scouting/analysis tables
-    "gold/gold_player_season.sql",
-    "gold/gold_team_season.sql",
-    "gold/gold_tm_players.sql",
-    "gold/gold_zaragoza_matches.sql",
+    "silver/rz_squad.sql",
+    "silver/tm_players.sql",
+    "silver/matches.sql",
+    "silver/player_stats.sql",       # depends on silver/matches
+    "silver/shots.sql",              # depends on silver/matches
+    "silver/team_stats.sql",
+    # Gold — fact and aggregate tables
+    "gold/fct_player_season_stats.sql",
+    "gold/fct_team_season_stats.sql",
+    "gold/fct_rz_matches.sql",
+    "gold/agg_player_market_values.sql",
+    "gold/agg_scouting_player_season.sql",   # depends on fct_player_season_stats + agg_player_market_values
+    "gold/agg_rz_squad_finances.sql",
+    "gold/agg_league_player_benchmarks.sql", # depends on fct_player_season_stats
 ]
 
 
