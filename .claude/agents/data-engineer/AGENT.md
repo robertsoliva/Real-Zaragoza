@@ -48,9 +48,9 @@ Do not guess at column names. If unsure, check the schema file.
 | J1 League | 196 | 87931 (2026) | ✅ both seasons in BQ |
 | FIFA World Cup 2026 | 16 | 58210 | separate dataset: `WC_26`; incremental only via `run_daily_wc26.sh` |
 | Turkish Süper Lig | 52 | 77805 (25/26) | backfill also: 63814 (24/25) |
-| Norwegian Eliteserien | 20 | 70174 (2025) | calendar-year seasons; backfill also: 57322 (2024) |
+| Norwegian Eliteserien | 20 | 87809 (2026) | calendar-year; 70174 (2025) + 57322 (2024) in BQ |
 | Austrian Bundesliga | 45 | 77382 (25/26) | backfill also: 62629 (24/25) |
-| Korean K League 1 | 410 | 70830 (2025) | calendar-year seasons; backfill also: 57878 (2024) |
+| Korean K League 1 | 410 | 88606 (2026) | calendar-year; 70830 (2025) + 57878 (2024) in BQ |
 | Brasileirao Serie B | 390 | 89840 (2026) | calendar-year seasons; backfill also: 72603 (2025) |
 | Mozzart Bet Superliga | 210 | 76909 (25/26) | backfill also: 61448 (24/25) |
 | MLS | 242 | 86668 (2026) | calendar-year seasons; backfill also: 70158 (2025) |

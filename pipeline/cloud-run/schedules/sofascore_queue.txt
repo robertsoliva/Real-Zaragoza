@@ -4,7 +4,7 @@
 #
 # Cadence: 4 seasons/day — 00:00, 06:00, 12:00, and 18:00 via launchd.
 # After each successful run, run_next_from_queue.sh removes that line.
-# Last updated: 2026-07-22
+# Last updated: 2026-07-24
 #
 # NOTE: WC 2026 is a SEPARATE workflow (incremental, BQ_DATASET=WC_26).
 # See run_daily_wc26.sh — tournament_id=16, season_id=58210.
@@ -34,3 +34,16 @@
 238  77806  LigaPortugal_2025-26
 35   63516  2Bundesliga_2024-25
 35   77333  2Bundesliga_2025-26
+# -------------------------------------------------------------------------
+# PRIORITY 5 — Gap fills identified 2026-07-24
+# J1 2026: data stops 2026-05-24 (~2 month gap). Re-scrape full season to fill.
+# MLS 2026: zero data in BQ. Full backfill.
+# Serie B 2025-26: only ~180/380 matches loaded (scraped Dec 2025, season
+#   ended June 2026). Re-scrape fills second half; silver deduplicates.
+# Norwegian 2026 / Korean 2026: new season IDs confirmed 2026-07-24.
+# -------------------------------------------------------------------------
+196  87931  J1_2026-catchup
+242  86668  MLS_2026
+53   79502  SerieB_2025-26-catchup
+20   87809  NorwegianEliteserien_2026
+410  88606  KoreanKLeague1_2026
