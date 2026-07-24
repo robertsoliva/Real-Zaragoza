@@ -6,45 +6,41 @@ Forward-looking only — pending items by category. Completed items graduate to 
 
 ## Active
 
-- **SofaScore backfill (4 new leagues)** — Eredivisie (37), Belgian Pro League (38), Liga Portugal (238), 2. Bundesliga (35) added 2026-07-22. Loading via launchd cadence. Expected completion ~2026-07-26.
-- **Transfermarkt multi-league initial scrape** — running now (PID 87614, started 2026-07-24). All 19 active leagues; data lands in `rz_raw.transfermarkt_players` → `rz_gold.gold_tm_players`.
+- **SofaScore backfill (4 leagues)** — Eredivisie (37), Belgian Pro League (38), Liga Portugal (238), 2. Bundesliga (35) added 2026-07-22. Loading via launchd cadence (4 slots/day). Expected completion ~2026-07-26.
+- **1RFEF 2026-27 season ID** — Zaragoza's actual playing season. Run `python seasons_lookup.py 17073` to find it; add to `sofascore_queue.txt` and `run_weekly_sofascore.sh` once available.
+
+---
+
+## Sporting analysis
+
+- **Scouting reports on 4 new signings** — Emil Hansson (LW), Edu Espiau (CF), Ander Herrera (MF/DM), Diego González (CB). All 2026-27 confirmed. Data exists for Hansson/Espiau/Herrera in SofaScore pipeline leagues. Use data-scout agent.
+- **LaLiga2 2025-26 squad benchmarks** — now that backfills are largely complete, produce team style profiles for all LaLiga2 2025-26 sides (from `gold.fct_team_season_stats`). Useful for pre-season opponent analysis.
+- **Match outcome model** — predict Zaragoza fixtures using historical form, opponent stats, home/away patterns. Feature set ready in `gold.fct_rz_matches` + `gold.fct_team_season_stats`. Approach TBD (logistic regression / xG-based).
+- **Scouting backlog** — old reports (Bjørkan, Seol, Radunović, Sjøvold, Hansson, Espiau, Herrera, González, Akman, Suzuki) used the old 5-dimension system. Redo when next batch requested.
 
 ---
 
 ## Data pipeline
 
-- **1RFEF 2026-27** — season ID not yet on SofaScore (~July 2026). When available: add to queue and weekly script.
-- **1RFEF 2024-25 anomaly** — only 100 matches loaded (expected ~380+). Likely SofaScore exposes only playoff rounds for this season via the rounds API. Investigate before deciding whether to re-backfill.
-- **WC league_name fix** — rows from the initial WC backfill (before 2026-07-05) have `league_name = "tournament_16"` not `"FIFA World Cup"`. Fix: normalise in `bronze_matches` with a CASE on `tournament_id`. Until then, always filter WC data by `tournament_id = "16"`.
-- **`rz_gold.season_results`** — W/D/L, GD, cumulative points per team per season. Starting point: `rz_gold.gold_zaragoza_matches` + `rz_silver.silver_team_stats` for all teams. Add SQL to `pipeline/sql/gold/`.
-- **`rz_silver.player_valuations`** — time series of market value per player per season, joinable with gold_player_season. Source: `rz_bronze.bronze_tm_players` (all leagues) and `rz_bronze.bronze_squad` (Zaragoza). Add SQL to `pipeline/sql/silver/`.
-- **Move TM scrapers to Cloud Run** — `scraper_transfermarkt.py` (Zaragoza-only, weekly) and `scraper_transfermarkt_leagues.py` (all leagues, weekly) are candidates for Cloud Run Jobs + Cloud Scheduler triggers. TM doesn't block GCP IPs. Would remove the only remaining local scraper dependency.
-- **Weekly SofaScore automation** — update `run_weekly_sofascore.sh` to include all 20 active leagues once backfills are fully done.
+- **Capology first run** — scraper and Cloud Run Job (`rz-capology-scraper`) are deployed but `raw.capology_wages` is empty. Run once manually to seed it: `gcloud run jobs execute rz-capology-scraper --region europe-west1`. Covers top 5 EU leagues only (not LaLiga2/Serie B etc.) — useful for profiling targets from big leagues.
+- **Weekly SofaScore automation** — update `run_weekly_sofascore.sh` to include all 20 active leagues once the backfill queue is cleared (~end of July 2026). Currently covers only LaLiga2 + 1RFEF.
+- **1RFEF 2024-25 anomaly** — only ~100 matches loaded (expected ~380+). Likely SofaScore exposes only playoff rounds for this season via the rounds API. Investigate before deciding whether to re-backfill.
+- **WC `league_name` fix** — rows from the initial WC backfill (before 2026-07-05) have `league_name = "tournament_16"` not `"FIFA World Cup"`. Fix: add `CASE WHEN tournament_id = "16" THEN "FIFA World Cup" ELSE league_name END` in `bronze/matches.sql`. Until then, filter WC data by `tournament_id = "16"`.
 
 ---
 
 ## Infrastructure
 
-- **Cloud Monitoring alerts** — set up alerts on Cloud Run job failure (rz-refresh-layers) and optional BQ query cost threshold. Low priority until pipeline is fully GCP-hosted.
-- **Cloud Function `rz-bq-loader`** — Pub/Sub subscriber for fan-out; deferred until SofaScore scraper can move off local machine or a second data source requires it.
-
----
-
-## Analysis & predictions
-
-- **Standardised agent report structures** — data-scout and match-analyst use ad-hoc column groupings; define enforced output templates that map to the [Attacking/Passing/Defending/Physical] schema labels.
-- **LaLiga2 2025-26 benchmarks** — form, head-to-head, defensive and attacking profiles for all 22 teams; now possible with backfill complete.
-- **Player comparison tool** — compare Zaragoza squad against league averages and specific targets; depends on `sofascore_player_match_stats`.
-- **Match outcome model** — predict Zaragoza fixtures; feature set from SofaScore + Transfermarkt; approach TBD.
-- **Scouting: redo old reports on new 6-dimension system** — Bjørkan, Seol, Radunović, Sjøvold, Hansson, Espiau, Herrera, González, Akman, Suzuki all use the old 5-dimension system without Player Quality/Level. Update when next report batch is requested.
+- **Cloud Monitoring alerts** — alert on Cloud Run Job failure (`rz-refresh-layers`, `rz-tm-scraper`, `rz-capology-scraper`) and optional BQ query cost threshold. Low priority until operationally critical.
 
 ---
 
 ## Wiki
 
-- **Season-by-season results table** — generate from SofaScore data once loaded; link from `history.md`.
-- **Player pages** — one atomic page per first-team player; replace `squad.md` prose roster with a structured table; after Transfermarkt data is stable.
-- **Sweep open items** — `current-situation.md` (Fernando López succession, institutional president), `squad.md` (2026-27 captaincy, at-risk players, Ander Herrera), `academy.md` (Francho/Azón renewals).
+- **`architecture.md`** — rewrite to reflect current dataset names, 20-league scope, Cloud Run Jobs, and medallion architecture. The existing page still references `rz_raw`, `WC_26`, and old infra.
+- **Player pages** — one atomic page per first-team player; replace `squad.md` prose roster with a structured table + per-player pages. After TM data stabilises (next quarterly scrape: Oct 1 2026).
+- **Sweep open items** — `current-situation.md` (Fernando López succession, institutional president), `squad.md` (2026-27 captaincy, at-risk players, Ander Herrera latest), `academy.md` (Francho/Azón renewals).
+- **Season-by-season results** — generate from `gold.fct_rz_matches` once 2025-26 data is loaded; link from `history.md`.
 
 ---
 
@@ -52,8 +48,8 @@ Forward-looking only — pending items by category. Completed items graduate to 
 
 Local demo in `website/`. Launch with `bash website/start.sh` (requires `ANTHROPIC_API_KEY`).
 
-- **Squad page** — update Transfermarkt cards with 2026-27 signings once multi-league TM scrape stabilises.
-- **Match results page** — from `gold_zaragoza_matches`.
-- **Player detail pages** — per-player stat breakdown.
-- **League comparison views** — Zaragoza vs. LaLiga2 averages.
-- **Deploy publicly** — once backfills are stable and at least one full 2025-26 season is in BQ.
+- **Squad cards** — update with 2026-27 confirmed signings (Hansson, Espiau, Herrera, González).
+- **Match results page** — from `gold.fct_rz_matches`.
+- **Player detail pages** — per-player stat breakdown from `gold.fct_player_season_stats`.
+- **League comparison views** — Zaragoza vs. LaLiga2 averages from `gold.agg_league_player_benchmarks`.
+- **Deploy publicly** — once at least one full 2025-26 season is in BQ and the squad page is current.

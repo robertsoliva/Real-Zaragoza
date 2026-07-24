@@ -1,228 +1,136 @@
 # Architecture — Data sources, pipeline, and BigQuery
 
-> **Status:** living document, last updated 2026-07-05. Transfermarkt + SofaScore pipelines live. SofaScore covers 6 leagues (10 total, 4 more pending backfill). 2-season/day extraction cadence in place via launchd queue. Bronze/silver/gold view layers live in `rz_processed` (13 views). WC 2026 full backfill complete. Agent ecosystem (data-lead, data-engineer, data-scout, match-analyst) in place.
+> **Status:** living document, last updated 2026-07-24. Full medallion architecture live (raw → bronze → silver → gold). 20 leagues in scope (16 active + 4 backfilling). All BQ tables have table + column descriptions. WC 2026 complete and archived.
+
+---
 
 ## Goal
 
 Build a data foundation to:
-- **Predict match outcomes** — model Zaragoza fixtures using historical and live form data
-- **Evaluate signings** — compare targets against current squad and league-wide benchmarks
-- **Scout opponents** — aggregate player and team stats across 6 confirmed leagues (LaLiga2, 1RFEF, Serie B, Ligue 2, Romanian SuperLiga, J1 League) + 4 pending (Turkish Süper Lig, Norwegian Eliteserien, Austrian Bundesliga, Korean K League 1) + WC 2026
+- **Scout transfer targets** — compare players across 20 leagues against Zaragoza's squad and positional benchmarks
+- **Analyse form and opponents** — team style profiles, Zaragoza match-by-match breakdown
+- **Predict match outcomes** — model fixtures using historical stats + form (future)
 
 ---
 
 ## Data sources
 
-| Source | What | Leagues | Method | Status |
+| Source | What | Coverage | Method | Cadence |
 |---|---|---|---|---|
-| **Transfermarkt** | Squad, market values, contracts | All (Zaragoza only) | httpx + BeautifulSoup | Live, weekly |
-| **SofaScore** | Match results, player stats, team stats, shot maps | LaLiga2, 1RFEF, Serie B, Ligue 2, Romanian SuperLiga, J1 League (+ Turkish, Norwegian, Austrian, Korean pending; WC 2026 separate) | curl_cffi (Chrome TLS impersonation) | Live locally; Cloud Run blocked by Cloudflare |
+| **SofaScore** | Matches, player stats, team stats, shot maps | 20 leagues + WC 2026 | curl_cffi Chrome TLS (local only — GCP IPs blocked) | 4 slots/day via launchd |
+| **Transfermarkt** | Market values, contracts, positions, squad | 19 leagues (1RFEF excluded) + Zaragoza-only | httpx + BeautifulSoup | Quarterly (Cloud Run) |
+| **Capology** | Gross wages | Top 5 EU leagues only (PL, La Liga, Bundesliga, Ligue 1, Serie A) | requests + BeautifulSoup | Monthly (Cloud Run) |
 
-**Why SofaScore over FotMob:** FotMob provides only match results (`lower` coverage) for 1RFEF with no player stats. SofaScore has full player and team stats for both LaLiga2 and 1RFEF, and was extended to 4 additional leagues on 2026-07-01 for scouting context.
-
----
-
-## SofaScore IDs
-
-| League | Tournament ID | 2024-25 Season ID | 2025-26 Season ID | Notes |
-|---|---|---|---|---|
-| LaLiga2 | 54 | 62048 | 77558 | ✅ in BQ |
-| 1RFEF | 17073 | 64430 | 77727 | ✅ 24-25 in BQ; 25-26 pending |
-| Serie B (Italy) | 53 | 63812 | 79502 | ✅ both in BQ |
-| Ligue 2 (France) | 182 | 61737 | 77357 | pending backfill; 2026-27 = 96109 |
-| Romanian SuperLiga | 152 | 62837 | 77312 | pending backfill; 2026-27 = 97124 |
-| J1 League (Japan) | 196 | 2025 = 69871 | 2026 = 87931 | pending backfill; calendar-year |
-| FIFA World Cup 2026 | 16 | — | 58210 | separate dataset `WC_26`; daily incremental via `run_daily_wc26.sh` |
-| Turkish Süper Lig | 52 | 63814 | 77805 | pending backfill |
-| Norwegian Eliteserien | 20 | 2024 = 57322 | 2025 = 70174 | calendar-year; pending backfill |
-| Austrian Bundesliga | 45 | 62629 | 77382 | pending backfill |
-| Korean K League 1 | 410 | 2024 = 57878 | 2025 = 70830 | calendar-year; pending backfill |
-
-Real Zaragoza team ID: **2815**. Run `python seasons_lookup.py <tournament_id>` to discover future season IDs.
+**Why SofaScore can't run on GCP:** Cloudflare blocks all GCP datacenter IPs even with Chrome TLS impersonation. The scraper must run locally via launchd.
 
 ---
 
-## Cloud infrastructure (GCP project: `real-zaragoza-500608`, region: `europe-west1`)
+## Active leagues
 
-```
-Cloud Scheduler (every Tuesday)
-  ├── 06:00 CET → rz-weekly-ingest      → Cloud Run: rz-scraper-transfermarkt
-  └── 06:30 CET → rz-weekly-sofascore  → Cloud Run: rz-scraper-sofascore
-                                                ↓
-                                          BigQuery (rz_raw)
-```
-
-| Resource | Name | Purpose |
-|---|---|---|
-| Cloud Run job | `rz-scraper-transfermarkt` | Scrapes Transfermarkt squad page → `rz_raw.transfermarkt_squad` |
-| Cloud Run job | `rz-scraper-sofascore` | Scrapes SofaScore match + player stats → `rz_raw.sofascore_*` tables |
-| Cloud Scheduler | `rz-weekly-ingest` | Fires Tuesdays 06:00 CET |
-| Cloud Scheduler | `rz-weekly-sofascore` | Fires Tuesdays 06:30 CET |
-| BQ dataset | `rz_raw` | Append-only partitioned tables — source of truth |
-| BQ dataset | `rz_processed` | Views over `rz_raw` for analysis |
-| Service account | `rz-pipeline` | Minimum IAM: BQ dataEditor + jobUser |
-| Budget alert | `rz-pipeline-alert` | €10/month cap |
-| Artifact Registry | `rz-images` | Container images for Cloud Run jobs |
-
----
-
-## Historical vs. incremental scraping
-
-**Historical backfill** — run once per season to load a full season's data:
-```bash
-# Set TOURNAMENT_ID + SEASON_ID for the target season, INCREMENTAL=false (default)
-gcloud run jobs update rz-scraper-sofascore \
-  --update-env-vars TOURNAMENT_ID=54,SEASON_ID=62048,INCREMENTAL=false
-gcloud run jobs execute rz-scraper-sofascore --region europe-west1
-```
-
-**Weekly incremental** — default mode once a season is loaded:
-- `rz-scraper-sofascore` has `INCREMENTAL=true`; fetches rounds containing matches from last 14 days
-- Transfermarkt always scrapes the current squad (append-only)
-
-All 12 seasons backfilled via `backfill_all.sh` (run 2026-07-01). Use the same script for future re-backfills. For a single league/season:
-```bash
-GCP_PROJECT_ID=real-zaragoza-500608 TOURNAMENT_ID=54 SEASON_ID=77558 python3 scraper_sofascore.py
-```
-
----
-
-## BigQuery schema
-
-All `rz_raw` tables are **append-only** — rows are never updated or deleted.
-
-### `rz_raw.transfermarkt_squad`
-Partition: `ingested_date` (date of scrape).
-
-| Field | Type | Description |
-|---|---|---|
-| `ingested_date` | DATE | Partition key |
-| `season_id` | INT64 | Transfermarkt season year (2025 = 2025-26) |
-| `player_id` | STRING | Transfermarkt internal ID |
-| `name` | STRING | |
-| `date_of_birth` | DATE | |
-| `jersey_number` | STRING | |
-| `position` | STRING | Spanish taxonomy (e.g. `Defensa central`) |
-| `age` | INT64 | Age at scrape date |
-| `nationality` | STRING | Primary nationality |
-| `nationality_all` | STRING | Comma-separated (dual nationals) |
-| `height` | STRING | e.g. `1,84m` |
-| `foot` | STRING | `Derecho` / `Izquierdo` |
-| `joined_date` | DATE | |
-| `signed_from` | STRING | Previous club |
-| `signing_fee` | STRING | Raw string: `Libre`, `120 mil €`, `?` |
-| `contract_expiry` | DATE | |
-| `market_value_eur` | INT64 | In EUR |
-| `ingested_at` | TIMESTAMP | |
-
-### `rz_raw.sofascore_matches`
-Partition: `match_date`. Clustered by: `match_round`, `tournament_id`.
-
-| Field | Type | Description |
-|---|---|---|
-| `match_id` | STRING | SofaScore event ID |
-| `match_date` | DATE | Partition key |
-| `match_round` | INT64 | Jornada / round number — cluster key |
-| `tournament_id` | STRING | 54=LaLiga2, 17073=1RFEF, 53=Serie B, 182=Ligue 2, 152=Romanian SuperLiga, 196=J1 |
-| `season_id` | STRING | e.g. 62048, 77558 |
-| `league_name` | STRING | Human-readable: LaLiga2, 1RFEF, Serie B, Ligue 2, Romanian SuperLiga, J1 League |
-| `home_team_id` / `away_team_id` | STRING | SofaScore team IDs |
-| `home_team_name` / `away_team_name` | STRING | |
-| `home_score` / `away_score` | INT64 | |
-| `status` | STRING | finished / notstarted / inprogress |
-| `ingested_date` / `ingested_at` | DATE / TIMESTAMP | Audit |
-
-### `rz_raw.sofascore_player_match_stats`
-Partition: `match_date`. Clustered by: `match_round`, `team_id`.  
-One row per player per match (starters + substitutes). Rows with all-null stats are skipped at ingest (SofaScore didn't process the match yet, or league lacks detail).
-
-Context columns on every row: `tournament_id`, `season_id`, `league_name` (no join to matches needed).
-
-Stat columns are tagged in BQ column descriptions with a category: **[Attacking]** `goals`, `goal_assists`, `total_shots`, `shots_on_target`, `expected_goals`, `expected_assists` — **[Passing]** `total_passes`, `accurate_passes`, `total_long_balls`, `accurate_long_balls`, `total_crosses`, `accurate_crosses`, `key_passes` — **[Defending]** `aerial_won`, `aerial_lost`, `duel_won`, `duel_lost`, `challenge_lost`, `total_tackle`, `won_tackle`, `interceptions`, `total_clearance`, `ball_recovery`, `saves` — **[Physical]** `minutes_played`, `touches`, `dispossessed`, `was_fouled`, `fouls`, `possession_lost`, `unsuccessful_touch`, `yellow_cards`, `red_cards`.
-
-Full schema: [`pipeline/bq-schemas/sofascore_player_match_stats.json`](../pipeline/bq-schemas/sofascore_player_match_stats.json)
-
-### `rz_raw.sofascore_shots`
-Partition: `match_date`. Clustered by: `match_round`.  
-One row per shot attempt. Context columns: `tournament_id`, `season_id`, `league_name`.
-
-Key fields: `shot_id`, `player_id`, `player_name`, `is_home`, `minute`, `x`/`y` (shot origin), `goal_mouth_x`/`y`/`z`, `goal_mouth_location`, `block_x`/`y`, `body_part`, `shot_type` (goal/save/miss/blocked), `situation`, `xg` (null for lower leagues). All coordinates tagged **[Attacking]** except block coords (**[Defending]**).
-
-Full schema: [`pipeline/bq-schemas/sofascore_shots.json`](../pipeline/bq-schemas/sofascore_shots.json)
-
-### `rz_raw.sofascore_team_match_stats`
-Partition: `match_date`. Clustered by: `match_round`, `team_id`.  
-Two rows per match (home + away). Context columns: `tournament_id`, `season_id`, `league_name`.
-
-Stat columns by category — **[Attacking]** `total_shots`, `shots_on_target/off_target/blocked/woodwork`, `shots_inside/outside_box`, `big_chances*`, `corners`, `offsides`, `touches_in_opp_box` — **[Passing]** `total/accurate_passes`, `long_balls`, `crosses`, `final_third_*`, `final_third_entries` — **[Defending]** `total/won_tackles`, `interceptions`, `clearances`, `ball_recoveries`, `errors_leading_to_shot`, `goalkeeper_saves`, `ground/aerial_duels_*` — **[Physical]** `possession_pct`, `fouls`, `yellow/red_cards`, `dribbles_*`, `dispossessed`.
-
-Full schema: [`pipeline/bq-schemas/sofascore_team_match_stats.json`](../pipeline/bq-schemas/sofascore_team_match_stats.json)
-
----
-
-## `rz_processed` — views over raw data
-
-Three separate BigQuery datasets — one per layer. SQL source files live in `pipeline/sql/{layer}/` and are the authoritative definition; BQ objects are created/refreshed by running those files. This is **not dbt** — it is plain SQL + shell scripts. dbt migration is a future option if the model count grows.
-
-### `rz_bronze` — views, union + normalise
-
-Unions `rz_raw` and `WC_26` source tables into a single canonical column order (the two datasets have different column positions due to scraper versions). Adds a `dataset_source` tag (`standard` or `wc_26`). No business logic.  
-**Type: views** — no storage cost, always reflect raw data in real time.
-
-| View | SQL file | Source tables |
-|---|---|---|
-| `bronze_matches` | `bronze/bronze_matches.sql` | rz_raw + WC_26 `sofascore_matches` |
-| `bronze_player_stats` | `bronze/bronze_player_stats.sql` | rz_raw + WC_26 `sofascore_player_match_stats` |
-| `bronze_team_stats` | `bronze/bronze_team_stats.sql` | rz_raw + WC_26 `sofascore_team_match_stats` |
-| `bronze_shots` | `bronze/bronze_shots.sql` | rz_raw + WC_26 `sofascore_shots` |
-| `bronze_squad` | `bronze/bronze_squad.sql` | rz_raw `transfermarkt_squad` passthrough |
-
-**Why explicit column lists?** rz_raw has `tournament_id/season_id/league_name` at the end; WC_26 (newer scraper) has them near the beginning. `SELECT *` in UNION ALL matches by position, causing type conflicts.
-
-### `rz_silver` — tables, dedup + team_name fix
-
-Materialised tables. One row per natural key; latest `ingested_at` wins. Resolves the `team_name` NULL bug in player_stats and shots (scraper wrote empty strings for `team_id` and `team_name`): fix is a LEFT JOIN to `silver_matches` using the `is_home` boolean.  
-**Type: partitioned/clustered tables** — refreshed by `run_refresh_processed.sh` at 11:00 and 20:00.
-
-| Table | SQL file | Key | Partition / Cluster |
+| League | Tournament ID | SofaScore Status | TM Code |
 |---|---|---|---|
-| `silver_matches` | `silver/silver_matches.sql` | `match_id` | match_date / tournament_id, match_round |
-| `silver_player_stats` | `silver/silver_player_stats.sql` | `match_id, player_id` | match_date / tournament_id, team_id |
-| `silver_team_stats` | `silver/silver_team_stats.sql` | `match_id, team_id` | match_date / tournament_id, team_id |
-| `silver_shots` | `silver/silver_shots.sql` | `shot_id` | match_date / tournament_id |
-| `silver_squad` | `silver/silver_squad.sql` | `player_id` | — |
+| LaLiga2 | 54 | ✅ loaded | ES2 |
+| 1RFEF | 17073 | ✅ loaded | — (excluded from TM) |
+| Serie B (Italy) | 53 | ✅ loaded | IT2 |
+| Ligue 2 (France) | 182 | ✅ loaded | FR2 |
+| Romanian SuperLiga | 152 | ✅ loaded | RO1 |
+| J1 League (Japan) | 196 | ✅ loaded | JAP1 |
+| Turkish Süper Lig | 52 | ✅ loaded | TR1 |
+| Norwegian Eliteserien | 20 | ✅ loaded | NO1 |
+| Austrian Bundesliga | 45 | ✅ loaded | A1 |
+| Korean K League 1 | 410 | ✅ loaded | RSK1 |
+| Brasileirao Serie B | 390 | ✅ loaded | BRA2 |
+| Mozzart Bet Superliga | 210 | ✅ loaded | SER1 |
+| MLS | 242 | ✅ loaded | MLS1 |
+| Allsvenskan | 40 | ✅ loaded | SE1 |
+| Eerste Divisie (NL 2nd) | 131 | ✅ loaded | NL2 |
+| Moldovan Super Liga | 685 | ✅ loaded | MO1N |
+| Eredivisie | 37 | ⏳ backfilling | NL1 |
+| Belgian Pro League | 38 | ⏳ backfilling | BE1 |
+| Liga Portugal | 238 | ⏳ backfilling | PO1 |
+| 2. Bundesliga | 35 | ⏳ backfilling | L2 |
+| FIFA World Cup 2026 | 16 | ✅ complete (archived) | — |
 
-`silver_matches` must be materialised before `silver_player_stats` and `silver_shots` (they JOIN to it). The refresh script handles this ordering.
+Real Zaragoza team_id: **2815**. Run `pipeline/cloud-run/scrapers/seasons_lookup.py <tournament_id>` to discover season IDs.
 
-### `rz_gold` — tables, aggregated for consumption
+---
 
-Materialised tables. Ready for analysis and scouting — no raw match rows.  
-**Type: tables** — refreshed after silver completes in `run_refresh_processed.sh`.
+## BigQuery architecture
 
-| Table | SQL file | Grain | Primary use |
+GCP project: `real-zaragoza-500608` · Region: `europe-west1`
+
+```
+SofaScore (local) ──► raw.sofascore_*           ──► bronze (views)
+                                                        │
+Transfermarkt (GCP) ─► raw.transfermarkt_players       ▼
+                    ─► raw.transfermarkt_squad    silver (deduped tables)
+                                                        │
+Capology (GCP) ──────► raw.capology_wages              ▼
+                                                   gold (aggregated tables)
+WC 2026 (local, done) ► wc_2026.sofascore_*  ──► bronze (via UNION ALL)
+```
+
+### Layer definitions
+
+| Layer | Dataset | Type | Refresh |
 |---|---|---|---|
-| `gold_player_season` | `gold/gold_player_season.sql` | `(player_id, team_name, league_name, season_id)` | Scout queries, player comparisons |
-| `gold_team_season` | `gold/gold_team_season.sql` | `(team_id, team_name, league_name, season_id)` | League benchmarking, team style |
-| `gold_zaragoza_matches` | `gold/gold_zaragoza_matches.sql` | `match_id` | Form analysis, W/D/L by season |
+| **Raw** | `raw`, `wc_2026` | Append-only partitioned tables | Written by scrapers |
+| **Bronze** | `bronze` | Views (no storage) | Always live — no refresh needed |
+| **Silver** | `silver` | Partitioned + clustered tables | Daily (`rz-refresh-layers` Cloud Run Job) |
+| **Gold** | `gold` | Clustered tables (some partitioned) | Daily (same job, after silver) |
 
-`gold_player_season` includes: `primary_position` (ANY_VALUE), `matches`, `total_minutes`, `avg_rating`, goals/assists/shots + per-90s, pass acc %, long ball acc %, cross acc %, tackle/aerial/duel win %, interceptions/p90, touches/p90, yellows/p90.
+**Always query `silver` or `gold`** — never `raw` directly (duplicates, no dedup).
 
-`gold_zaragoza_matches` joins `silver_team_stats` for Zaragoza's match-level metrics and derives `result` (W/D/L), `venue` (home/away), `opponent`, `rz_goals`, `opponent_goals`. Filtered to `team_id = "2815"`.
+### Gold tables
 
-### Refresh cadence
+| Table | Grain | Primary use |
+|---|---|---|
+| `fct_player_season_stats` | player × team × league × season | Scouting, player trends |
+| `fct_team_season_stats` | team × league × season | Team style comparison |
+| `fct_rz_matches` | match (Zaragoza only) | Form analysis, W/D/L |
+| `agg_player_market_values` | player × club × season (TM latest) | Market value per player |
+| `agg_scouting_player_season` | player × league × season (stats + TM joined) | **Main scouting table** |
+| `agg_rz_squad_finances` | Zaragoza squad (TM latest) | Squad financial overview |
+| `agg_league_player_benchmarks` | league × season × position (≥450 min) | Contextualise player stats |
+| `agg_tm_player_valuations` | player × club × season × ingested_date | Market value history/trends |
+| `agg_player_wage_benchmarks` | league × position_group | Wage P25/median/P75 (top 5 EU only) |
+
+All tables have `OPTIONS(description=...)` with grain, source, and cluster/partition details. All columns are described.
+
+---
+
+## Cloud infrastructure
+
+| Resource | Name | Purpose | Cadence |
+|---|---|---|---|
+| Cloud Run Job | `rz-refresh-layers` | Runs all bronze→silver→gold SQL | Daily 06:00 Madrid |
+| Cloud Run Job | `rz-tm-scraper` | Transfermarkt multi-league scrape | Quarterly (1 Jan/Apr/Jul/Oct) |
+| Cloud Run Job | `rz-capology-scraper` | Capology wage scrape (top 5 EU leagues) | Monthly (1st of month) |
+| Cloud Scheduler | `rz-refresh-layers-daily` | Triggers `rz-refresh-layers` | Daily 06:00 Europe/Madrid |
+| Cloud Scheduler | `rz-tm-scraper-quarterly` | Triggers `rz-tm-scraper` | 1 Jan/Apr/Jul/Oct 06:00 |
+| Cloud Scheduler | `rz-capology-scraper-monthly` | Triggers `rz-capology-scraper` | 1st monthly 06:00 |
+| Artifact Registry | `rz-images` | Docker images for all jobs | europe-west1 |
+| Service account | `622526432554-compute@...` | Default compute SA (BQ write access) | — |
+
+---
+
+## SofaScore local cadence (launchd)
+
+Since GCP IPs are blocked, all SofaScore scraping runs locally on macOS via launchd.
 
 ```
-09:00  extraction slot 1 (run_next_from_queue.sh)
-11:00  refresh slot 1   (run_refresh_processed.sh) — 2h buffer for extraction to complete
-18:00  extraction slot 2 (run_next_from_queue.sh)
-20:00  refresh slot 2   (run_refresh_processed.sh)
+00:00 → run_next_from_queue.sh   (extraction slot 1)
+06:00 → run_next_from_queue.sh   (extraction slot 2)
+12:00 → run_next_from_queue.sh   (extraction slot 3)
+18:00 → run_next_from_queue.sh   (extraction slot 4)
+07:30 Tue → run_weekly_sofascore.sh  (incremental update for all active seasons)
 ```
 
-Bronze views need no refresh (they're live views over rz_raw/WC_26). Silver and gold are fully rebuilt on each refresh run. Full rebuild takes ~30s for the current data volume.
+Queue: `pipeline/cloud-run/schedules/sofascore_queue.txt` — one season per line. Each slot pops and runs one season. **Never run 2+ consecutive seasons — triggers 24h Cloudflare IP ban.**
 
-**Known data quality issue:** WC_26 rows ingested before 2026-07-05 have `league_name = "tournament_16"` instead of `"FIFA World Cup"` (LEAGUE_NAMES dict was fixed mid-backfill). Filter by `tournament_id = "16"` rather than `league_name` when querying WC data.
+**IP ban behaviour:** Even 2 consecutive seasons (~50 min) trips the ban. Symptoms: HTTP 403 `{"reason":"challenge"}`. Recovery: full 24h wait.
 
-**Legacy dataset:** `rz_processed` contains the original views and can be deleted once all agents and queries are confirmed pointing at the new datasets.
+launchd plists in `pipeline/cloud-run/schedules/` — copies live in `~/Library/LaunchAgents/`.
 
 ---
 
@@ -231,126 +139,56 @@ Bronze views need no refresh (they're live views over rz_raw/WC_26). Silver and 
 ```
 pipeline/
   cloud-run/
-    scrapers/                        # Python source — data extractors
-      scraper_sofascore.py           #   SofaScore: matches, player/team stats, shots
-      scraper_transfermarkt.py       #   Transfermarkt: squad + market values
-      seasons_lookup.py              #   Helper: list season IDs for any tournament
-    schedules/                       # How and when scrapers run (local macOS)
-      sofascore_queue.txt            #   Priority backfill queue (one season per line)
-      run_next_from_queue.sh         #   Pops queue, runs 1 season; fired by launchd
-      run_weekly_sofascore.sh        #   Weekly incremental (all active seasons)
-      run_daily_wc26.sh              #   WC 2026 daily incremental → BQ WC_26
-      com.realzaragoza.sofascore-9am.plist   # launchd: 09:00 daily
-      com.realzaragoza.sofascore-6pm.plist   # launchd: 18:00 daily
-      com.realzaragoza.sofascore-weekly.plist # launchd: Tuesdays 07:30
-      com.realzaragoza.wc26-daily.plist      # launchd: 09:00 daily (WC period)
-    docker/                          # Cloud Run containers (Transfermarkt only)
-      Dockerfile                     #   Transfermarkt (deployed, runs weekly)
-      Dockerfile.sofascore           #   SofaScore (built; scheduler paused — GCP IPs blocked)
-      requirements.txt
-      requirements-sofascore.txt
-      cloudbuild-sofascore.yaml      #   Run from docker/ folder
-    archive/                         # Historical one-off scripts (superseded by queue)
-      backfill_all.sh
-      backfill_retry.sh
-      backfill_retry2.sh
-  bq-schemas/
-    transfermarkt_squad.json
-    sofascore_matches.json
-    sofascore_player_match_stats.json
-    sofascore_shots.json
-    sofascore_team_match_stats.json
+    scrapers/
+      scraper_sofascore.py              # SofaScore: 4 tables per run
+      scraper_transfermarkt_leagues.py  # TM multi-league: raw.transfermarkt_players
+      scraper_transfermarkt.py          # TM Zaragoza-only: raw.transfermarkt_squad
+      scraper_capology.py               # Capology wages: raw.capology_wages
+      seasons_lookup.py                 # Helper: discover SofaScore season IDs
+    schedules/
+      sofascore_queue.txt               # Backfill queue
+      run_next_from_queue.sh            # Pops queue, runs 1 season
+      run_weekly_sofascore.sh           # Incremental for active seasons
+      run_daily_wc26.sh                 # WC 2026 daily (archived — tournament over)
+      com.realzaragoza.sofascore-*.plist  # launchd job definitions
+    refresh-layers/
+      main.py                           # Ordered SQL execution (bronze→silver→gold)
+      Dockerfile                        # Cloud Run image
+      cloudbuild.yaml
+    tm-scraper/                         # Cloud Run Job image for TM multi-league
+    capology-scraper/                   # Cloud Run Job image for Capology
+  sql/
+    raw/                                # ALTER TABLE descriptions for raw tables
+    wc_2026/                            # ALTER TABLE descriptions for WC tables
+    bronze/                             # CREATE OR REPLACE VIEW statements
+    silver/                             # CREATE OR REPLACE TABLE (dedup)
+    gold/                               # CREATE OR REPLACE TABLE (aggregated)
+                                        # Each model has a companion _descriptions.sql
 ```
 
 ---
 
-## Notes on Cloud Run vs. local execution
+## Known data issues
 
-`curl_cffi` bundles its own libcurl binary (no system dependencies). However, **SofaScore blocks GCP datacenter IPs** at the Cloudflare layer — Cloud Run executions get non-200 from every API call even with Chrome TLS impersonation (confirmed 2026-06-28).
-
-**Current execution model:**
-- **SofaScore backfills and weekly runs: local machine** — `python3 scraper_sofascore.py` with `GCP_PROJECT_ID` set, writing directly to BigQuery via Application Default Credentials. Home IP is not blocked.
-- **Transfermarkt: Cloud Run** — unaffected (static site, no bot protection).
-- `rz-scraper-sofascore` Cloud Run job exists but scheduler (`rz-weekly-sofascore`) is **paused**. Kept in case a proxy or alternative approach is added later.
-
-To run a local weekly update (1RFEF season, once it starts):
-```bash
-cd pipeline/cloud-run/scrapers
-GCP_PROJECT_ID=real-zaragoza-500608 TOURNAMENT_ID=17073 SEASON_ID=<sid> INCREMENTAL=true \
-  python3 scraper_sofascore.py
-```
-
----
-
-## Weekly local cron (macOS launchd)
-
-Since SofaScore blocks GCP IPs, the weekly incremental run must execute on a local machine. A launchd agent handles this automatically — it fires every Tuesday at 07:30, runs the scraper for both active seasons with `INCREMENTAL=true`, and writes directly to BigQuery via ADC.
-
-**Files:**
-
-| File | Purpose |
-|---|---|
-| `pipeline/cloud-run/schedules/run_weekly_sofascore.sh` | Wrapper: sets env vars, runs scraper for each season, logs to `/tmp/sofascore_weekly_YYYYMMDD.log` |
-| `pipeline/cloud-run/schedules/com.realzaragoza.sofascore-weekly.plist` | launchd job definition (copy to `~/Library/LaunchAgents/` to activate) |
-
-See `pipeline/cloud-run/schedules/README.md` for full setup instructions.
-
-**To trigger manually (e.g. after a missed Tuesday):**
-```bash
-launchctl start com.realzaragoza.sofascore-weekly
-# or run the wrapper directly:
-bash pipeline/cloud-run/schedules/run_weekly_sofascore.sh
-```
-
-**Season update (start of each season):** edit `schedules/run_weekly_sofascore.sh` and update `SEASON_ID` for each tournament.
-
-**Rate limiting:** `REQUEST_DELAY=5.0s` between API calls, `ROUND_DELAY=20.0s` between rounds (increased 2026-07-03 after repeated bans). Writes flush per round so a crash only loses the current round.
-
-**IP ban behaviour (confirmed 2026-07-03):** Even **2 consecutive full seasons** (~50 min of continuous requests) is enough to trigger a **24-hour Cloudflare IP ban**. The scraper returns `Could not fetch rounds` immediately; a plain curl shows HTTP 403 `{"reason":"challenge"}`. Recovery: wait the full 24 hours — shorter waits don't work. **Prevention: run max 1 season per slot, 2 slots/day (09:00 + 18:00 via launchd + `run_next_from_queue.sh`).** The per-round delays are a buffer, not the primary protection — the 1-season-per-run cadence is.
+- **1RFEF 2024-25** — only ~100 matches loaded (expected ~380+). SofaScore may expose only playoff rounds for this season. Investigate before re-backfilling.
+- **WC `league_name`** — rows from the initial WC backfill (before 2026-07-05) have `league_name = "tournament_16"`. Filter WC data by `tournament_id = "16"`, not `league_name`.
+- **Capology coverage gap** — `raw.capology_wages` covers Premier League, La Liga, Bundesliga, Ligue 1, Serie A only. None of the SofaScore pipeline leagues are covered. `gold.agg_player_wage_benchmarks` is useful for top-league transfer targets only.
 
 ---
 
 ## Agent ecosystem
 
-Four analytical agents live in `.claude/agents/`. Each reads its own `AGENT.md` at the start of every session to load context and constraints.
-
-| Agent | Role | Cannot |
+| Agent | Role | AGENT.md |
 |---|---|---|
-| `data-lead` | Vision, roadmap, governance, documentation | Write SQL, run pipelines |
-| `data-engineer` | SQL, dbt, BQ schemas, pipeline code | Update wiki, set strategy |
-| `data-scout` | Player profiles, acquisition fit analysis | Match/team analysis |
-| `match-analyst` | Zaragoza form, match breakdowns, league benchmarks | Transfer recommendations |
-
----
-
-## World Cup 2026 (`WC_26`)
-
-BQ dataset `WC_26` (europe-west1) created 2026-07-01 for FIFA World Cup 2026 data (tournament runs June 11 – July 19 2026). Same 4-table schema as `rz_raw`; updated daily at 09:00 during the tournament.
-
-| Resource | Detail |
-|---|---|
-| BQ dataset | `real-zaragoza-500608:WC_26` |
-| Tables | `sofascore_matches`, `sofascore_player_match_stats`, `sofascore_team_match_stats`, `sofascore_shots` — identical schema to `rz_raw` |
-| Daily script | `pipeline/cloud-run/schedules/run_daily_wc26.sh` — runs `INCREMENTAL=true, BQ_DATASET=WC_26` |
-| launchd plist | `pipeline/cloud-run/schedules/com.realzaragoza.wc26-daily.plist` — fires 09:00 daily |
-| WC tournament ID | **16** (confirmed 2026-07-05 via seasons_lookup.py) |
-| WC season ID | **58210** (confirmed 2026-07-05) |
-
-`scraper_sofascore.py` accepts `BQ_DATASET` env var (default `rz_raw`); set `BQ_DATASET=WC_26` to write to the WC dataset. Full backfill (June 11 → June 28) + gap fill (June 29 → July 5) completed 2026-07-05.
-
----
-
-## Open items
-
-- **Backfill cadence (active)** — 1 season/slot × 2 slots/day via `run_next_from_queue.sh` + launchd (09:00 + 18:00). Remaining queue: Ligue 2 × 2, Romanian SuperLiga × 2, J1 × 2, 1RFEF 2025-26, Turkish × 2, Norwegian × 2, Austrian × 2, Korean × 2.
-- **1RFEF 2024-25 anomaly** — only 100 matches loaded (expected ~380+). Likely SofaScore only exposes playoff rounds for this season. Investigate before deciding to re-backfill.
-- **Weekly automation** — update `run_weekly_sofascore.sh` to include all active leagues once backfills complete.
-- **WC league_name inconsistency** — rows from the initial WC backfill (before 2026-07-05) have `league_name = "tournament_16"` instead of `"FIFA World Cup"`. Fix: re-run backfill OR normalise `league_name` in bronze_matches with a CASE on `tournament_id`. Until fixed, always filter WC data by `tournament_id = "16"` not by `league_name`.
-- **`rz_processed.season_results`** — W/D/L, GD, cumulative points per team per season (can now be built from `gold_zaragoza_matches` as a starting point).
+| `data-lead` | Vision, roadmap, governance | `.claude/agents/data-lead/AGENT.md` |
+| `data-engineer` | SQL, BQ schemas, pipeline code | `.claude/agents/data-engineer/AGENT.md` |
+| `data-scout` | Scouting reports, acquisition fit | `.claude/agents/data-scout/AGENT.md` |
+| `match-analyst` | Form, match breakdowns, benchmarks | `.claude/agents/match-analyst/AGENT.md` |
 
 ## Sources
 
-- [SofaScore — sofascore.com](https://www.sofascore.com/es-la/football/tournament/spain/laliga-2/54)
-- [Transfermarkt — verein/142/plus/1](https://www.transfermarkt.es/real-zaragoza/kader/verein/142/plus/1)
-- [Cloud Run jobs documentation](https://cloud.google.com/run/docs/create-jobs)
+- [SofaScore](https://www.sofascore.com/)
+- [Transfermarkt](https://www.transfermarkt.es/real-zaragoza/kader/verein/142/plus/1)
+- [Capology](https://www.capology.com/)
+- [GCP Cloud Run Jobs](https://cloud.google.com/run/docs/create-jobs)
 - [BigQuery partitioned tables](https://cloud.google.com/bigquery/docs/partitioned-tables)
