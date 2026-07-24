@@ -20,6 +20,18 @@ SQL_DIR = Path("/app/sql")
 # Execution order matters: bronze (views) → silver (tables) → gold (tables).
 # Silver/gold models reference bronze via CREATE OR REPLACE, so bronze must run first.
 SQL_ORDER = [
+    # Raw table descriptions (metadata-only ALTER TABLE, idempotent — fast, no data scan)
+    "raw/sofascore_matches_descriptions.sql",
+    "raw/sofascore_player_match_stats_descriptions.sql",
+    "raw/sofascore_shots_descriptions.sql",
+    "raw/sofascore_team_match_stats_descriptions.sql",
+    "raw/transfermarkt_players_descriptions.sql",
+    "raw/transfermarkt_squad_descriptions.sql",
+    # WC 2026 table descriptions
+    "wc_2026/sofascore_matches_descriptions.sql",
+    "wc_2026/sofascore_player_match_stats_descriptions.sql",
+    "wc_2026/sofascore_shots_descriptions.sql",
+    "wc_2026/sofascore_team_match_stats_descriptions.sql",
     # Bronze — lightweight views over raw, always recreated first
     "bronze/rz_squad.sql",
     "bronze/rz_squad_descriptions.sql",

@@ -1,5 +1,5 @@
 CREATE OR REPLACE VIEW `real-zaragoza-500608.bronze.shots`
-OPTIONS(description="UNION ALL of shot event records from raw.sofascore_shots (standard leagues) and wc_2026.sofascore_shots (FIFA World Cup 2026). Adds dataset_source column. Bronze layer — no deduplication applied here.")
+OPTIONS(description="GRAIN: one row per (shot_id, scrape run) — NOT deduplicated. SOURCE: UNION ALL of raw.sofascore_shots + wc_2026.sofascore_shots. Adds dataset_source ('standard' or 'wc_26'). NOTES: each row is a single shot attempt with pitch coordinates (x, y), goal-mouth coordinates, xG, body part, and shot type. team_id/team_name resolved at silver layer via JOIN with silver.matches using is_home flag. No partition. No cluster.")
 AS
 SELECT
   shot_id, match_id, match_date, match_round, tournament_id, season_id, league_name,

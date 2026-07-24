@@ -1,5 +1,5 @@
 CREATE OR REPLACE TABLE `real-zaragoza-500608.silver.rz_squad`
-OPTIONS(description="Deduplicated Real Zaragoza squad from Transfermarkt. One row per player (latest ingestion). Source: bronze.rz_squad → raw.transfermarkt_squad.")
+OPTIONS(description="GRAIN: one row per player_id — latest ingestion only. SOURCE: bronze.rz_squad → raw.transfermarkt_squad (Zaragoza-only scraper). DEDUP: ROW_NUMBER() OVER (PARTITION BY player_id ORDER BY ingested_date DESC), keeps rn=1. NOTES: single-club table; use gold.agg_rz_squad_finances for the finance/contract view sorted by value. No partition. No cluster.")
 AS
 WITH ranked AS (
   SELECT *,

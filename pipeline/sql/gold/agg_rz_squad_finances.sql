@@ -2,7 +2,7 @@
 -- Source: silver.rz_squad (Zaragoza-only single-club TM scraper).
 -- Use for wage/value planning, contract expiry alerts, and squad cost analysis.
 CREATE OR REPLACE TABLE `real-zaragoza-500608.gold.agg_rz_squad_finances`
-OPTIONS(description="Real Zaragoza squad financial snapshot from Transfermarkt. Latest scrape per player. Ordered by market value descending. Use for squad cost analysis, contract expiry planning, and scouting budget context.")
+OPTIONS(description="GRAIN: one row per player in the latest Zaragoza squad TM snapshot. SOURCE: silver.rz_squad (Zaragoza-only TM scraper). NOTES: ordered by market_value_eur DESC NULLS LAST — players without TM valuation appear at the bottom. contract_expiry and signed_from allow contract planning and transfer history review. signing_fee is the reported fee paid when the player joined. No partition. No cluster.")
 AS
 SELECT
   player_id,

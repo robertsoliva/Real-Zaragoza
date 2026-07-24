@@ -1,0 +1,31 @@
+ALTER TABLE `real-zaragoza-500608.raw.sofascore_shots`
+  SET OPTIONS(description="GRAIN: one row per (shot_id, scrape run) — NOT deduplicated. SOURCE: scraper_sofascore.py shotmap endpoint. PARTITION BY match_date (DAY). CLUSTER BY match_round. NOTE: team_id/team_name resolved at silver layer via JOIN with silver.matches using is_home flag. Coordinates use SofaScore's 0–100 pitch system. Deduplicated version: silver.shots.");
+
+ALTER TABLE `real-zaragoza-500608.raw.sofascore_shots`
+  ALTER COLUMN shot_id SET OPTIONS(description="SofaScore unique shot identifier (string)"),
+  ALTER COLUMN match_id SET OPTIONS(description="SofaScore match identifier this shot belongs to"),
+  ALTER COLUMN match_date SET OPTIONS(description="Date the match was played (partition key)"),
+  ALTER COLUMN match_round SET OPTIONS(description="Round/gameweek number within the season"),
+  ALTER COLUMN tournament_id SET OPTIONS(description="SofaScore tournament/competition identifier"),
+  ALTER COLUMN season_id SET OPTIONS(description="SofaScore season identifier"),
+  ALTER COLUMN league_name SET OPTIONS(description="Human-readable league name"),
+  ALTER COLUMN player_id SET OPTIONS(description="SofaScore player identifier of the shooter"),
+  ALTER COLUMN player_name SET OPTIONS(description="Name of the player who took the shot"),
+  ALTER COLUMN is_home SET OPTIONS(description="True if the shooter's team was the home side"),
+  ALTER COLUMN minute SET OPTIONS(description="Match minute when the shot was taken"),
+  ALTER COLUMN added_time SET OPTIONS(description="Added time (stoppage time) minutes, if applicable"),
+  ALTER COLUMN time_seconds SET OPTIONS(description="Cumulative match time in seconds when shot was taken"),
+  ALTER COLUMN x SET OPTIONS(description="Shooter pitch x-coordinate (0–100 scale, SofaScore system)"),
+  ALTER COLUMN y SET OPTIONS(description="Shooter pitch y-coordinate (0–100 scale, SofaScore system)"),
+  ALTER COLUMN goal_mouth_x SET OPTIONS(description="Goal-mouth impact x-coordinate (0–100)"),
+  ALTER COLUMN goal_mouth_y SET OPTIONS(description="Goal-mouth impact y-coordinate (0–100)"),
+  ALTER COLUMN goal_mouth_z SET OPTIONS(description="Goal-mouth impact z-coordinate (height, 0–100)"),
+  ALTER COLUMN goal_mouth_location SET OPTIONS(description="Descriptive goal-mouth zone label (e.g. 'HighCentre', 'LowLeft')"),
+  ALTER COLUMN block_x SET OPTIONS(description="Block location x-coordinate if shot was blocked (NULL otherwise)"),
+  ALTER COLUMN block_y SET OPTIONS(description="Block location y-coordinate if shot was blocked (NULL otherwise)"),
+  ALTER COLUMN body_part SET OPTIONS(description="Body part used (e.g. 'rightFoot', 'leftFoot', 'head')"),
+  ALTER COLUMN shot_type SET OPTIONS(description="Shot outcome type (e.g. 'goal', 'save', 'miss', 'block', 'post')"),
+  ALTER COLUMN situation SET OPTIONS(description="Situation leading to the shot (e.g. 'openPlay', 'setpiece', 'fastbreak')"),
+  ALTER COLUMN xg SET OPTIONS(description="Expected goals (xG) value for this specific shot (0.0–1.0)"),
+  ALTER COLUMN ingested_date SET OPTIONS(description="Calendar date when this row was written by the scraper"),
+  ALTER COLUMN ingested_at SET OPTIONS(description="Full ISO timestamp when this row was written by the scraper")

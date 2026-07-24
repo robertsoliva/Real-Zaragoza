@@ -3,7 +3,7 @@
 -- due to naming differences between systems (e.g. accents, abbreviations).
 -- TM position is the source of truth for position granularity (more detailed than SofaScore).
 CREATE OR REPLACE TABLE `real-zaragoza-500608.gold.agg_scouting_player_season`
-OPTIONS(description="Main scouting table. Joins SofaScore season stats with Transfermarkt profile and market value data. One row per player per season. TM position used when available (more granular). Join coverage ~70-80%; naming mismatches may leave TM columns NULL. Clustered by league_name, season_id, tm_position.")
+OPTIONS(description="GRAIN: one row per (player_id, team_name, league_name, season_id) — SofaScore stats enriched with TM profile. SOURCE: gold.fct_player_season_stats LEFT JOIN gold.agg_player_market_values. JOIN KEY: LOWER(TRIM(player_name)) = LOWER(TRIM(name)) AND LOWER(TRIM(team_name)) = LOWER(TRIM(club_name)) AND CAST(season_id AS STRING). NOTES: LEFT JOIN — TM columns (market_value_eur, contract_expiry, tm_player_id, age, nationality, height, foot) are NULL when name/club doesn't match across systems (~20-30% miss rate due to diacritics and abbreviations). tm_position = COALESCE(TM position, SofaScore primary_position) — prefer tm_position for role mapping in 4-2-3-1. Primary table for scouting report data loading. CLUSTER BY league_name, season_id, tm_position.")
 CLUSTER BY league_name, season_id, tm_position
 AS
 SELECT

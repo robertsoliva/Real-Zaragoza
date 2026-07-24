@@ -1,5 +1,5 @@
 CREATE OR REPLACE TABLE `real-zaragoza-500608.gold.fct_rz_matches`
-OPTIONS(description="Real Zaragoza match-by-match results with per-match team stats (SofaScore team_id=2815). One row per match. Includes result, venue, goals scored/conceded, and Zaragoza's in-match stats. Partitioned by match_date, clustered by season_id and result.")
+OPTIONS(description="GRAIN: one row per match where Real Zaragoza (SofaScore team_id='2815') played. SOURCE: silver.matches (match metadata) LEFT JOIN silver.team_stats (Zaragoza's match stats). NOTES: result (W/D/L), venue (home/away), rz_goals, opponent_goals, and opponent derived in SQL. team_stats columns (possession_pct, total_shots, etc.) are Zaragoza's own stats only — NULL if stats not scraped for that match. Covers all seasons with Zaragoza data in the pipeline (LaLiga2 and 1RFEF). PARTITION BY match_date (DAY). CLUSTER BY season_id, result.")
 PARTITION BY match_date
 CLUSTER BY season_id, result
 AS
