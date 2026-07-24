@@ -12,7 +12,7 @@
 # Usage (manual):
 #   bash run_daily_wc26.sh
 #   or: GCP_PROJECT_ID=real-zaragoza-500608 TOURNAMENT_ID=<tid> SEASON_ID=<sid> \
-#         BQ_DATASET=WC_26 INCREMENTAL=true python3 scraper_sofascore.py
+#         BQ_DATASET=wc_2026 INCREMENTAL=true python3 scraper_sofascore.py
 
 set -euo pipefail
 
@@ -26,7 +26,7 @@ WC_SEASON_ID=58210    # confirmed 2026-07-05
 echo "=== WC26 daily run: $(date) ===" | tee -a "$LOG"
 
 GCP_PROJECT_ID=real-zaragoza-500608 \
-BQ_DATASET=WC_26 \
+BQ_DATASET=wc_2026 \
 TOURNAMENT_ID="$WC_TOURNAMENT_ID" \
 SEASON_ID="$WC_SEASON_ID" \
 INCREMENTAL=true \

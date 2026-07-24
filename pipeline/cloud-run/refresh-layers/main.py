@@ -20,9 +20,10 @@ SQL_DIR = Path("/app/sql")
 # Execution order matters: bronze (views) → silver (tables) → gold (tables).
 # Silver/gold models reference bronze via CREATE OR REPLACE, so bronze must run first.
 SQL_ORDER = [
-    # Bronze — lightweight views over rz_raw, always recreated first
+    # Bronze — lightweight views over raw, always recreated first
     "bronze/rz_squad.sql",
     "bronze/tm_players.sql",
+    "bronze/capology_wages.sql",
     "bronze/matches.sql",
     "bronze/player_stats.sql",
     "bronze/shots.sql",
@@ -30,6 +31,7 @@ SQL_ORDER = [
     # Silver — dedup tables (latest row per natural key)
     "silver/rz_squad.sql",
     "silver/tm_players.sql",
+    "silver/capology_wages.sql",
     "silver/matches.sql",
     "silver/player_stats.sql",       # depends on silver/matches
     "silver/shots.sql",              # depends on silver/matches
@@ -42,6 +44,8 @@ SQL_ORDER = [
     "gold/agg_scouting_player_season.sql",   # depends on fct_player_season_stats + agg_player_market_values
     "gold/agg_rz_squad_finances.sql",
     "gold/agg_league_player_benchmarks.sql", # depends on fct_player_season_stats
+    "gold/agg_tm_player_valuations.sql",     # reads raw directly for historical snapshots
+    "gold/agg_player_wage_benchmarks.sql",   # depends on silver/capology_wages + silver/tm_players
 ]
 
 
