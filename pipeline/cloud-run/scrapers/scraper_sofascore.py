@@ -24,7 +24,7 @@ Env vars:
   GCP_PROJECT_ID — write to BigQuery when set; otherwise save local CSV
   BQ_DATASET     — BQ dataset to write to (default: raw; use wc_2026 for World Cup)
 
-BQ tables (configurable via BQ_DATASET, default rz_raw):
+BQ tables (configurable via BQ_DATASET, default raw):
   sofascore_matches, sofascore_player_match_stats,
   sofascore_shots, sofascore_team_match_stats
 """
