@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.realzaragoza.sofascore-6am</string>
+    <string>com.realzaragoza.sofascore-4am</string>
 
     <key>ProgramArguments</key>
     <array>
@@ -11,19 +11,19 @@
         <string>/Users/robertsoliva/Desktop/Projects/Real-Zaragoza/pipeline/cloud-run/schedules/run_next_from_queue.sh</string>
     </array>
 
-    <!-- Fire daily at 06:00 local time -->
+    <!-- Fire daily at 04:00 local time -->
     <key>StartCalendarInterval</key>
     <dict>
         <key>Hour</key>
-        <integer>6</integer>
+        <integer>4</integer>
         <key>Minute</key>
         <integer>0</integer>
     </dict>
 
     <key>StandardOutPath</key>
-    <string>/tmp/sofascore_6am_launchd.log</string>
+    <string>/tmp/sofascore_4am_launchd.log</string>
     <key>StandardErrorPath</key>
-    <string>/tmp/sofascore_6am_launchd.log</string>
+    <string>/tmp/sofascore_4am_launchd.log</string>
 
     <key>RunAtLoad</key>
     <false/>

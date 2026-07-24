@@ -57,8 +57,17 @@ Do not guess at column names. If unsure, check the schema file.
 | Allsvenskan | 40 | 87925 (2026) | calendar-year seasons; backfill also: 69956 (2025) |
 | Eerste Divisie | 131 | 77156 (25/26) | Netherlands 2nd div; backfill also: 61667 (24/25) |
 | Moldovan Super Liga | 685 | 76499 (25/26) | backfill also: 63546 (24/25) |
+| Eredivisie | 37 | 77012 (25/26) | backfill also: 61666 (24/25) — ⏳ backfilling |
+| Belgian Pro League | 38 | 77040 (25/26) | backfill also: 61459 (24/25) — ⏳ backfilling |
+| Liga Portugal | 238 | 77806 (25/26) | backfill also: 63670 (24/25) — ⏳ backfilling |
+| Bundesliga (1st div) | 35 | 77333 (25/26) | backfill also: 63516 (24/25) — ⏳ backfilling |
+| 2. Bundesliga | 44 | 77354 (25/26) | backfill also: 63514 (24/25) — ⏳ backfilling |
+| Premier League | 17 | 76986 (25/26) | backfill also: 61627 (24/25) — ⏳ backfilling |
+| La Liga | 8 | 77559 (25/26) | backfill also: 61643 (24/25) — ⏳ backfilling |
+| Serie A | 23 | 76457 (25/26) | backfill also: 63515 (24/25) — ⏳ backfilling |
+| Ligue 1 | 34 | 77356 (25/26) | backfill also: 61736 (24/25) — ⏳ backfilling |
 
-**Extraction cadence (backfill phase):** 4 seasons/day via `run_next_from_queue.sh` — launchd fires at 00:00, 06:00, 12:00, and 18:00. Queue order in `sofascore_queue.txt`. WC 2026 runs separately via `run_daily_wc26.sh` (incremental, `WC_26` dataset).
+**Extraction cadence (backfill phase):** 6 seasons/day via `run_next_from_queue.sh` — launchd fires at 00:00, 04:00, 08:00, 12:00, 16:00, 20:00. Queue order in `sofascore_queue.txt`. WC 2026 archived (tournament ended 2026-07-19).
 
 ---
 

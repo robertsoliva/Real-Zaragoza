@@ -1,6 +1,6 @@
 # Architecture — Data sources, pipeline, and BigQuery
 
-> **Status:** living document, last updated 2026-07-24. Full medallion architecture live (raw → bronze → silver → gold). 20 leagues in scope (16 active + 4 backfilling). All BQ tables have table + column descriptions. WC 2026 complete and archived.
+> **Status:** living document, last updated 2026-07-24. Full medallion architecture live (raw → bronze → silver → gold). 26 leagues in scope (16 active + 10 backfilling). All BQ tables have table + column descriptions. WC 2026 complete and archived. Extraction cadence upgraded to 6 slots/day (every 4h).
 
 ---
 
@@ -48,7 +48,12 @@ Build a data foundation to:
 | Eredivisie | 37 | ⏳ backfilling | NL1 |
 | Belgian Pro League | 38 | ⏳ backfilling | BE1 |
 | Liga Portugal | 238 | ⏳ backfilling | PO1 |
-| 2. Bundesliga | 35 | ⏳ backfilling | L2 |
+| Bundesliga (1st div) | 35 | ⏳ backfilling | L1 |
+| 2. Bundesliga | 44 | ⏳ backfilling | L2 |
+| Premier League | 17 | ⏳ backfilling | GB1 |
+| La Liga | 8 | ⏳ backfilling | ES1 |
+| Serie A | 23 | ⏳ backfilling | IT1 |
+| Ligue 1 | 34 | ⏳ backfilling | FR1 |
 | FIFA World Cup 2026 | 16 | ✅ complete (archived) | — |
 
 Real Zaragoza team_id: **2815**. Run `pipeline/cloud-run/scrapers/seasons_lookup.py <tournament_id>` to discover season IDs.
@@ -120,9 +125,11 @@ Since GCP IPs are blocked, all SofaScore scraping runs locally on macOS via laun
 
 ```
 00:00 → run_next_from_queue.sh   (extraction slot 1)
-06:00 → run_next_from_queue.sh   (extraction slot 2)
-12:00 → run_next_from_queue.sh   (extraction slot 3)
-18:00 → run_next_from_queue.sh   (extraction slot 4)
+04:00 → run_next_from_queue.sh   (extraction slot 2)
+08:00 → run_next_from_queue.sh   (extraction slot 3)
+12:00 → run_next_from_queue.sh   (extraction slot 4)
+16:00 → run_next_from_queue.sh   (extraction slot 5)
+20:00 → run_next_from_queue.sh   (extraction slot 6)
 07:30 Tue → run_weekly_sofascore.sh  (incremental update for all active seasons)
 ```
 

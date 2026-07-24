@@ -49,7 +49,12 @@ run_league "Moldovan Super Liga 2025-26" 685   76499
 run_league "Eredivisie 2025-26"         37     77012
 run_league "Belgian Pro League 2025-26" 38     77040
 run_league "Liga Portugal 2025-26"      238    77806
-run_league "2. Bundesliga 2025-26"      35     77333
+run_league "Bundesliga 2025-26"         35     77333
+run_league "2. Bundesliga 2025-26"      44     77354
+run_league "Premier League 2025-26"     17     76986
+run_league "La Liga 2025-26"            8      77559
+run_league "Serie A 2025-26"            23     76457
+run_league "Ligue 1 2025-26"            34     77356
 
 # ── Calendar-year leagues (Spring–Autumn) ───────────────────────────────────
 run_league "J1 League 2026"             196    87931
