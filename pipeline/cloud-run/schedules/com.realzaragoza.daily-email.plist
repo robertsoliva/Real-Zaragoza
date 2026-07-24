@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.realzaragoza.daily-email</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/opt/anaconda3/bin/python3</string>
+        <string>/Users/robertsoliva/Desktop/Projects/Real-Zaragoza/pipeline/cloud-run/schedules/send_daily_summary.py</string>
+    </array>
+
+    <!-- Fire daily at 22:00 — after the 20:00 extraction slot finishes -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>22</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+
+    <key>StandardOutPath</key>
+    <string>/tmp/rz_daily_email.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/rz_daily_email.log</string>
+
+    <key>RunAtLoad</key>
+    <false/>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/anaconda3/bin:/usr/local/bin:/usr/bin:/bin</string>
+        <key>HOME</key>
+        <string>/Users/robertsoliva</string>
+    </dict>
+</dict>
+</plist>
