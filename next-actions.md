@@ -6,30 +6,37 @@ Forward-looking only — pending items by category. Completed items graduate to 
 
 ## Active
 
-- **Backfill cadence** — 1 season/slot × 4/day via `run_next_from_queue.sh` (launchd 00:00 + 06:00 + 12:00 + 18:00). Remaining queue (as of 2026-07-08): Turkish × 2, Norwegian × 2, Austrian × 2, Korean × 2, Brasileirao Serie B × 2, Mozzart Bet Superliga × 2, MLS × 2, Allsvenskan × 2, Eerste Divisie × 2, Moldovan Super Liga × 2 (20 seasons — ~5 days at current cadence). Next up: TurkishSuperLig_2024-25 at 18:00. Completed: LaLiga2 × 2, 1RFEF × 2, Serie B × 2, Ligue 2 × 2, Romanian SuperLiga × 2, J1 × 2.
-- **WC 2026 daily incremental** — `com.realzaragoza.wc26-daily.plist` registered 2026-07-05. Fires daily at 09:00 through July 19 (WC final).
+- **SofaScore backfill (4 new leagues)** — Eredivisie (37), Belgian Pro League (38), Liga Portugal (238), 2. Bundesliga (35) added 2026-07-22. Loading via launchd cadence. Expected completion ~2026-07-26.
+- **Transfermarkt multi-league initial scrape** — running now (PID 87614, started 2026-07-24). All 19 active leagues; data lands in `rz_raw.transfermarkt_players` → `rz_gold.gold_tm_players`.
 
 ---
 
 ## Data pipeline
 
-- **Verify backfills landed** — after each league completes, run `SELECT tournament_id, season_id, COUNT(*) FROM rz_raw.sofascore_matches GROUP BY 1,2` to confirm row counts.
-- **Weekly automation** — once backfills are done, update `run_weekly_sofascore.sh` to include all active leagues and ensure launchd Tuesday job is registered.
 - **1RFEF 2026-27** — season ID not yet on SofaScore (~July 2026). When available: add to queue and weekly script.
 - **1RFEF 2024-25 anomaly** — only 100 matches loaded (expected ~380+). Likely SofaScore exposes only playoff rounds for this season via the rounds API. Investigate before deciding whether to re-backfill.
-- **WC league_name fix** — rows from the initial WC backfill (before 2026-07-05) have `league_name = "tournament_16"` not `"FIFA World Cup"`. Fix: either re-backfill or normalise in `bronze_matches` with a CASE on `tournament_id`. Until then, always filter WC data by `tournament_id = "16"`.
+- **WC league_name fix** — rows from the initial WC backfill (before 2026-07-05) have `league_name = "tournament_16"` not `"FIFA World Cup"`. Fix: normalise in `bronze_matches` with a CASE on `tournament_id`. Until then, always filter WC data by `tournament_id = "16"`.
 - **`rz_gold.season_results`** — W/D/L, GD, cumulative points per team per season. Starting point: `rz_gold.gold_zaragoza_matches` + `rz_silver.silver_team_stats` for all teams. Add SQL to `pipeline/sql/gold/`.
-- **`rz_silver.player_valuations`** — time series of market value from `rz_bronze.bronze_squad`; add after second weekly scrape. Add SQL to `pipeline/sql/silver/`.
-- **Cloud Function** — `rz-bq-loader` Pub/Sub subscriber; deferred until fan-out is needed.
+- **`rz_silver.player_valuations`** — time series of market value per player per season, joinable with gold_player_season. Source: `rz_bronze.bronze_tm_players` (all leagues) and `rz_bronze.bronze_squad` (Zaragoza). Add SQL to `pipeline/sql/silver/`.
+- **Move TM scrapers to Cloud Run** — `scraper_transfermarkt.py` (Zaragoza-only, weekly) and `scraper_transfermarkt_leagues.py` (all leagues, weekly) are candidates for Cloud Run Jobs + Cloud Scheduler triggers. TM doesn't block GCP IPs. Would remove the only remaining local scraper dependency.
+- **Weekly SofaScore automation** — update `run_weekly_sofascore.sh` to include all 20 active leagues once backfills are fully done.
+
+---
+
+## Infrastructure
+
+- **Cloud Monitoring alerts** — set up alerts on Cloud Run job failure (rz-refresh-layers) and optional BQ query cost threshold. Low priority until pipeline is fully GCP-hosted.
+- **Cloud Function `rz-bq-loader`** — Pub/Sub subscriber for fan-out; deferred until SofaScore scraper can move off local machine or a second data source requires it.
 
 ---
 
 ## Analysis & predictions
 
 - **Standardised agent report structures** — data-scout and match-analyst use ad-hoc column groupings; define enforced output templates that map to the [Attacking/Passing/Defending/Physical] schema labels.
-- **LaLiga2 2024-25 stats analysis** — form, head-to-head, defensive and attacking profiles for all 22 teams; depends on BQ backfill.
+- **LaLiga2 2025-26 benchmarks** — form, head-to-head, defensive and attacking profiles for all 22 teams; now possible with backfill complete.
 - **Player comparison tool** — compare Zaragoza squad against league averages and specific targets; depends on `sofascore_player_match_stats`.
 - **Match outcome model** — predict Zaragoza fixtures; feature set from SofaScore + Transfermarkt; approach TBD.
+- **Scouting: redo old reports on new 6-dimension system** — Bjørkan, Seol, Radunović, Sjøvold, Hansson, Espiau, Herrera, González, Akman, Suzuki all use the old 5-dimension system without Player Quality/Level. Update when next report batch is requested.
 
 ---
 
@@ -41,16 +48,12 @@ Forward-looking only — pending items by category. Completed items graduate to 
 
 ---
 
-## Infrastructure
-
-- **Cloud Monitoring alerts** — Pub/Sub backlog + Cloud Run failure rate; add when Cloud Function is deployed.
-
----
-
 ## Website
 
-Local demo built 2026-07-08: Flask + BQ + Claude API. Lives in `website/`. Launch with `bash website/start.sh` (requires `ANTHROPIC_API_KEY` in env).
+Local demo in `website/`. Launch with `bash website/start.sh` (requires `ANTHROPIC_API_KEY`).
 
-- **Squad page** — Transfermarkt cards with hover (nationality, position, age, height). Needs new Transfermarkt pull to include summer 2026 signings.
-- **Match calculator** — player selector from gold_player_season → numeric fit score + Claude-generated scouting verdict. Working end-to-end.
-- **Next for the site** — add match results page (from gold_zaragoza_matches), player detail pages, league comparison views. Deploy publicly once backfills are stable.
+- **Squad page** — update Transfermarkt cards with 2026-27 signings once multi-league TM scrape stabilises.
+- **Match results page** — from `gold_zaragoza_matches`.
+- **Player detail pages** — per-player stat breakdown.
+- **League comparison views** — Zaragoza vs. LaLiga2 averages.
+- **Deploy publicly** — once backfills are stable and at least one full 2025-26 season is in BQ.

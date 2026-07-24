@@ -1,0 +1,13 @@
+# Run from repo root:
+#   gcloud builds submit . --config pipeline/cloud-run/refresh-layers/cloudbuild.yaml
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -f
+      - pipeline/cloud-run/refresh-layers/Dockerfile
+      - -t
+      - europe-west1-docker.pkg.dev/real-zaragoza-500608/rz-images/rz-refresh-layers:latest
+      - .
+images:
+  - europe-west1-docker.pkg.dev/real-zaragoza-500608/rz-images/rz-refresh-layers:latest
