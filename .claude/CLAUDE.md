@@ -30,6 +30,8 @@ Active leagues: LaLiga2 (54), 1RFEF (17073), Serie B (53), Ligue 2 (182), Romani
 
 **Extraction cadence:** 1 season per slot, 4 slots/day (00:00 + 06:00 + 12:00 + 18:00) via launchd + `run_next_from_queue.sh`. Queue in `pipeline/cloud-run/schedules/sofascore_queue.txt`. Do not run back-to-back seasons manually — even 2 consecutive seasons triggers a 24-hour Cloudflare IP ban.
 
+**Transfermarkt multi-league pipeline:** `pipeline/cloud-run/scrapers/scraper_transfermarkt_leagues.py` scrapes all active pipeline leagues (1RFEF excluded — too many teams). Run manually or via `pipeline/run_transfermarkt_leagues.sh`; suggested cadence is weekly. Writes to `rz_raw.transfermarkt_players` (separate from `rz_raw.transfermarkt_squad` which is Zaragoza-only). Processed layers: `rz_bronze.bronze_tm_players` → `rz_silver.silver_tm_players` → `rz_gold.gold_tm_players`. Gold table is the scouting join target for market value, age, nationality, contract expiry. TM codes verified 2026-07-24.
+
 ## Agent ecosystem
 
 Four specialised agents live in `.claude/agents/`. Invoke the right one for the task:
