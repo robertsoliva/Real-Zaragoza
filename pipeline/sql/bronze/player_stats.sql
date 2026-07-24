@@ -1,4 +1,6 @@
-CREATE OR REPLACE VIEW `real-zaragoza-500608.bronze.player_stats` AS
+CREATE OR REPLACE VIEW `real-zaragoza-500608.bronze.player_stats`
+OPTIONS(description="UNION ALL of per-player per-match stats from raw.sofascore_player_match_stats (standard leagues) and wc_2026.sofascore_player_match_stats (FIFA World Cup 2026). Adds dataset_source column. Bronze layer — no deduplication applied here.")
+AS
 SELECT
   match_id, player_id, match_date, match_round, tournament_id, season_id, league_name,
   player_name, team_id, team_name, is_home, position, shirt_number, is_substitute, captain,

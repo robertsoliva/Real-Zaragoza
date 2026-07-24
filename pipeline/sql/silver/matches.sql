@@ -1,4 +1,5 @@
 CREATE OR REPLACE TABLE `real-zaragoza-500608.silver.matches`
+OPTIONS(description="Deduplicated SofaScore match records covering all pipeline leagues plus WC 2026. One row per match_id (latest ingestion). Partitioned by match_date, clustered by tournament_id and match_round.")
 PARTITION BY match_date
 CLUSTER BY tournament_id, match_round
 AS

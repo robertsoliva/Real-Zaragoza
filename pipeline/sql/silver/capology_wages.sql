@@ -1,6 +1,7 @@
 -- Deduplicates to the latest ingestion per (player, club, league).
 -- Excludes players on loan (their wage inflates the parent club's number).
 CREATE OR REPLACE TABLE `real-zaragoza-500608.silver.capology_wages`
+OPTIONS(description="Deduplicated Capology wage data. One row per (player, club, league), latest ingestion. Loan players excluded to avoid wage distortion. Clustered by league_name and position_group. Source: bronze.capology_wages.")
 CLUSTER BY league_name, position_group
 AS
 WITH ranked AS (

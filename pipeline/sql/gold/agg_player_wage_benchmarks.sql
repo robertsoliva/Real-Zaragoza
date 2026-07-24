@@ -3,6 +3,7 @@
 -- giving a combined view useful for scouting budget planning:
 -- what does a player of this value/age/position typically earn?
 CREATE OR REPLACE TABLE `real-zaragoza-500608.gold.agg_player_wage_benchmarks`
+OPTIONS(description="Wage benchmarks by position group and league. Aggregates Capology gross wage data joined with TM market values. Provides P25/median/P75/avg annual wage and avg_wage_to_value_pct per (league, position group). Use for scouting budget planning and wage-to-value ratio analysis. Clustered by league_name and position_group.")
 CLUSTER BY league_name, position_group
 AS
 WITH wages AS (

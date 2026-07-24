@@ -22,30 +22,53 @@ SQL_DIR = Path("/app/sql")
 SQL_ORDER = [
     # Bronze — lightweight views over raw, always recreated first
     "bronze/rz_squad.sql",
+    "bronze/rz_squad_descriptions.sql",
     "bronze/tm_players.sql",
+    "bronze/tm_players_descriptions.sql",
     "bronze/capology_wages.sql",
+    "bronze/capology_wages_descriptions.sql",
     "bronze/matches.sql",
+    "bronze/matches_descriptions.sql",
     "bronze/player_stats.sql",
+    "bronze/player_stats_descriptions.sql",
     "bronze/shots.sql",
+    "bronze/shots_descriptions.sql",
     "bronze/team_stats.sql",
+    "bronze/team_stats_descriptions.sql",
     # Silver — dedup tables (latest row per natural key)
     "silver/rz_squad.sql",
+    "silver/rz_squad_descriptions.sql",
     "silver/tm_players.sql",
+    "silver/tm_players_descriptions.sql",
     "silver/capology_wages.sql",
+    "silver/capology_wages_descriptions.sql",
     "silver/matches.sql",
-    "silver/player_stats.sql",       # depends on silver/matches
-    "silver/shots.sql",              # depends on silver/matches
+    "silver/matches_descriptions.sql",
+    "silver/player_stats.sql",               # depends on silver/matches
+    "silver/player_stats_descriptions.sql",
+    "silver/shots.sql",                      # depends on silver/matches
+    "silver/shots_descriptions.sql",
     "silver/team_stats.sql",
+    "silver/team_stats_descriptions.sql",
     # Gold — fact and aggregate tables
     "gold/fct_player_season_stats.sql",
+    "gold/fct_player_season_stats_descriptions.sql",
     "gold/fct_team_season_stats.sql",
+    "gold/fct_team_season_stats_descriptions.sql",
     "gold/fct_rz_matches.sql",
+    "gold/fct_rz_matches_descriptions.sql",
     "gold/agg_player_market_values.sql",
-    "gold/agg_scouting_player_season.sql",   # depends on fct_player_season_stats + agg_player_market_values
+    "gold/agg_player_market_values_descriptions.sql",
+    "gold/agg_scouting_player_season.sql",           # depends on fct_player_season_stats + agg_player_market_values
+    "gold/agg_scouting_player_season_descriptions.sql",
     "gold/agg_rz_squad_finances.sql",
-    "gold/agg_league_player_benchmarks.sql", # depends on fct_player_season_stats
-    "gold/agg_tm_player_valuations.sql",     # reads raw directly for historical snapshots
-    "gold/agg_player_wage_benchmarks.sql",   # depends on silver/capology_wages + silver/tm_players
+    "gold/agg_rz_squad_finances_descriptions.sql",
+    "gold/agg_league_player_benchmarks.sql",         # depends on fct_player_season_stats
+    "gold/agg_league_player_benchmarks_descriptions.sql",
+    "gold/agg_tm_player_valuations.sql",             # reads raw directly for historical snapshots
+    "gold/agg_tm_player_valuations_descriptions.sql",
+    "gold/agg_player_wage_benchmarks.sql",           # depends on silver/capology_wages + silver/tm_players
+    "gold/agg_player_wage_benchmarks_descriptions.sql",
 ]
 
 

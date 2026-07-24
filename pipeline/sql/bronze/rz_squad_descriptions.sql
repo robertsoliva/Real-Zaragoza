@@ -1,0 +1,17 @@
+ALTER TABLE `real-zaragoza-500608.bronze.rz_squad`
+  ALTER COLUMN player_id SET OPTIONS(description="Transfermarkt internal player identifier"),
+  ALTER COLUMN name SET OPTIONS(description="Player full name as shown on Transfermarkt"),
+  ALTER COLUMN jersey_number SET OPTIONS(description="Squad jersey number at Real Zaragoza"),
+  ALTER COLUMN position SET OPTIONS(description="Transfermarkt position label (e.g. Centre-Back, Left Winger)"),
+  ALTER COLUMN age SET OPTIONS(description="Player age at time of scrape"),
+  ALTER COLUMN date_of_birth SET OPTIONS(description="Player date of birth"),
+  ALTER COLUMN nationality SET OPTIONS(description="Primary nationality"),
+  ALTER COLUMN height SET OPTIONS(description="Player height in centimetres"),
+  ALTER COLUMN foot SET OPTIONS(description="Preferred foot: left, right, or both"),
+  ALTER COLUMN market_value_eur SET OPTIONS(description="Transfermarkt estimated market value in EUR"),
+  ALTER COLUMN contract_expiry SET OPTIONS(description="Contract expiry date at Real Zaragoza"),
+  ALTER COLUMN joined_date SET OPTIONS(description="Date the player joined Real Zaragoza"),
+  ALTER COLUMN signed_from SET OPTIONS(description="Club from which the player was signed"),
+  ALTER COLUMN signing_fee SET OPTIONS(description="Reported transfer fee paid by Zaragoza in EUR (NULL if free or undisclosed)"),
+  ALTER COLUMN season_id SET OPTIONS(description="Season year string used during scrape (e.g. 2024)"),
+  ALTER COLUMN ingested_date SET OPTIONS(description="Date the data was scraped from Transfermarkt")

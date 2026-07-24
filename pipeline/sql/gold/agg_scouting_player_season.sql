@@ -3,6 +3,7 @@
 -- due to naming differences between systems (e.g. accents, abbreviations).
 -- TM position is the source of truth for position granularity (more detailed than SofaScore).
 CREATE OR REPLACE TABLE `real-zaragoza-500608.gold.agg_scouting_player_season`
+OPTIONS(description="Main scouting table. Joins SofaScore season stats with Transfermarkt profile and market value data. One row per player per season. TM position used when available (more granular). Join coverage ~70-80%; naming mismatches may leave TM columns NULL. Clustered by league_name, season_id, tm_position.")
 CLUSTER BY league_name, season_id, tm_position
 AS
 SELECT

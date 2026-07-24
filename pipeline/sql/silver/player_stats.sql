@@ -1,4 +1,5 @@
 CREATE OR REPLACE TABLE `real-zaragoza-500608.silver.player_stats`
+OPTIONS(description="Deduplicated SofaScore per-player per-match stats. One row per (match_id, player_id). Team identity resolved from silver.matches via JOIN. Partitioned by match_date, clustered by tournament_id and team_id.")
 PARTITION BY match_date
 CLUSTER BY tournament_id, team_id
 AS

@@ -1,4 +1,5 @@
 CREATE OR REPLACE TABLE `real-zaragoza-500608.gold.fct_rz_matches`
+OPTIONS(description="Real Zaragoza match-by-match results with per-match team stats (SofaScore team_id=2815). One row per match. Includes result, venue, goals scored/conceded, and Zaragoza's in-match stats. Partitioned by match_date, clustered by season_id and result.")
 PARTITION BY match_date
 CLUSTER BY season_id, result
 AS

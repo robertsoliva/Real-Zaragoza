@@ -1,4 +1,5 @@
 CREATE OR REPLACE TABLE `real-zaragoza-500608.gold.agg_player_market_values`
+OPTIONS(description="Transfermarkt market value and contract data for all pipeline leagues, deduplicated to latest scrape per (player, club, season). Primary source of truth for market values, contract expiries, and TM position (more granular than SofaScore). Clustered by league_name, position, season_id.")
 CLUSTER BY league_name, position, season_id
 AS
 SELECT

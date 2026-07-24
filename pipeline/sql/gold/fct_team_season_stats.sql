@@ -1,4 +1,5 @@
 CREATE OR REPLACE TABLE `real-zaragoza-500608.gold.fct_team_season_stats`
+OPTIONS(description="Per-team per-season aggregated match stats from SofaScore. One row per (team_id, league, season). Covers possession, passing, shooting, defensive, and aerial averages. Use for team style analysis and origin/destination team comparisons in scouting reports. Clustered by league_name and season_id.")
 CLUSTER BY league_name, season_id
 AS
 SELECT

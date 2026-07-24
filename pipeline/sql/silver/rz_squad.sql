@@ -1,4 +1,5 @@
 CREATE OR REPLACE TABLE `real-zaragoza-500608.silver.rz_squad`
+OPTIONS(description="Deduplicated Real Zaragoza squad from Transfermarkt. One row per player (latest ingestion). Source: bronze.rz_squad → raw.transfermarkt_squad.")
 AS
 WITH ranked AS (
   SELECT *,

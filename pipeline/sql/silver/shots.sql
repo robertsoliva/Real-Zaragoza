@@ -1,4 +1,5 @@
 CREATE OR REPLACE TABLE `real-zaragoza-500608.silver.shots`
+OPTIONS(description="Deduplicated SofaScore shot event records. One row per shot_id (latest ingestion). Team identity resolved from silver.matches. Partitioned by match_date, clustered by tournament_id.")
 PARTITION BY match_date
 CLUSTER BY tournament_id
 AS

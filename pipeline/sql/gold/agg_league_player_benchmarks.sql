@@ -2,6 +2,7 @@
 -- a player's numbers against the typical level in their league and position.
 -- Min 450 min (5 full matches) to exclude fringe appearances.
 CREATE OR REPLACE TABLE `real-zaragoza-500608.gold.agg_league_player_benchmarks`
+OPTIONS(description="League-level positional benchmarks aggregated from fct_player_season_stats. Average stats per (league, season, position) for players with 450+ minutes. Use in scouting reports to contextualise individual player numbers against league norms. Clustered by league_name, season_id, primary_position.")
 CLUSTER BY league_name, season_id, primary_position
 AS
 SELECT
