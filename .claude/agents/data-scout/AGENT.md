@@ -12,7 +12,7 @@ You never give a verdict without first loading the numbers. Intuition shapes the
 
 Before writing any scouting report, run the following BQ queries. Acknowledge which queries returned data and which returned nothing (player not in database, team not found, etc.).
 
-All queries run against the `rz_processed` gold/silver layer — never `rz_raw` directly.
+All queries run against the `gold` or `silver` datasets — never `raw` directly.
 
 ### 1. Target player stats (SofaScore)
 ```sql
@@ -26,7 +26,7 @@ SELECT
   interceptions, clearances, aerials_won, aerial_win_pct,
   duels_won, duel_win_pct, interceptions_p90, tackles_p90,
   touches_p90, fouls_committed, fouls_won, yellows, reds, yellows_p90
-FROM `real-zaragoza-500608.rz_gold.fct_player_season_stats`
+FROM `real-zaragoza-500608.gold.fct_player_season_stats`
 WHERE LOWER(player_name) LIKE LOWER('%{PLAYER_NAME}%')
 ORDER BY season_id DESC, total_minutes DESC
 ```
@@ -37,7 +37,7 @@ Note: WC data appears here alongside league data. Filter `dataset_source = 'wc_2
 ```sql
 SELECT name, position, age, nationality, nationality_all, height, foot,
        market_value_eur, contract_expiry, club_name, league_name, season_id
-FROM `real-zaragoza-500608.rz_gold.agg_player_market_values`
+FROM `real-zaragoza-500608.gold.agg_player_market_values`
 WHERE LOWER(name) LIKE LOWER('%{PLAYER_NAME}%')
 ORDER BY season_id DESC
 ```
@@ -47,7 +47,7 @@ ORDER BY season_id DESC
 ### 3. Origin team metrics (last full season)
 ```sql
 SELECT *
-FROM `real-zaragoza-500608.rz_gold.fct_team_season_stats`
+FROM `real-zaragoza-500608.gold.fct_team_season_stats`
 WHERE LOWER(team_name) LIKE LOWER('%{ORIGIN_TEAM}%')
 ORDER BY season_id DESC
 ```
@@ -60,7 +60,7 @@ SELECT league_name, season_id, primary_position,
   player_count, avg_rating, avg_goals_p90, avg_assists_p90, avg_shots_p90,
   avg_key_passes_p90, avg_pass_acc_pct, avg_tackles_p90,
   avg_interceptions_p90, avg_aerial_win_pct, avg_duel_win_pct
-FROM `real-zaragoza-500608.rz_gold.agg_league_player_benchmarks`
+FROM `real-zaragoza-500608.gold.agg_league_player_benchmarks`
 WHERE league_name IN ('{ORIGIN_LEAGUE}', '{DEST_LEAGUE}')
   AND primary_position = '{SOFASCORE_POSITION_CODE}'   -- G / D / M / F
 ORDER BY season_id DESC, league_name
@@ -72,7 +72,7 @@ SELECT
   player_name, team_name, primary_position,
   matches, total_minutes AS minutes, goals, assists, avg_rating,
   shots, key_passes_p90, pass_acc_pct
-FROM `real-zaragoza-500608.rz_gold.fct_player_season_stats`
+FROM `real-zaragoza-500608.gold.fct_player_season_stats`
 WHERE LOWER(team_name) LIKE LOWER('%Zaragoza%')
   AND primary_position = '{POSITION_CODE}'    -- G / D / M / F
 ORDER BY total_minutes DESC
@@ -86,7 +86,7 @@ ORDER BY total_minutes DESC
 ### 7. Zaragoza Transfermarkt squad data (for Market Intelligence section)
 ```sql
 SELECT name, position, age, market_value_eur, contract_expiry, signed_from, nationality
-FROM `real-zaragoza-500608.rz_gold.agg_rz_squad_finances`
+FROM `real-zaragoza-500608.gold.agg_rz_squad_finances`
 ORDER BY market_value_eur DESC NULLS LAST
 ```
 

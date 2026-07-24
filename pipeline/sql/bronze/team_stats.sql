@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW `real-zaragoza-500608.rz_bronze.team_stats` AS
+CREATE OR REPLACE VIEW `real-zaragoza-500608.bronze.team_stats` AS
 SELECT
   match_id, match_date, match_round, tournament_id, season_id, league_name,
   team_id, team_name, side, possession_pct, total_shots, shots_on_target,
@@ -10,7 +10,7 @@ SELECT
   errors_leading_to_shot, goalkeeper_saves, ground_duels_won, total_ground_duels,
   aerial_duels_won, total_aerial_duels, dribbles_completed, total_dribbles, dispossessed,
   ingested_date, ingested_at, "standard" AS dataset_source
-FROM `real-zaragoza-500608.rz_raw.sofascore_team_match_stats`
+FROM `real-zaragoza-500608.raw.sofascore_team_match_stats`
 UNION ALL
 SELECT
   match_id, match_date, match_round, tournament_id, season_id, league_name,
@@ -23,4 +23,4 @@ SELECT
   errors_leading_to_shot, goalkeeper_saves, ground_duels_won, total_ground_duels,
   aerial_duels_won, total_aerial_duels, dribbles_completed, total_dribbles, dispossessed,
   ingested_date, ingested_at, "wc_26" AS dataset_source
-FROM `real-zaragoza-500608.WC_26.sofascore_team_match_stats`
+FROM `real-zaragoza-500608.wc_2026.sofascore_team_match_stats`

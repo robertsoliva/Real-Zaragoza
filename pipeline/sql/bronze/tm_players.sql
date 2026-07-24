@@ -1,2 +1,2 @@
-CREATE OR REPLACE VIEW `real-zaragoza-500608.rz_bronze.tm_players` AS
-SELECT * FROM `real-zaragoza-500608.rz_raw.transfermarkt_players`
+CREATE OR REPLACE VIEW `real-zaragoza-500608.bronze.tm_players` AS
+SELECT * FROM `real-zaragoza-500608.raw.transfermarkt_players`

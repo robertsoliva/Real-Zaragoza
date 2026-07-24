@@ -1,4 +1,4 @@
-CREATE OR REPLACE TABLE `real-zaragoza-500608.rz_gold.fct_player_season_stats`
+CREATE OR REPLACE TABLE `real-zaragoza-500608.gold.fct_player_season_stats`
 CLUSTER BY league_name, season_id, primary_position
 AS
 SELECT
@@ -46,6 +46,6 @@ SELECT
   SUM(yellow_cards)                                                                           AS yellows,
   SUM(red_cards)                                                                              AS reds,
   ROUND(SUM(yellow_cards)  / NULLIF(SUM(minutes_played),0) * 90, 3)                          AS yellows_p90
-FROM `real-zaragoza-500608.rz_silver.player_stats`
+FROM `real-zaragoza-500608.silver.player_stats`
 WHERE minutes_played IS NOT NULL AND minutes_played > 0
 GROUP BY player_id, player_name, team_name, league_name, dataset_source, tournament_id, season_id

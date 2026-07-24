@@ -1,0 +1,13 @@
+# Run from repo root:
+#   gcloud builds submit . --config pipeline/cloud-run/tm-scraper/cloudbuild.yaml
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -f
+      - pipeline/cloud-run/tm-scraper/Dockerfile
+      - -t
+      - europe-west1-docker.pkg.dev/real-zaragoza-500608/rz-images/rz-tm-scraper:latest
+      - .
+images:
+  - europe-west1-docker.pkg.dev/real-zaragoza-500608/rz-images/rz-tm-scraper:latest

@@ -1,11 +1,11 @@
-CREATE OR REPLACE TABLE `real-zaragoza-500608.rz_silver.player_stats`
+CREATE OR REPLACE TABLE `real-zaragoza-500608.silver.player_stats`
 PARTITION BY match_date
 CLUSTER BY tournament_id, team_id
 AS
 WITH ranked AS (
   SELECT *,
     ROW_NUMBER() OVER (PARTITION BY match_id, player_id ORDER BY ingested_at DESC) AS rn
-  FROM `real-zaragoza-500608.rz_bronze.player_stats`
+  FROM `real-zaragoza-500608.bronze.player_stats`
 ),
 deduped AS (
   SELECT * EXCEPT (rn) FROM ranked WHERE rn = 1
@@ -27,4 +27,4 @@ SELECT
   d.touches, d.possession_lost, d.unsuccessful_touch,
   d.yellow_cards, d.red_cards, d.saves, d.expected_goals, d.expected_assists
 FROM deduped d
-LEFT JOIN `real-zaragoza-500608.rz_silver.matches` m USING (match_id)
+LEFT JOIN `real-zaragoza-500608.silver.matches` m USING (match_id)

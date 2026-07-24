@@ -2,7 +2,7 @@
 -- Join key: normalized player_name + team_name. Covers ~70-80% of players; some miss
 -- due to naming differences between systems (e.g. accents, abbreviations).
 -- TM position is the source of truth for position granularity (more detailed than SofaScore).
-CREATE OR REPLACE TABLE `real-zaragoza-500608.rz_gold.agg_scouting_player_season`
+CREATE OR REPLACE TABLE `real-zaragoza-500608.gold.agg_scouting_player_season`
 CLUSTER BY league_name, season_id, tm_position
 AS
 SELECT
@@ -50,8 +50,8 @@ SELECT
   tm.foot,
   tm.signed_from,
   tm.club_id                                                                 AS tm_club_id
-FROM `real-zaragoza-500608.rz_gold.fct_player_season_stats` s
-LEFT JOIN `real-zaragoza-500608.rz_gold.agg_player_market_values` tm
+FROM `real-zaragoza-500608.gold.fct_player_season_stats` s
+LEFT JOIN `real-zaragoza-500608.gold.agg_player_market_values` tm
   ON LOWER(TRIM(s.player_name))  = LOWER(TRIM(tm.name))
  AND LOWER(TRIM(s.team_name))   = LOWER(TRIM(tm.club_name))
  AND CAST(s.season_id AS STRING) = CAST(tm.season_id AS STRING)

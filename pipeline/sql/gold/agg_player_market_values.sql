@@ -1,4 +1,4 @@
-CREATE OR REPLACE TABLE `real-zaragoza-500608.rz_gold.agg_player_market_values`
+CREATE OR REPLACE TABLE `real-zaragoza-500608.gold.agg_player_market_values`
 CLUSTER BY league_name, position, season_id
 AS
 SELECT
@@ -24,4 +24,4 @@ SELECT
   signing_fee,
   jersey_number,
   ingested_date
-FROM `real-zaragoza-500608.rz_silver.tm_players`
+FROM `real-zaragoza-500608.silver.tm_players`

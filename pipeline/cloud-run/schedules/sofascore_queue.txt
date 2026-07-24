@@ -14,7 +14,6 @@
 # PRIORITY 2 — New leagues (all IDs confirmed via seasons_lookup.py 2026-07-05)
 # -------------------------------------------------------------------------
 # PRIORITY 3 — Additional leagues (all IDs confirmed via seasons_lookup.py 2026-07-05)
-40   69956  Allsvenskan_2025
 40   87925  Allsvenskan_2026
 131  61667  EersteDivisie_2024-25
 131  77156  EersteDivisie_2025-26

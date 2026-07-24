@@ -3,8 +3,8 @@ Real Zaragoza — multi-league Transfermarkt scraper.
 
 For each active pipeline league, discovers all clubs from the competition
 startseite page, then scrapes each club's /plus/1 squad page. Results are
-appended to rz_raw.transfermarkt_players in BigQuery (separate from the
-single-club rz_raw.transfermarkt_squad table).
+appended to raw.transfermarkt_players in BigQuery (separate from the
+single-club raw.transfermarkt_squad table).
 
 Usage:
     python scraper_transfermarkt_leagues.py               # all leagues
@@ -335,11 +335,11 @@ def save_local(df: pd.DataFrame, tm_code: str, season: int) -> Path:
 
 
 def write_to_bq(df: pd.DataFrame, project_id: str) -> None:
-    """Append rows to rz_raw.transfermarkt_players in BigQuery."""
+    """Append rows to raw.transfermarkt_players in BigQuery."""
     from google.cloud import bigquery
 
     client = bigquery.Client(project=project_id)
-    table_ref = f"{project_id}.rz_raw.transfermarkt_players"
+    table_ref = f"{project_id}.raw.transfermarkt_players"
 
     job_config = bigquery.LoadJobConfig(
         write_disposition=bigquery.WriteDisposition.WRITE_APPEND,

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Squad — RZ Analytics{% endblock %}
+{% block content %}
+
+<h1>2026-27 Squad</h1>
+<p class="squad-meta">
+  Source: Transfermarkt — last scraped 2026-06-26. Summer 2026 signings (Westerveld, Ademo, Escudero, Gabilondo, Jardí, Díez, Pereira, Peña) may not appear until next Transfermarkt pull. Hover a card for details.
+</p>
+
+{% if players %}
+<div class="squad-grid">
+  {% for p in players %}
+  <div class="player-card">
+    <div class="jersey">#{{ p.jersey_number or '—' }}</div>
+    <div class="player-name">{{ p.name }}</div>
+    <div class="pos-badge">{{ p.position or '—' }}</div>
+    <div class="market-value">
+      {% if p.market_value_eur %}
+        €{{ "{:,.0f}".format(p.market_value_eur) }}
+      {% else %}
+        —
+      {% endif %}
+    </div>
+
+    <div class="hover-info">
+      <div>
+        <div class="hi-label">Nationality</div>
+        <div class="hi-row">{{ p.nationality or '—' }}</div>
+      </div>
+      <div>
+        <div class="hi-label">Position</div>
+        <div class="hi-row">{{ p.position or '—' }}</div>
+      </div>
+      <div>
+        <div class="hi-label">Age</div>
+        <div class="hi-row">{{ p.age or '—' }}</div>
+      </div>
+      <div>
+        <div class="hi-label">Height</div>
+        <div class="hi-row">{{ p.height or '—' }}</div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<p>No squad data available.</p>
+{% endif %}
+
+{% endblock %}

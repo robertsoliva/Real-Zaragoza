@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% block title %}Match Calculator — RZ Analytics{% endblock %}
+{% block content %}
+
+<h1>Match Calculator</h1>
+<p style="margin-bottom: 2rem;">Select a player from any league in the database and get a fit score for Real Zaragoza's 2026-27 squad in 1RFEF.</p>
+
+<div class="calc-layout">
+  <!-- Selector panel -->
+  <div class="calc-panel">
+    <label>Search player</label>
+    <input type="text" id="search" placeholder="Type a name…" autocomplete="off">
+
+    <label>Player</label>
+    <select id="player-select" size="1">
+      <option value="">— select —</option>
+      {% for p in players %}
+      <option
+        value="{{ p.player_name }}"
+        data-season="{{ p.season_id }}"
+        data-league="{{ p.league_name }}"
+        data-pos="{{ p.primary_position }}"
+        data-team="{{ p.team_name }}"
+        data-rating="{{ p.avg_rating }}"
+      >
+        {{ p.player_name }} · {{ p.team_name }} · {{ p.league_name }}
+      </option>
+      {% endfor %}
+    </select>
+
+    <label>League</label>
+    <input type="text" id="league-display" readonly placeholder="—">
+
+    <label>Season</label>
+    <input type="text" id="season-display" readonly placeholder="—">
+
+    <button class="btn-primary" id="analyse-btn" disabled>Analyse fit →</button>
+  </div>
+
+  <!-- Result panel -->
+  <div id="result-panel" class="result-panel calc-panel">
+    <div id="loading" class="loading" style="display:none">Analysing… fetching stats and generating verdict</div>
+
+    <div id="result-content" style="display:none">
+      <div class="score-ring">
+        <div>
+          <div class="score-num" id="score-val">—<span>/10</span></div>
+          <div class="score-label">Overall fit score</div>
+        </div>
+        <div>
+          <div id="player-header" style="font-size:1.1rem;font-weight:700;margin-bottom:0.25rem;"></div>
+          <div id="player-meta" style="font-size:0.8rem;color:var(--muted);"></div>
+        </div>
+      </div>
+
+      <div class="breakdown-grid">
+        <div class="bd-item">
+          <div class="bd-label">Position need</div>
+          <div class="bd-val" id="bd-pos">—<small style="font-size:0.7rem;color:var(--muted)">/3</small></div>
+        </div>
+        <div class="bd-item">
+          <div class="bd-label">Output quality</div>
+          <div class="bd-val" id="bd-out">—<small style="font-size:0.7rem;color:var(--muted)">/4</small></div>
+        </div>
+        <div class="bd-item">
+          <div class="bd-label">League adjustment</div>
+          <div class="bd-val" id="bd-league">—<small style="font-size:0.7rem;color:var(--muted)">/2</small></div>
+        </div>
+        <div class="bd-item">
+          <div class="bd-label">Experience</div>
+          <div class="bd-val" id="bd-exp">—<small style="font-size:0.7rem;color:var(--muted)">/1</small></div>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-item"><div class="sv" id="st-goals">—</div><div class="sl">Goals/90</div></div>
+        <div class="stat-item"><div class="sv" id="st-assists">—</div><div class="sl">Assists/90</div></div>
+        <div class="stat-item"><div class="sv" id="st-rating">—</div><div class="sl">Avg Rating</div></div>
+        <div class="stat-item"><div class="sv" id="st-shots">—</div><div class="sl">Shots/90</div></div>
+        <div class="stat-item"><div class="sv" id="st-kp">—</div><div class="sl">Key Passes/90</div></div>
+        <div class="stat-item"><div class="sv" id="st-mins">—</div><div class="sl">Minutes</div></div>
+      </div>
+
+      <h2 style="margin-bottom:0.75rem;">Scout Verdict</h2>
+      <div class="narrative" id="narrative"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const searchEl = document.getElementById('search');
+const selectEl = document.getElementById('player-select');
+const leagueEl = document.getElementById('league-display');
+const seasonEl = document.getElementById('season-display');
+const analyseBtn = document.getElementById('analyse-btn');
+const resultPanel = document.getElementById('result-panel');
+const loading = document.getElementById('loading');
+const resultContent = document.getElementById('result-content');
+
+let allOptions = Array.from(selectEl.options).slice(1);
+
+searchEl.addEventListener('input', () => {
+  const q = searchEl.value.toLowerCase();
+  Array.from(selectEl.options).forEach((opt, i) => {
+    if (i === 0) return;
+    opt.style.display = opt.text.toLowerCase().includes(q) ? '' : 'none';
+  });
+});
+
+selectEl.addEventListener('change', () => {
+  const opt = selectEl.selectedOptions[0];
+  if (!opt.value) { analyseBtn.disabled = true; return; }
+  leagueEl.value = opt.dataset.league;
+  seasonEl.value = opt.dataset.season;
+  analyseBtn.disabled = false;
+});
+
+analyseBtn.addEventListener('click', async () => {
+  const opt = selectEl.selectedOptions[0];
+  if (!opt.value) return;
+
+  resultPanel.classList.add('visible');
+  loading.style.display = 'block';
+  resultContent.style.display = 'none';
+  analyseBtn.disabled = true;
+
+  const res = await fetch('/api/fit', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      player_name: opt.value,
+      season_id: opt.dataset.season,
+      league_name: opt.dataset.league,
+    })
+  });
+
+  const data = await res.json();
+  loading.style.display = 'none';
+  analyseBtn.disabled = false;
+
+  if (data.error) {
+    resultContent.innerHTML = `<p style="color:var(--red)">${data.error}</p>`;
+    resultContent.style.display = 'block';
+    return;
+  }
+
+  const p = data.player;
+  const b = data.breakdown;
+
+  document.getElementById('score-val').innerHTML = `${data.score}<span>/10</span>`;
+  document.getElementById('player-header').textContent = p.player_name;
+  document.getElementById('player-meta').textContent =
+    `${p.primary_position} · ${p.team_name} · ${p.league_name} · ${p.total_minutes} mins`;
+
+  document.getElementById('bd-pos').innerHTML = `${b.position_need}<small style="font-size:0.7rem;color:var(--muted)">/3</small>`;
+  document.getElementById('bd-out').innerHTML = `${b.output_quality}<small style="font-size:0.7rem;color:var(--muted)">/4</small>`;
+  document.getElementById('bd-league').innerHTML = `${b.league_adjustment}<small style="font-size:0.7rem;color:var(--muted)">/2</small>`;
+  document.getElementById('bd-exp').innerHTML = `${b.experience}<small style="font-size:0.7rem;color:var(--muted)">/1</small>`;
+
+  document.getElementById('st-goals').textContent = p.goals_p90 ?? '—';
+  document.getElementById('st-assists').textContent = p.assists_p90 ?? '—';
+  document.getElementById('st-rating').textContent = p.avg_rating ?? '—';
+  document.getElementById('st-shots').textContent = p.shots_p90 ?? '—';
+  document.getElementById('st-kp').textContent = p.key_passes_p90 ?? '—';
+  document.getElementById('st-mins').textContent = p.total_minutes ?? '—';
+
+  document.getElementById('narrative').textContent = data.narrative;
+  resultContent.style.display = 'block';
+});
+</script>
+
+{% endblock %}

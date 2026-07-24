@@ -22,7 +22,7 @@ Env vars:
   INCREMENTAL    — "true" → only matches in last 14 days
   ROUND_START    — resume a backfill from this round number (default 1)
   GCP_PROJECT_ID — write to BigQuery when set; otherwise save local CSV
-  BQ_DATASET     — BQ dataset to write to (default: rz_raw; use WC_26 for World Cup)
+  BQ_DATASET     — BQ dataset to write to (default: raw; use wc_2026 for World Cup)
 
 BQ tables (configurable via BQ_DATASET, default rz_raw):
   sofascore_matches, sofascore_player_match_stats,
@@ -433,7 +433,7 @@ def parse_shots(match_id: str, match_date: Optional[str], match_round: Optional[
 # Output
 # ---------------------------------------------------------------------------
 
-def write_to_bq(rows: list[dict], table: str, project_id: str, dataset: str = "rz_raw") -> None:
+def write_to_bq(rows: list[dict], table: str, project_id: str, dataset: str = "raw") -> None:
     from google.cloud import bigquery
     if not rows:
         return
@@ -535,7 +535,7 @@ async def _scrape_event(
 
 async def run_scrape() -> None:
     project_id    = os.environ.get("GCP_PROJECT_ID")
-    bq_dataset    = os.environ.get("BQ_DATASET", "rz_raw")
+    bq_dataset    = os.environ.get("BQ_DATASET", "raw")
     tournament_id = os.environ.get("TOURNAMENT_ID", "54")    # default LaLiga2
     season_id     = os.environ.get("SEASON_ID", "62048")     # default 2024-25
     incremental   = os.environ.get("INCREMENTAL", "").lower() == "true"

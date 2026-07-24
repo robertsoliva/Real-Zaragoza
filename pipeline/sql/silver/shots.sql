@@ -1,11 +1,11 @@
-CREATE OR REPLACE TABLE `real-zaragoza-500608.rz_silver.shots`
+CREATE OR REPLACE TABLE `real-zaragoza-500608.silver.shots`
 PARTITION BY match_date
 CLUSTER BY tournament_id
 AS
 WITH ranked AS (
   SELECT *,
     ROW_NUMBER() OVER (PARTITION BY shot_id ORDER BY ingested_at DESC) AS rn
-  FROM `real-zaragoza-500608.rz_bronze.shots`
+  FROM `real-zaragoza-500608.bronze.shots`
 ),
 deduped AS (
   SELECT * EXCEPT (rn) FROM ranked WHERE rn = 1
@@ -20,4 +20,4 @@ SELECT
   s.x, s.y, s.goal_mouth_x, s.goal_mouth_y, s.goal_mouth_z, s.goal_mouth_location,
   s.block_x, s.block_y, s.body_part, s.shot_type, s.situation, s.xg
 FROM deduped s
-LEFT JOIN `real-zaragoza-500608.rz_silver.matches` m USING (match_id)
+LEFT JOIN `real-zaragoza-500608.silver.matches` m USING (match_id)

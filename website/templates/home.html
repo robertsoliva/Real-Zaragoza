@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Real Zaragoza Analytics{% endblock %}
+{% block content %}
+
+<div class="hero">
+  <div class="tag">Data Platform</div>
+  <h1>Real Zaragoza CF<br>Analytics</h1>
+  <p>A private data platform tracking Real Zaragoza CF across sporting and institutional dimensions. Match results, player stats, and squad intelligence from 16 leagues — all queryable, all live.</p>
+</div>
+
+<h2>Tools</h2>
+<div class="features">
+  <a href="/squad" class="feature-card">
+    <div class="icon">🫱</div>
+    <h3>Current Squad</h3>
+    <p>Zaragoza's 2026-27 roster with market values, positions, and nationalities. Sourced from Transfermarkt.</p>
+  </a>
+  <a href="/calculator" class="feature-card">
+    <div class="icon">⚖️</div>
+    <h3>Match Calculator</h3>
+    <p>Select any player from the database and get a fit score + AI scouting verdict for Real Zaragoza.</p>
+  </a>
+</div>
+
+<div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border);">
+  <h2>Data Coverage</h2>
+  <p style="margin-bottom: 1rem;">SofaScore match, player, and shot data across 16 leagues loaded into BigQuery. Processed through bronze → silver → gold layers.</p>
+  <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem;">
+    {% for league in ["LaLiga2", "1RFEF", "Serie B", "Ligue 2", "Romanian SuperLiga", "J1 League", "Turkish Süper Lig", "Norwegian Eliteserien", "Austrian Bundesliga", "Korean K League 1", "Brasileirao Serie B", "Mozzart Bet Superliga", "MLS", "Allsvenskan", "Eerste Divisie", "Moldovan Super Liga"] %}
+    <span style="background: var(--surface); border: 1px solid var(--border); font-size: 0.75rem; padding: 0.3rem 0.7rem; border-radius: 4px; color: var(--muted);">{{ league }}</span>
+    {% endfor %}
+  </div>
+  <p style="margin-top: 1rem; font-size: 0.8rem;">+ FIFA World Cup 2026 (separate dataset, incremental daily)</p>
+</div>
+
+{% endblock %}

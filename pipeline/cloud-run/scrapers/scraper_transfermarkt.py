@@ -2,7 +2,7 @@
 Real Zaragoza — Transfermarkt squad scraper.
 
 Scrapes the detailed squad page (/plus/1) for verein/142 and appends one row
-per player to rz_raw.transfermarkt_squad in BigQuery.
+per player to raw.transfermarkt_squad in BigQuery.
 
 Local usage:
     python scraper_transfermarkt.py
@@ -109,7 +109,7 @@ def scrape_squad(
 ) -> pd.DataFrame:
     """
     Fetch the /plus/1 detailed squad page and return a DataFrame
-    with one row per player aligned to rz_raw.transfermarkt_squad.
+    with one row per player aligned to raw.transfermarkt_squad.
 
     The /plus/1 view has exactly 8 td.zentriert cells per player row:
         [0] jersey number  (contains div.rn_nummer)
@@ -259,11 +259,11 @@ def save_local(df: pd.DataFrame) -> Path:
 
 
 def write_to_bq(df: pd.DataFrame, project_id: str) -> None:
-    """Append rows to rz_raw.transfermarkt_squad in BigQuery."""
+    """Append rows to raw.transfermarkt_squad in BigQuery."""
     from google.cloud import bigquery
 
     client = bigquery.Client(project=project_id)
-    table_ref = f"{project_id}.rz_raw.transfermarkt_squad"
+    table_ref = f"{project_id}.raw.transfermarkt_squad"
 
     job_config = bigquery.LoadJobConfig(
         write_disposition=bigquery.WriteDisposition.WRITE_APPEND,
