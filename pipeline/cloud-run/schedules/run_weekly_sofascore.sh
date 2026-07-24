@@ -23,8 +23,9 @@ echo "=== SofaScore weekly incremental update started: $(date) ==="
 echo "    INCREMENTAL=true — fetching last 14 days per league"
 echo ""
 
-# Inter-league pause to avoid triggering Cloudflare IP ban
-PAUSE=30
+# 15-minute inter-league pause — established safe cadence from IP ban incident
+# (even incremental runs share the same Cloudflare rate limit as full backfills)
+PAUSE=900
 
 run_league() {
     local name=$1 tid=$2 sid=$3
