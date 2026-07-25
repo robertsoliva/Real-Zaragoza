@@ -87,7 +87,7 @@ Medallion architecture. dbt model definitions in `pipeline/dbt/models/{bronze,si
 - `player_stats` (key: player_id + match_id) — PARTITION BY match_date, CLUSTER BY tournament_id
 - `team_stats` (key: team_id + match_id)
 - `shots` (key: shot_id)
-- `rz_squad` (key: player_id) — Zaragoza TM snapshot (stale since 2026-07-25 — old weekly scraper decommissioned)
+- `rz_squad` (key: player_id) — Zaragoza TM snapshot, written by `rz-scraper-transfermarkt` (weekly Tuesdays)
 - `tm_players` (key: player_id + club_id + season_id) — multi-league TM (empty until quarterly run Oct 2026)
 - `capology_wages` (key: player_name + club_name + league_name) — loans excluded
 
@@ -97,7 +97,7 @@ Medallion architecture. dbt model definitions in `pipeline/dbt/models/{bronze,si
 - `fct_rz_matches` — Zaragoza-only (team_id="2815"), W/D/L, venue, opponent
 - `agg_player_market_values` — TM market values per player × club × season (empty until quarterly run)
 - `agg_scouting_player_season` — **main scouting table**: SofaScore stats LEFT JOIN TM values + position
-- `agg_rz_squad_finances` — Zaragoza squad from `raw.transfermarkt_squad` (stale — see silver.rz_squad note)
+- `agg_rz_squad_finances` — Zaragoza squad from `raw.transfermarkt_squad` (weekly refresh via `rz-scraper-transfermarkt`)
 - `agg_league_player_benchmarks` — P25/median/P75 stats by league × position (≥450 min)
 - `agg_tm_player_valuations` — all quarterly TM snapshots preserved (value history; empty until Oct 2026)
 - `agg_player_wage_benchmarks` — wage P25/median/P75 by position, top 5 EU leagues only
