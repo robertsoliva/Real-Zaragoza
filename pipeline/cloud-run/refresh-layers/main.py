@@ -21,6 +21,16 @@ from google.cloud import bigquery
 PROJECT_ID = os.environ.get("GCP_PROJECT_ID", "real-zaragoza-500608")
 SQL_DIR = Path("/app/sql")
 
+# Files that depend on scrapers that may not have been run yet.
+# Failures in these are logged as SKIP (not FAIL) and don't cause exit 1.
+OPTIONAL_SQL = {
+    "bronze/capology_wages.sql",
+    "silver/capology_wages.sql",
+    "silver/capology_wages_descriptions.sql",
+    "gold/agg_player_wage_benchmarks.sql",
+    "gold/agg_player_wage_benchmarks_descriptions.sql",
+}
+
 SQL_ORDER = [
     # Raw table descriptions (ALTER TABLE column descriptions — idempotent)
     "raw/sofascore_matches_descriptions.sql",
@@ -239,7 +249,9 @@ def set_table_descriptions(client: bigquery.Client) -> None:
             client.update_table(table, ["description"])
             print(f"DESC  {table_ref}", flush=True)
         except Exception as exc:
-            print(f"WARN  {table_ref} description failed: {exc}", flush=True)
+            # Suppress noise for capology tables when scraper hasn't run yet
+            if "capology" not in table_ref and "wage" not in table_ref:
+                print(f"WARN  {table_ref} description failed: {exc}", flush=True)
 
 
 def main() -> None:
@@ -261,8 +273,11 @@ def main() -> None:
             print(f"OK    {rel_path}", flush=True)
             ok.append(rel_path)
         except Exception as exc:
-            print(f"FAIL  {rel_path}: {exc}", flush=True)
-            failed.append(rel_path)
+            if rel_path in OPTIONAL_SQL:
+                print(f"SKIP  {rel_path} (optional — upstream table missing): {exc}", flush=True)
+            else:
+                print(f"FAIL  {rel_path}: {exc}", flush=True)
+                failed.append(rel_path)
 
     print(f"\n{len(ok)} succeeded, {len(failed)} failed.", flush=True)
 
