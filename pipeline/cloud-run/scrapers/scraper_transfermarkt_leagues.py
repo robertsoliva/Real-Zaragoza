@@ -393,7 +393,7 @@ def main():
                       f"Valid codes: {[lg[1] for lg in LEAGUES]}")
             raise SystemExit(1)
 
-    project_id = os.environ.get("GCP_PROJECT_ID")
+    project_id = os.environ.get("GCP_PROJECT_ID", "real-zaragoza-500608")
 
     all_frames = []
     for idx, (ss_id, tm_code, tm_slug, league_name, tm_season) in enumerate(leagues):
