@@ -1,0 +1,38 @@
+version: 2
+
+models:
+  - name: silver_matches
+    description: "GRAIN: one row per match_id — latest ingestion only. Deduped via ROW_NUMBER PARTITION BY match_id ORDER BY ingested_at DESC. Canonical join key for silver_player_stats and silver_team_stats. PARTITION BY match_date (DAY). CLUSTER BY tournament_id, match_round."
+    columns:
+      - name: match_id
+        description: "SofaScore unique match identifier."
+      - name: tournament_id
+        description: "SofaScore tournament/competition identifier (e.g. 54 = LaLiga2)."
+      - name: dataset_source
+        description: "Origin dataset: 'standard' (pipeline leagues) or 'wc_26' (FIFA World Cup 2026)."
+
+  - name: silver_player_stats
+    description: "GRAIN: one row per (match_id, player_id) — latest ingestion only. Team resolved from is_home flag via JOIN with silver_matches. minutes_played > 0 filter applied at gold layer. PARTITION BY match_date (DAY). CLUSTER BY tournament_id, team_id."
+    columns:
+      - name: player_id
+        description: "SofaScore unique player identifier."
+      - name: team_id
+        description: "Resolved from match home/away sides via JOIN with silver_matches."
+
+  - name: silver_shots
+    description: "GRAIN: one row per shot_id — latest ingestion only. Pitch coordinates use SofaScore's 0–100 scale. xg is the shot-level expected goals value. PARTITION BY match_date (DAY). CLUSTER BY tournament_id."
+
+  - name: silver_team_stats
+    description: "GRAIN: one row per (match_id, team_id) — latest ingestion only; two rows per match. Full match stats including shots, passes, corners, big chances, aerial/ground duels. PARTITION BY match_date (DAY). CLUSTER BY tournament_id, team_id."
+
+  - name: silver_rz_squad
+    description: "GRAIN: one row per player_id — latest TM snapshot. Zaragoza-only squad data from scraper_transfermarkt.py."
+
+  - name: silver_tm_players
+    description: "GRAIN: one row per (player_id, club_id, season_id) — latest quarterly TM scrape. TM position is more granular than SofaScore. For historical value tracking use gold.agg_tm_player_valuations. CLUSTER BY league_name, season_id."
+    columns:
+      - name: position
+        description: "TM position label — more granular than SofaScore (e.g. 'Centre-Back' vs 'D'). Source of truth for scouting position mapping."
+
+  - name: silver_capology_wages
+    description: "GRAIN: one row per (player_name, club_name, league_name) — latest ingestion. Loan players excluded. Adds wage_eur_annual = wage_eur_weekly × 52. Top 5 EU leagues only. CLUSTER BY league_name, position_group."

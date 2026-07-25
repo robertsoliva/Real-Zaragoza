@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: bronze_matches
+    description: "GRAIN: one row per (match, scrape run) — NOT deduplicated. UNION ALL of raw.sofascore_matches + wc_2026.sofascore_matches. Adds dataset_source tag ('standard' or 'wc_26')."
+
+  - name: bronze_player_stats
+    description: "GRAIN: one row per (player, match, scrape run) — NOT deduplicated. ~40 per-match stats per player. UNION ALL of raw + wc_2026 player_match_stats."
+
+  - name: bronze_shots
+    description: "GRAIN: one row per (shot, scrape run) — NOT deduplicated. UNION ALL of raw + wc_2026 shot events with xG and pitch coordinates."
+
+  - name: bronze_team_stats
+    description: "GRAIN: one row per (team, match, scrape run) — NOT deduplicated. UNION ALL of raw + wc_2026 team match stats."
+
+  - name: bronze_rz_squad
+    description: "GRAIN: one row per (player, ingestion run) — NOT deduplicated. Pass-through of raw.transfermarkt_squad (Zaragoza-only)."
+
+  - name: bronze_tm_players
+    description: "GRAIN: one row per (player, club, ingestion run) — NOT deduplicated. Pass-through of raw.transfermarkt_players (19 leagues, quarterly)."
+
+  - name: bronze_capology_wages
+    description: "GRAIN: one row per (player, club, ingestion run) — NOT deduplicated. Pass-through of raw.capology_wages (top 5 EU leagues, monthly)."

@@ -1,0 +1,25 @@
+name: real_zaragoza
+version: '1.0.0'
+config-version: 2
+
+profile: real_zaragoza
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  real_zaragoza:
+    +persist_docs:
+      relation: true
+      columns: true
+    bronze:
+      +materialized: view
+      +schema: bronze
+    silver:
+      +materialized: table
+      +schema: silver
+    gold:
+      +materialized: table
+      +schema: gold

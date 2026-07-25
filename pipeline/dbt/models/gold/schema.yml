@@ -1,0 +1,75 @@
+version: 2
+
+models:
+  - name: fct_player_season_stats
+    description: "GRAIN: one row per (player_id, team_name, league_name, dataset_source, tournament_id, season_id) — season totals and per-90 rates. FILTER: minutes_played > 0. Primary scouting query target. CLUSTER BY league_name, season_id, primary_position."
+    columns:
+      - name: player_id
+        description: "SofaScore unique player identifier."
+      - name: primary_position
+        description: "SofaScore position code (G/D/M/F). Use tm_position from agg_scouting_player_season for granular role mapping."
+      - name: goals_p90
+        description: "Goals per 90 minutes."
+      - name: assists_p90
+        description: "Assists per 90 minutes."
+
+  - name: fct_team_season_stats
+    description: "GRAIN: one row per (team_id, team_name, league_name, dataset_source, tournament_id, season_id) — season averages per match. CLUSTER BY league_name, season_id."
+
+  - name: fct_rz_matches
+    description: "GRAIN: one row per match where Real Zaragoza (team_id='2815') played. Adds result (W/D/L), venue (home/away), rz_goals, opponent_goals. PARTITION BY match_date (DAY). CLUSTER BY season_id, result."
+    columns:
+      - name: result
+        description: "Match result from Zaragoza's perspective: W (win), D (draw), L (loss)."
+      - name: venue
+        description: "Match venue from Zaragoza's perspective: 'home' or 'away'."
+
+  - name: agg_player_market_values
+    description: "GRAIN: one row per (player_id, club_id, season_id) — latest TM scrape. TM position is source of truth for scouting (more granular than SofaScore). CLUSTER BY league_name, position, season_id."
+
+  - name: agg_scouting_player_season
+    description: "GRAIN: one row per (sofascore_id, team_name, league_name, season_id) — SofaScore season stats LEFT JOIN TM profile. ~30% miss rate on TM join due to name/diacritic differences. Primary table for scouting reports. CLUSTER BY league_name, season_id, tm_position."
+    columns:
+      - name: sofascore_id
+        description: "SofaScore player_id. Join key between SofaScore and TM data."
+      - name: tm_position
+        description: "COALESCE(TM position, SofaScore position). Use this for role mapping — more granular than sofascore_position."
+
+  - name: agg_rz_squad_finances
+    description: "GRAIN: one row per player in the latest Zaragoza TM squad snapshot. Ordered by market_value_eur DESC. Use for contract planning and squad cost overview."
+
+  - name: agg_league_player_benchmarks
+    description: "GRAIN: one row per (league_name, season_id, primary_position) — average per-90 stats. FILTER: total_minutes >= 450. Use to contextualise individual player stats against league/position averages. CLUSTER BY league_name, season_id, primary_position."
+
+  - name: agg_tm_player_valuations
+    description: "GRAIN: one row per (player_id, club_id, season_id, ingested_date) — ALL quarterly TM snapshots preserved (reads raw directly, not silver). snapshot_rank=1 is most recent. Use for market value trend analysis. CLUSTER BY player_id, league_name."
+    columns:
+      - name: snapshot_rank
+        description: "1 = most recent snapshot for this (player, club, season). ORDER BY ingested_date DESC."
+
+  - name: agg_player_wage_benchmarks
+    description: "GRAIN: one row per (league_name, position_group) — P25/median/P75/avg gross wages. Top 5 EU leagues only (PL, La Liga, Bundesliga, Ligue 1, Serie A). CLUSTER BY league_name, position_group."
+
+  - name: dim_league
+    description: "DIMENSION: one row per tournament_id — fixed once inserted. Covers all active pipeline leagues + WC 2026. Fields: tournament_id, league_name, dataset_source, country."
+    columns:
+      - name: tournament_id
+        description: "SofaScore tournament identifier. Natural key — immutable once inserted."
+      - name: country
+        description: "Country the competition belongs to. 'World' for WC 2026."
+
+  - name: dim_team
+    description: "DIMENSION: one row per team_id — fixed once inserted. team_name captured at first appearance; never updated. Covers all teams seen in silver.matches."
+    columns:
+      - name: team_id
+        description: "SofaScore team identifier. Natural key — immutable once inserted."
+
+  - name: dim_player
+    description: "DIMENSION: one row per player_id — fixed once inserted. Captures stable attributes (position, nationality, foot, height) at first appearance. Variable attributes (market_value, contract) live in gold fact/agg tables."
+    columns:
+      - name: player_id
+        description: "SofaScore player identifier. Natural key — immutable once inserted."
+      - name: tm_position
+        description: "TM granular position (e.g. 'Centre-Back', 'Left Winger'). NULL if no TM match found."
+      - name: primary_position
+        description: "SofaScore broad position code (G/D/M/F)."
