@@ -22,3 +22,6 @@ venv/
 
 # External reference material — not part of the repo
 Extracció/
+
+# Generated reports — output artifacts, not source code
+reports/

@@ -8,7 +8,7 @@ Shell runners and launchd plists that control when scrapers and refresh jobs fir
 |---|---|---|
 | `run_next_from_queue.sh` | launchd 6×/day (00:00, 04:00, 08:00, 12:00, 16:00, 20:00) | Pops next season from `sofascore_queue.txt`, runs it, removes it, runs GCS backup |
 | `run_weekly_sofascore.sh` | launchd Tuesdays 07:30 | Incremental update for all active seasons (last 14 days) |
-| `run_refresh_processed.sh` | launchd 11:00 + 20:00 | Triggers `rz-refresh-layers` + `rz-dbt-refresh` Cloud Run Jobs |
+| `run_refresh_processed.sh` | launchd 11:00 + 20:00 | Triggers `rz-dbt-refresh` Cloud Run Job |
 | `backup_raw_to_gcs.sh` | Called by `run_next_from_queue.sh` | Exports all raw BQ tables to `gs://rz-raw-backups/YYYY-MM-DD/` as Parquet |
 | `run_daily_wc26.sh` | *(archived — WC 2026 complete)* | WC incremental scrape; plists unloaded |
 | `send_daily_summary.py` | `com.realzaragoza.daily-email.plist` | Daily pipeline summary email |

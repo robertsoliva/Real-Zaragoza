@@ -1,6 +1,6 @@
 # Architecture — Data sources, pipeline, and BigQuery
 
-> **Status:** living document, last updated 2026-07-25. Full medallion architecture live (raw → bronze → silver → gold). dbt migration in parallel-run period alongside legacy SQL pipeline. 26 leagues in scope (16 active + 10 backfilling). GCS daily backup live. WC 2026 complete and archived.
+> **Status:** living document, last updated 2026-07-25. Full medallion architecture live (raw → bronze → silver → gold) via dbt. 26 leagues in scope (16 active + 10 backfilling). GCS daily backup live. WC 2026 complete and archived.
 
 ---
 
@@ -81,8 +81,8 @@ WC 2026 (local, done) ► wc_2026.sofascore_*  ──► bronze (via UNION ALL)
 |---|---|---|---|
 | **Raw** | `raw`, `wc_2026` | Append-only partitioned tables | Written by scrapers |
 | **Bronze** | `bronze` | Views (no storage) | Always live — no refresh needed |
-| **Silver** | `silver` | Partitioned + clustered tables | Daily (`rz-refresh-layers` + `rz-dbt-refresh`) |
-| **Gold** | `gold` | Clustered tables (some partitioned) | Daily (same jobs, after silver) |
+| **Silver** | `silver` | Partitioned + clustered tables | Daily (`rz-dbt-refresh`) |
+| **Gold** | `gold` | Clustered tables (some partitioned) | Daily (same job, after silver) |
 
 **Always query `silver` or `gold`** — never `raw` directly (duplicates, no dedup).
 
@@ -103,20 +103,19 @@ WC 2026 (local, done) ► wc_2026.sofascore_*  ──► bronze (via UNION ALL)
 | `dim_team` | team_id (insert-only) | Team name lookup |
 | `dim_player` | player_id (insert-only) | Fixed player attributes: position, nationality, foot, height |
 
-All tables have `OPTIONS(description=...)` and column-level descriptions.
+All tables have `OPTIONS(description=...)` and column-level descriptions (via dbt `schema.yml` + `persist_docs`).
 
 ---
 
-## dbt migration
+## dbt pipeline
 
-dbt models live in `pipeline/dbt/`. The dbt pipeline (`rz-dbt-refresh`) runs in parallel with the legacy SQL pipeline (`rz-refresh-layers`) during a verification period. Once row counts and outputs match, the legacy pipeline will be decommissioned.
+dbt models live in `pipeline/dbt/`. The pipeline runs as Cloud Run Job `rz-dbt-refresh`.
 
-- **Legacy:** `pipeline/sql/` + `pipeline/cloud-run/refresh-layers/main.py` → Cloud Run Job `rz-refresh-layers`
-- **dbt:** `pipeline/dbt/models/` → Cloud Run Job `rz-dbt-refresh`
-- **Schema:** `pipeline/dbt/models/{bronze,silver,gold}/schema.yml` (column docs, tests)
-- **Naming:** dbt models use layer-prefixed filenames (`silver_matches.sql`) with `alias` config to produce clean BQ table names (`silver.matches`)
-
-Decommission checklist in `next-actions.md`.
+- **Models:** `pipeline/dbt/models/{bronze,silver,gold}/` — 26 models total
+- **Schema/docs:** `pipeline/dbt/models/{bronze,silver,gold}/schema.yml`
+- **Naming:** layer-prefixed filenames (`silver_matches.sql`) with `alias` config → clean BQ table names (`silver.matches`)
+- **Dim tables:** insert-only via incremental merge strategy; capture fixed attributes only (position, nationality, foot, height — not variable like market value)
+- **Macro:** `generate_schema_name.sql` routes each model to its correct dataset
 
 ---
 
@@ -124,11 +123,9 @@ Decommission checklist in `next-actions.md`.
 
 | Resource | Name | Purpose | Cadence |
 |---|---|---|---|
-| Cloud Run Job | `rz-refresh-layers` | Runs all bronze→silver→gold SQL (legacy) | Daily 06:00 Madrid + launchd 11:00/20:00 |
-| Cloud Run Job | `rz-dbt-refresh` | dbt run (parallel verification) | Daily 06:00 Madrid + launchd 11:00/20:00 |
+| Cloud Run Job | `rz-dbt-refresh` | dbt run (all bronze → silver → gold) | Daily 06:00 Madrid + launchd 11:00/20:00 |
 | Cloud Run Job | `rz-tm-scraper` | Transfermarkt multi-league scrape | Quarterly (1 Jan/Apr/Jul/Oct 06:00) |
 | Cloud Run Job | `rz-capology-scraper` | Capology wage scrape (top 5 EU leagues) | Monthly (1st of month 06:00) |
-| Cloud Scheduler | `rz-refresh-layers-daily` | Triggers `rz-refresh-layers` | Daily 06:00 Europe/Madrid |
 | Cloud Scheduler | `rz-dbt-refresh-daily` | Triggers `rz-dbt-refresh` | Daily 06:00 Europe/Madrid |
 | Cloud Scheduler | `rz-tm-scraper-quarterly` | Triggers `rz-tm-scraper` | 1 Jan/Apr/Jul/Oct 06:00 |
 | Cloud Scheduler | `rz-capology-scraper-monthly` | Triggers `rz-capology-scraper` | 1st monthly 06:00 |
@@ -146,11 +143,11 @@ Since GCP IPs are blocked, all SofaScore scraping runs locally on macOS via laun
 00:00 → run_next_from_queue.sh   (extraction slot 1)
 04:00 → run_next_from_queue.sh   (extraction slot 2)
 08:00 → run_next_from_queue.sh   (extraction slot 3)
-11:00 → run_refresh_processed.sh (triggers rz-refresh-layers + rz-dbt-refresh)
+11:00 → run_refresh_processed.sh (triggers rz-dbt-refresh)
 12:00 → run_next_from_queue.sh   (extraction slot 4)
 16:00 → run_next_from_queue.sh   (extraction slot 5)
 20:00 → run_next_from_queue.sh   (extraction slot 6)
-20:00 → run_refresh_processed.sh (triggers rz-refresh-layers + rz-dbt-refresh)
+20:00 → run_refresh_processed.sh (triggers rz-dbt-refresh)
 07:30 Tue → run_weekly_sofascore.sh  (incremental for all active seasons)
 ```
 
@@ -186,7 +183,7 @@ gs://rz-raw-backups/
       sofascore_team_match_stats/*.parquet
 ```
 
-Six extractions per day all overwrite the same date path — one snapshot per calendar day is retained. To restore a table: `bq load --source_format=PARQUET PROJECT:DATASET.TABLE 'gs://rz-raw-backups/DATE/dataset/table/*.parquet'`.
+Six extractions per day all overwrite the same date path — one snapshot per calendar day. To restore a table: `bq load --source_format=PARQUET PROJECT:DATASET.TABLE 'gs://rz-raw-backups/DATE/dataset/table/*.parquet'`.
 
 ---
 
@@ -205,34 +202,25 @@ pipeline/
       sofascore_queue.txt               # Backfill queue
       run_next_from_queue.sh            # Pops queue, runs 1 season, calls GCS backup
       run_weekly_sofascore.sh           # Incremental for active seasons (Tue 07:30)
-      run_refresh_processed.sh          # Triggers rz-refresh-layers + rz-dbt-refresh
+      run_refresh_processed.sh          # Triggers rz-dbt-refresh Cloud Run Job
       backup_raw_to_gcs.sh              # Exports raw tables to gs://rz-raw-backups/
       com.realzaragoza.sofascore-*.plist  # launchd job definitions (6 daily slots)
-      com.realzaragoza.refresh-*.plist    # launchd refresh triggers
+      com.realzaragoza.refresh-*.plist    # launchd refresh triggers (11:00 + 20:00)
       run_daily_wc26.sh                 # WC 2026 daily scrape (archived)
-    refresh-layers/                     # Legacy SQL pipeline (parallel period)
-      main.py                           # Ordered SQL execution (bronze→silver→gold)
-      Dockerfile / cloudbuild.yaml
-    dbt-refresh/                        # dbt pipeline (parallel period)
+    dbt-refresh/                        # Cloud Run Job image
       Dockerfile / cloudbuild.yaml
     tm-scraper/                         # Cloud Run Job image: TM multi-league
     capology-scraper/                   # Cloud Run Job image: Capology
-    docker/                             # Original Docker configs (TM Zaragoza-only + SS)
+    docker/                             # Original Docker configs (TM Zaragoza-only)
     archive/                            # Historical one-off backfill scripts
   dbt/                                  # dbt project
     dbt_project.yml / profiles.yml
     macros/generate_schema_name.sql     # Routes models to correct datasets
     models/
       sources.yml                       # raw + wc_2026 source declarations
-      bronze/   (7 models — views)
-      silver/   (7 models — deduped tables)
+      bronze/   (7 models — views, alias to bronze.*)
+      silver/   (7 models — deduped tables, alias to silver.*)
       gold/     (12 models — aggregated tables + dims)
-  sql/                                  # Legacy SQL (kept during dbt parallel period)
-    raw/                                # ALTER TABLE descriptions for raw tables
-    wc_2026/                            # ALTER TABLE descriptions for WC tables
-    bronze/                             # CREATE OR REPLACE VIEW statements
-    silver/                             # CREATE OR REPLACE TABLE (dedup)
-    gold/                               # CREATE OR REPLACE TABLE (aggregated)
   bq-schemas/                           # BQ JSON schemas for raw tables
   run_transfermarkt_leagues.sh          # One-shot TM multi-league runner
 ```

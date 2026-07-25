@@ -28,8 +28,9 @@ Forward-looking only — pending items by category. Completed items graduate to 
 
 ## Infrastructure
 
-- **dbt parallel-run verification → decommission old pipeline** — `rz-dbt-refresh` and `rz-refresh-layers` are running in parallel. Once satisfied dbt output matches (spot-check row counts on key tables across both layers), decommission the old pipeline: delete `pipeline/sql/`, `pipeline/cloud-run/refresh-layers/`, and the `rz-refresh-layers` Cloud Run Job. Also update Capology next-actions: enrich `agg_scouting_player_season` with wage data from `silver.capology_wages` (join on normalised name+club, same pattern as TM join).
-- **Cloud Monitoring alerts** — alert on Cloud Run Job failure (`rz-refresh-layers`, `rz-dbt-refresh`, `rz-tm-scraper`, `rz-capology-scraper`) and optional BQ query cost threshold.
+- **Delete `rz-refresh-layers` Cloud Run Job + its Cloud Scheduler** — legacy pipeline decommissioned (2026-07-25): `pipeline/sql/` and `pipeline/cloud-run/refresh-layers/` deleted. Run: `gcloud scheduler jobs delete rz-refresh-layers-daily --location=europe-west1 --project=real-zaragoza-500608` then `gcloud run jobs delete rz-refresh-layers --region=europe-west1 --project=real-zaragoza-500608`.
+- **Capology enrichment in scouting** — enrich `agg_scouting_player_season` with wage data from `silver.capology_wages` (join on normalised name+club, same pattern as TM join).
+- **Cloud Monitoring alerts** — alert on Cloud Run Job failure (`rz-dbt-refresh`, `rz-tm-scraper`, `rz-capology-scraper`) and optional BQ query cost threshold.
 
 ---
 
