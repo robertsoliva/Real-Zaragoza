@@ -126,7 +126,7 @@ dbt models live in `pipeline/dbt/`. The pipeline runs as Cloud Run Job `rz-dbt-r
 | Cloud Run Job | `rz-dbt-refresh` | dbt run (all bronze → silver → gold) | Daily 06:00 Madrid + launchd 11:00/20:00 |
 | Cloud Run Job | `rz-tm-scraper` | Transfermarkt multi-league scrape | Quarterly (1 Jan/Apr/Jul/Oct 06:00) |
 | Cloud Run Job | `rz-capology-scraper` | Capology wage scrape (top 5 EU leagues) | Monthly (1st of month 06:00) |
-| Cloud Scheduler | `rz-dbt-refresh-daily` | Triggers `rz-dbt-refresh` | Daily 06:00 Europe/Madrid |
+| Cloud Scheduler | `rz-dbt-refresh-daily` | Triggers `rz-dbt-refresh` | Daily 06:00 Europe/Madrid (**⚠️ not yet created — see next-actions**) |
 | Cloud Scheduler | `rz-tm-scraper-quarterly` | Triggers `rz-tm-scraper` | 1 Jan/Apr/Jul/Oct 06:00 |
 | Cloud Scheduler | `rz-capology-scraper-monthly` | Triggers `rz-capology-scraper` | 1st monthly 06:00 |
 | GCS Bucket | `rz-raw-backups` | Daily Parquet snapshot of all raw tables | After each SofaScore extraction |
@@ -224,6 +224,14 @@ pipeline/
   bq-schemas/                           # BQ JSON schemas for raw tables
   run_transfermarkt_leagues.sh          # One-shot TM multi-league runner
 ```
+
+---
+
+## Infrastructure gaps (as of 2026-07-25)
+
+- **`rz-dbt-refresh-daily` Cloud Scheduler missing** — dbt only runs from local launchd (11:00/20:00). If Mac is asleep, dbt skips. Must create the Cloud Scheduler (see next-actions).
+- **`rz-weekly-ingest` Cloud Scheduler is live but targets deleted job** — fires every Tuesday targeting `rz-scraper-transfermarkt` which no longer exists. Should be paused (see next-actions).
+- **`raw.transfermarkt_squad` is stale** — the Zaragoza-only TM weekly job was decommissioned 2026-07-25. `agg_rz_squad_finances` and `silver.rz_squad` will not update until this is resolved (see next-actions).
 
 ---
 

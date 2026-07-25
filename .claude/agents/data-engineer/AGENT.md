@@ -15,8 +15,8 @@ Read in order before writing any code:
 3. **`.claude/CLAUDE.md`** — project conventions
 4. **`next-actions.md`** — understand what's in-scope for this session
 
-For any task involving dbt or a silver/gold layer, also read:
-5. Any existing model files in `dbt/` (if the directory exists)
+For any task involving silver/gold layers or adding new models, also read:
+5. Relevant model files in `pipeline/dbt/models/` and `pipeline/dbt/models/sources.yml`
 
 Do not guess at column names. If unsure, check the schema file.
 
@@ -76,7 +76,7 @@ Do not guess at column names. If unsure, check the schema file.
 
 ## Processed layers
 
-Medallion architecture. SQL source files in `pipeline/sql/{layer}/` — authoritative definitions. Refreshed daily by Cloud Run Job `rz-refresh-layers` (06:00 Europe/Madrid).
+Medallion architecture. dbt model definitions in `pipeline/dbt/models/{bronze,silver,gold}/`. Schema in `pipeline/dbt/models/{bronze,silver,gold}/schema.yml`. Refreshed daily by Cloud Run Job `rz-dbt-refresh` (06:00 Europe/Madrid via Cloud Scheduler + launchd 11:00/20:00).
 
 **`bronze`** — views, always live (no storage):
 - `matches`, `player_stats`, `team_stats`, `shots` — UNION ALL of `raw` + `wc_2026`, adds `dataset_source` tag
@@ -87,22 +87,25 @@ Medallion architecture. SQL source files in `pipeline/sql/{layer}/` — authorit
 - `player_stats` (key: player_id + match_id) — PARTITION BY match_date, CLUSTER BY tournament_id
 - `team_stats` (key: team_id + match_id)
 - `shots` (key: shot_id)
-- `rz_squad` (key: player_id) — latest Zaragoza TM snapshot
-- `tm_players` (key: player_id + club_id + season_id) — multi-league TM
+- `rz_squad` (key: player_id) — Zaragoza TM snapshot (stale since 2026-07-25 — old weekly scraper decommissioned)
+- `tm_players` (key: player_id + club_id + season_id) — multi-league TM (empty until quarterly run Oct 2026)
 - `capology_wages` (key: player_name + club_name + league_name) — loans excluded
 
 **`gold`** — aggregated tables, always query these for analysis:
 - `fct_player_season_stats` — season totals + per-90, grain: player × team × league × season
 - `fct_team_season_stats` — team averages per season
 - `fct_rz_matches` — Zaragoza-only (team_id="2815"), W/D/L, venue, opponent
-- `agg_player_market_values` — TM market values per player × club × season
+- `agg_player_market_values` — TM market values per player × club × season (empty until quarterly run)
 - `agg_scouting_player_season` — **main scouting table**: SofaScore stats LEFT JOIN TM values + position
-- `agg_rz_squad_finances` — latest Zaragoza squad, market values + contracts
+- `agg_rz_squad_finances` — Zaragoza squad from `raw.transfermarkt_squad` (stale — see silver.rz_squad note)
 - `agg_league_player_benchmarks` — P25/median/P75 stats by league × position (≥450 min)
-- `agg_tm_player_valuations` — all quarterly TM snapshots preserved (value history)
+- `agg_tm_player_valuations` — all quarterly TM snapshots preserved (value history; empty until Oct 2026)
 - `agg_player_wage_benchmarks` — wage P25/median/P75 by position, top 5 EU leagues only
+- `dim_league` — league metadata + country, insert-only (tournament_id as key)
+- `dim_team` — team name lookup, insert-only (team_id as key)
+- `dim_player` — fixed player attributes (position, nationality, foot, height), insert-only
 
-**Known issue:** WC rows ingested before 2026-07-05 have `league_name = "tournament_16"`. Filter WC data by `tournament_id = "16"` until fixed in `bronze/matches.sql`.
+**Known issue:** WC rows ingested before 2026-07-05 have `league_name = "tournament_16"`. Filter WC data by `tournament_id = "16"` until fixed in the bronze matches dbt model.
 
 ---
 
