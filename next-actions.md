@@ -21,7 +21,6 @@ Forward-looking only — pending items by category. Completed items graduate to 
 
 ## Data pipeline
 
-- **Capology first run** — scraper and Cloud Run Job (`rz-capology-scraper`) are deployed but `raw.capology_wages` is empty. Run: `gcloud run jobs execute rz-capology-scraper --region europe-west1`. Covers top 5 EU leagues only — useful for profiling big-league targets.
 - **1RFEF 2024-25 anomaly** — only ~100 matches loaded (expected ~380+). Likely SofaScore exposes only playoff rounds for this season. Investigate before re-backfilling.
 - **WC `league_name` fix** — rows from initial WC backfill have `league_name = "tournament_16"` not `"FIFA World Cup"`. Fix: add `CASE WHEN tournament_id = "16" THEN "FIFA World Cup" ELSE league_name END` in `bronze/matches.sql`. Until then filter by `tournament_id = "16"`.
 
@@ -29,7 +28,8 @@ Forward-looking only — pending items by category. Completed items graduate to 
 
 ## Infrastructure
 
-- **Cloud Monitoring alerts** — alert on Cloud Run Job failure (`rz-refresh-layers`, `rz-tm-scraper`, `rz-capology-scraper`) and optional BQ query cost threshold.
+- **dbt parallel-run verification → decommission old pipeline** — `rz-dbt-refresh` and `rz-refresh-layers` are running in parallel. Once satisfied dbt output matches (spot-check row counts on key tables across both layers), decommission the old pipeline: delete `pipeline/sql/`, `pipeline/cloud-run/refresh-layers/`, and the `rz-refresh-layers` Cloud Run Job. Also update Capology next-actions: enrich `agg_scouting_player_season` with wage data from `silver.capology_wages` (join on normalised name+club, same pattern as TM join).
+- **Cloud Monitoring alerts** — alert on Cloud Run Job failure (`rz-refresh-layers`, `rz-dbt-refresh`, `rz-tm-scraper`, `rz-capology-scraper`) and optional BQ query cost threshold.
 
 ---
 
