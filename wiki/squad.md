@@ -1,6 +1,6 @@
 # Real Zaragoza — Squad (2026–27 preseason)
 
-> **Status:** living document, last updated 2026-07-22. Preseason is underway (started 20 July). Transfer window still open — treat the squad as provisional. Sources of truth: [realzaragoza.com](https://www.realzaragoza.com/) and [Spanish Wikipedia](https://es.wikipedia.org/wiki/Real_Zaragoza); official `/plantilla` page not yet reflecting the 2026-27 squad — cross-reference against official news posts and Aragonese press.
+> **Status:** living document, last updated 2026-07-25. Preseason is underway (started 20 July). Transfer window still open — treat the squad as provisional. Sources of truth: [realzaragoza.com](https://www.realzaragoza.com/) and [Spanish Wikipedia](https://es.wikipedia.org/wiki/Real_Zaragoza); official `/plantilla` page not yet reflecting the 2026-27 squad — cross-reference against official news posts and Aragonese press.
 
 ## TL;DR
 
@@ -23,12 +23,11 @@
 
 The squad is being rebuilt almost from scratch for life in **Primera RFEF** (third tier, semi-professional) under new head coach **Ibai Gómez** (see [current-situation.md](./current-situation.md)). Primera RFEF's financial fair-play rules impose a much lower salary ceiling than Segunda División, which is the direct cause of the scale of turnover described below — several players who were good enough for Segunda are reportedly unaffordable in the new category. Sporting director **Lalo Arantegui** has said he wants 80%+ of the squad settled before the first day of preseason training on 20 July 2026.
 
-## 2025–26 captains (for reference — not yet confirmed for 2026–27)
+## 2026–27 captaincy
 
-The club used a four-captain system in 2025–26: **Francho Serrano**, **Keidi Bare**, **Raúl "Guti"**, and **Iván Calero**. Notes:
-- Francho Serrano is a longtime academy product and one of the dressing room's senior figures; as of March 2025 press described him as "the captain and crest the club still hasn't renewed" (contract situation unresolved at that point).
-- Two of the four 2025–26 captains are themselves part of the squad turnover below: Guti is out of contract, and Keidi Bare is named among the higher earners who may be released for being incompatible with Primera RFEF's wage limits.
-- **Open item:** no 2026–27 captaincy announcement found yet.
+The club used a four-captain system in 2025–26: Francho Serrano, Keidi Bare, Raúl "Guti," and Iván Calero. Two of those are gone (Guti out of contract; Bare/Calero status pending). **Francho Serrano renewed through 2030** (announced during a tribute act at La Romareda) and is the natural dressing-room leader going into the rebuild.
+
+**Open item:** formal 2026–27 captaincy announcement not yet made.
 
 ## Confirmed departures (summer 2026)
 
@@ -89,13 +88,14 @@ Primer partido oficial: vs **Nàstic** (1ª RFEF Group II, last weekend of Augus
 
 ## Open items for this page
 
-- Replace this whole page's prose roster with a structured table once the **Transfermarkt data pull** (tracked in [`../next-actions.md`](../next-actions.md)) is live.
-- Re-check `realzaragoza.com/plantilla` once the club publishes its official 2026–27 squad list, and reconcile against it as the higher-priority source.
-- Confirm 2026–27 captaincy once announced.
+- Replace this whole page's prose roster with a structured table once the **Transfermarkt data pull** is live.
+- Re-check `realzaragoza.com/plantilla` once the club publishes the official 2026–27 squad list.
+- Confirm formal 2026–27 captaincy announcement.
 - Confirm final outcome for the three "at risk" salary-cap cases (Dani Gómez, Valery, Keidi Bare).
-- Confirm whether Samed Baždar stays or is sold (two offers already rejected as of July 8).
-- Confirm identities and positions for the less-detailed signings (Anartz Peña, Jaume Jardí, Raúl Pereira) from the initial wave — those three lack position/age/career detail in this page.
-- Confirm Hugo Carrillo's position and profile (returned from loan at Real Unión de Irún, was loaned Aug 2025 from Zaragoza; details sparse in current sources).
+- Confirm whether Samed Baždar stays or is sold (Lalo said "next week" on July 22 — not yet resolved as of July 25).
+- Confirm whether Adrián Liso is sold (Lalo also mentioned this on July 22 as "next week").
+- Fill in profiles for Anartz Peña, Jaume Jardí, Raúl Pereira (position/age/career detail missing).
+- Fill in Hugo Carrillo's profile (returned from loan at Real Unión de Irún).
 
 ## Sources
 

@@ -15,8 +15,8 @@ Before answering anything substantive, read the following in order. Do not skip 
 1. **`.claude/CLAUDE.md`** — project rules, wiki conventions, what this repo is
 2. **`next-actions.md`** — current backlog: what's planned, in-progress, and done
 3. **`wiki/index.md`** — index of all documented knowledge; understand what exists
-4. **`pipeline/cloud-run/scrapers/scraper_sofascore.py`** header docstring — current league IDs, tables, and env vars
-5. **`pipeline/bq-schemas/`** — all four schema files; understand the data model
+4. **`wiki/architecture.md`** — full data platform description: datasets, layers, tables, cadence
+5. **`.claude/agents/data-engineer/AGENT.md`** — all 26 league IDs, season IDs, gold table list
 6. Any **`wiki/`** pages directly relevant to today's conversation topic
 
 Summarise what you've loaded in one sentence before starting the conversation (e.g. "Context loaded — backlog shows 3 open items in bronze/silver layer, wiki has 8 pages covering squad and ownership").

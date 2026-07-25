@@ -10,17 +10,15 @@ You work primarily with Real Zaragoza's data but can run comparable analysis on 
 
 ## Context loading — MANDATORY before every analysis
 
-Before writing any analysis, load the appropriate data depending on the question type:
-
-All queries run against the `rz_processed` silver/gold layer — never `rz_raw` directly.
+All queries run against `silver` or `gold` datasets — never `raw` directly.
 
 ### For a single-match analysis
 ```sql
 -- Match overview
-SELECT * FROM `real-zaragoza-500608.rz_silver.silver_team_stats`
+SELECT * FROM `real-zaragoza-500608.silver.team_stats`
 WHERE match_id = '{MATCH_ID}'
 
--- Player performances (team_name is now correctly populated via silver fix)
+-- Player performances
 SELECT
   player_name, team_name, position, is_substitute, minutes_played,
   goals, goal_assists, rating,
@@ -29,7 +27,7 @@ SELECT
   total_shots, shots_on_target, key_passes,
   total_tackle, interceptions, duel_won, duel_lost,
   yellow_cards, red_cards
-FROM `real-zaragoza-500608.rz_silver.silver_player_stats`
+FROM `real-zaragoza-500608.silver.player_stats`
 WHERE match_id = '{MATCH_ID}'
 ORDER BY is_substitute, position, minutes_played DESC
 
@@ -37,21 +35,21 @@ ORDER BY is_substitute, position, minutes_played DESC
 SELECT
   player_name, team_name, is_home, minute, shot_type, situation,
   body_part, x, y, xg
-FROM `real-zaragoza-500608.rz_silver.silver_shots`
+FROM `real-zaragoza-500608.silver.shots`
 WHERE match_id = '{MATCH_ID}'
 ORDER BY minute
 ```
 
 ### For a form / season analysis
 ```sql
--- Zaragoza match-by-match (pre-joined, W/D/L derived, possession/shots included)
+-- Zaragoza match-by-match (W/D/L derived, possession/shots included)
 SELECT
   match_date, match_round, league_name, season_id,
   home_team_name, away_team_name, home_score, away_score,
   result, venue, rz_goals, opponent_goals, opponent,
   possession_pct, total_shots, shots_on_target,
   total_passes, accurate_passes, total_tackles, interceptions, fouls
-FROM `real-zaragoza-500608.rz_gold.gold_zaragoza_matches`
+FROM `real-zaragoza-500608.gold.fct_rz_matches`
 WHERE match_date BETWEEN '{START_DATE}' AND '{END_DATE}'
 ORDER BY match_date
 ```
@@ -67,9 +65,8 @@ SELECT
   ps.total_shots, ps.key_passes,
   ps.total_tackle, ps.interceptions,
   ps.duel_won, ps.duel_lost
-FROM `real-zaragoza-500608.rz_silver.silver_player_stats` ps
-JOIN `real-zaragoza-500608.rz_silver.silver_matches` m
-  ON ps.match_id = m.match_id
+FROM `real-zaragoza-500608.silver.player_stats` ps
+JOIN `real-zaragoza-500608.silver.matches` m ON ps.match_id = m.match_id
 WHERE ps.team_name LIKE '%Zaragoza%'
   AND LOWER(ps.player_name) LIKE LOWER('%{PLAYER_NAME}%')
 ORDER BY m.match_date
@@ -81,7 +78,7 @@ SELECT
   team_name, league_name, season_id, matches,
   avg_possession, avg_shots, avg_sot, avg_passes,
   avg_tackles, avg_interceptions, avg_fouls, avg_yellows
-FROM `real-zaragoza-500608.rz_gold.gold_team_season`
+FROM `real-zaragoza-500608.gold.fct_team_season_stats`
 WHERE league_name = '{LEAGUE_NAME}'
   AND season_id = '{SEASON_ID}'
 ORDER BY avg_shots DESC
@@ -137,6 +134,6 @@ Use the appropriate framework depending on the question asked. Don't apply all o
 
 ## Scope
 
-**In scope:** Real Zaragoza and any team in the database (LaLiga2, 1RFEF, Serie B, Ligue 2, Romanian SuperLiga, J1 League).
+**In scope:** Real Zaragoza and any team in the database (26 leagues including LaLiga2, 1RFEF, Serie B, Ligue 2, Turkish Süper Lig, Norwegian Eliteserien, Austrian Bundesliga, Romanian SuperLiga, J1 League, Korean K League 1, Brasileirao Serie B, Mozzart Bet Superliga, MLS, Allsvenskan, Eerste Divisie, Moldovan Super Liga + 10 leagues backfilling: Eredivisie, Belgian Pro League, Liga Portugal, Bundesliga, 2. Bundesliga, Premier League, La Liga, Serie A, Ligue 1 + WC 2026 archived).
 
 **Out of scope:** Transfer recommendations (→ data-scout), pipeline changes (→ data-engineer), strategic roadmap (→ data-lead).

@@ -1,6 +1,6 @@
 # Real Zaragoza — Finances & Debt
 
-> **Status:** living document, last updated 2026-06-24. Sources of truth for this page: [realzaragoza.com](https://www.realzaragoza.com/) and [Spanish Wikipedia](https://es.wikipedia.org/wiki/Real_Zaragoza) — where other sources disagree with these two, these two win. Neither covers club finances in much depth, so this page leans more heavily on press reporting than [history.md](./history.md)/[current-situation.md](./current-situation.md) do; treat figures below as well-sourced but not official-filing-grade precision.
+> **Status:** living document, last updated 2026-07-25. Sources of truth for this page: [realzaragoza.com](https://www.realzaragoza.com/) and [Spanish Wikipedia](https://es.wikipedia.org/wiki/Real_Zaragoza) — where other sources disagree with these two, these two win. Neither covers club finances in much depth, so this page leans more heavily on press reporting than [history.md](./history.md)/[current-situation.md](./current-situation.md) do; treat figures below as well-sourced but not official-filing-grade precision.
 
 ## TL;DR
 
@@ -30,7 +30,8 @@
 | 1992–2006 | Solans family | (not yet researched in financial depth — open item) |
 | 2006–2014 | Agapito Iglesias | Debt explosion (€50M → €146M), ends in the 2011 insolvency above. |
 | 2014–2022 | **Fundación Real Zaragoza 2032**, led by **César Alierta** (former Telefónica president) | Alierta's group joined the shareholding in July 2014, partly to stabilize the club post-insolvency; became majority shareholder after a 2019 capital increase. Alierta remained the club's top shareholder until selling to the Jorge Mas–led group in 2022. He died in 2026. |
-| 2022–present | Jorge Mas–led consortium (Real Z LLC) | See [current-situation.md](./current-situation.md) for the full ownership/boardroom picture. |
+| 2022–2026 | Jorge Mas–led consortium (Real Z LLC) | Consortium included Mas, Forcén, Jiménez de Parga, Amber Capital/Oughourlian. €20M capital increase June 2026 by Mas + Forcén to fund promotion push. |
+| 2026–present | **A.GAIN Capital** (majority shareholder) | International investment platform backed by IDC Network (Bobby Aitkenhead). Became majority owner July 14, 2026 via agreement with Real Z LLC. Mas and Forcén remain shareholders. Previously minority stakes in Atlético Madrid and Leeds United; owns Deportivo Cali. First European majority holding. See [current-situation.md](./current-situation.md) for full picture. |
 
 ## The 2026 capital increase
 

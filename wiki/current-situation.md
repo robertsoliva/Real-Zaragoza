@@ -1,13 +1,13 @@
 # Real Zaragoza — Current Situation
 
-> **Status:** living document, highly volatile right now — the club is mid-restructuring after relegation. Sources of truth for this page: [realzaragoza.com](https://www.realzaragoza.com/) and [Spanish Wikipedia](https://es.wikipedia.org/wiki/Real_Zaragoza); where day-to-day news and these two disagree, these two win, but several roles below are genuinely in transition — those lines are flagged as open questions, not settled facts.
+> **Status:** living document, last updated 2026-07-25. Sources of truth: [realzaragoza.com](https://www.realzaragoza.com/) and [Spanish Wikipedia](https://es.wikipedia.org/wiki/Real_Zaragoza); where day-to-day news and these two disagree, these two win. Several roles remain in flux — those lines are flagged explicitly.
 
 ## TL;DR
 
 - Relegated to Primera RFEF (3rd tier) May 2026 — deepest crisis in 94 years, first time outside professional football since 1949
+- **A.GAIN Capital** (IDC Network) became majority shareholder July 14, 2026; Jorge Mas and Juan Forcén remain as shareholders
+- **Guido Baroli** appointed General Director July 16, 2026 (replaces Fernando López)
 - Ibai Gómez hired as head coach June 2026; Lalo Arantegui as sporting director since March 2026
-- Jorge Mas leads ownership consortium (Real Z LLC); €20M capital increase approved June 2026 to fund the promotion push
-- Boardroom flux: Mas may hand daily presidency to a new "institutional president"; Fernando López (general director) likely departing
 - Playing at temporary Ibercaja Estadio (20,071 seats) while new permanent Ibercaja Romareda is built (expected August 31, 2027)
 
 ## Model
@@ -27,24 +27,24 @@ The club has been placed in **Group II of 1ª RFEF** for 2026–27; **Nàstic** 
 
 ## Ownership
 
-Per the club's own organisational chart, **Jorge Mas** is President; per Wikipedia's infobox, ownership ("Propietario") is attributed to **Pablo Jiménez de Parga** (Spain) and **Amber Capital** (UK) — the investment vehicle of **Joseph Oughourlian**, who is also chairman of Grupo Prisa and owner of Racing Club de Lens. These aren't necessarily contradictory: reporting indicates Mas, Jiménez de Parga, Amber Capital/Oughourlian and local businessman **Juan Forcén** came in together as a consortium.
+**Current majority shareholder: A.GAIN Capital** — an international investment platform backed by **IDC Network** (a conglomerate with 30+ years in the sector, founded by Bobby Aitkenhead). A.GAIN's arrival was announced **July 14, 2026**, two weeks after the €20M capital increase (June 2026). Previously held minority stakes in Atlético Madrid and Leeds United; also owns Deportivo Cali (Colombia). This is their first European majority ownership. Within the agreement, **Jorge Mas** remains President and **Juan Forcén** remains a shareholder; A.GAIN assumes management of the club in coordination with the existing structure.
 
-- **Ownership history:** Solans family presidency 1992–2006 → Agapito Iglesias majority ownership 2006–2014 (the "Dark Era," see [history.md](./history.md)) → **Fundación Real Zaragoza 2032**, led by former Telefónica president **César Alierta**, joined the shareholding in 2014 to help stabilize the club post-insolvency (see [finances.md](./finances.md)) and became majority shareholder after a 2019 capital increase, holding that position until selling to the Jorge Mas–led group in **April 2022**. Alierta died in 2026.
-- **2026 internal restructuring:** the board approved a €20M capital increase (announced ~2 June 2026), the largest since the 2022 takeover. Press reporting frames this as Mas and Forcén moving to consolidate majority control within the **Real Z LLC** holding structure, at the expense of the other 2022 partners (Jiménez de Parga, Amber Capital/Oughourlian, and per some reports a fund called Global Tavira and Ares Management — **this last detail is the least certain piece of the puzzle and needs re-verification**).
-- **Open / in progress:** Jorge Mas has signaled he may step back from the *day-to-day, representative* presidency (reported ~12 May 2026) without giving up his shareholding weight, in favour of a new non-shareholding "institutional president." As of the live organisational chart (checked 2026-06-24), **Mas is still listed as President**, so this change has not yet taken effect publicly. **Flag to revisit.**
+- **Ownership history:** Solans family 1992–2006 → Agapito Iglesias 2006–2014 (the "Dark Era," see [history.md](./history.md)) → **Fundación Real Zaragoza 2032**, led by former Telefónica president **César Alierta**, majority shareholder 2019–2022 (Alierta died in 2026) → Jorge Mas–led consortium (**Real Z LLC**, April 2022) → **A.GAIN Capital** as majority shareholder (July 14, 2026), alongside Mas and Forcén.
+- The June 2026 €20M capital increase was funded by Mas and Forcén, consolidating control within Real Z LLC at the expense of the other 2022 partners (Jiménez de Parga, Amber Capital/Oughourlian). A.GAIN then entered as majority shareholder a few weeks later via a separate agreement with Real Z LLC.
+- **"Institutional president" idea:** Mas had signalled he might hand day-to-day representation to a non-shareholding "institutional president." As of the July 25 check, **Mas is still listed as President** on the official organigrama. With A.GAIN's arrival and Baroli as GM, this restructuring may be considered fulfilled without a separate "institutional president" being named — **flag to monitor**.
 
-## Board of Directors (per official organigrama, checked 2026-07-05)
+## Board of Directors (per official organigrama, checked 2026-07-25)
 
-| Role | Person |
-|---|---|
-| President | Jorge Mas |
-| General Director | Fernando López — press reported (~2 June 2026) that his departure was agreed; he remains listed in this role on the official org chart as of the 2026-07-03 re-check. **Still unresolved — flag to revisit.** |
-| Board member / council secretary | Cristina Llop |
-| Board member | Pilar Gil |
-| Board member | Mariano Aguilar |
-| Board member | Guzmán Pérez-Ayo |
-| Board member | Lawrence Cook |
-| Board member | Juan Forcén |
+| Role | Person | Notes |
+|---|---|---|
+| President | Jorge Mas | Remains president post-A.GAIN acquisition |
+| General Director | **Guido Baroli** | Appointed July 16, 2026. Born Buenos Aires 1987; former GM at Defensa y Justicia (Copa Sudamericana 2020, Recopa 2021), Commercial Director at River Plate, Real Madrid basketball marketing. Replaces Fernando López. Arrives as "the strong man of A.GAIN at RZ." |
+| Board member / council secretary | Cristina Llop | |
+| Board member | Pilar Gil | |
+| Board member | Mariano Aguilar | |
+| Board member | Guzmán Pérez-Ayo | |
+| Board member | Lawrence Cook | |
+| Board member | Juan Forcén | |
 
 ## Football management structure
 
@@ -66,15 +66,20 @@ The club does not currently play at its historic home. **La Romareda** was demol
 
 ## Open items for this page
 
-- Confirm names for the new "institutional president" role, and confirm whether/when Fernando López is actually replaced as general director. (Re-checked 2026-07-05: both Mas and López still listed on official organigrama — change not yet implemented publicly.)
-- Re-verify the "Global Tavira" / "Ares Management" shareholder detail — currently sourced only from one round of press reporting, not from the official site or Wikipedia.
-- Add an organizational chart graphic once the restructuring settles (cross-reference `https://www.realzaragoza.com/organigrama`).
+- Confirm whether the "institutional president" idea is now considered resolved via Baroli's appointment, or if a separate representative president is still planned.
+- Re-verify the "Global Tavira" / "Ares Management" shareholder detail — currently sourced only from one round of press reporting.
+- Confirm stake percentages for A.GAIN vs Mas/Forcén once disclosed officially.
+- Add an organizational chart graphic once the restructuring settles (`https://www.realzaragoza.com/organigrama`).
 
 ## Sources
 
 - [Real Zaragoza — Wikipedia (ES)](https://es.wikipedia.org/wiki/Real_Zaragoza)
 - [Organigrama — official site](https://www.realzaragoza.com/organigrama)
 - [Accionistas — official site](https://www.realzaragoza.com/accionistas)
+- [A.GAIN nuevo accionista mayoritario del club — Cope Aragón](https://www.cope.es/emisoras/aragon/zaragoza-provincia/zaragoza/deportes-en-zaragoza/noticias/gain-convierte-accionista-mayoritario-real-zaragoza-20260714_3404239.html)
+- [A.Gain Capital, nuevo máximo accionista del Real Zaragoza — Aragón Digital](https://www.aragondigital.es/articulo/real-zaragoza/gain-capital-maximo-accionista-real-zaragoza/20260714121022995507.html)
+- [Guido Baroli, nuevo director general del Real Zaragoza — official site](https://www.realzaragoza.com/noticias/guido-baroli-nuevo-director-general-del-real-zaragoza)
+- [Guido Baroli sera el nuevo director general del Real Zaragoza — Sport Aragón](https://www.sportaragon.com/articulo/real-zaragoza/guido-baroli-sera-nuevo-director-general-real-zaragoza-perfil-trayectoria/20260716080713156500.html)
 - [62 millones inyectados, opacidad accionarial... — Hoy Aragón](https://www.hoyaragon.es/articulo/noticias-real-zaragoza/quien-es-propietario-real-zaragoza-acciones/20260602223447133178.html)
 - [El dueño del Lens y presidente de Prisa quiere comprar la mayoría del Zaragoza — El Gol Digital](https://www.elgoldigital.com/futbol/real-zaragoza/oughourlian-mayoria-accionarial-real-zaragoza-jimenez-de-parga-acciones-forcen-mayo-2026/)
 - [El Real Zaragoza perfila su nueva cúpula con un presidente institucional y un director general — Sport Aragón](https://www.sportaragon.com/articulo/real-zaragoza/real-zaragoza-perfila-nueva-cupula-presidente-institucional-director-general/20260623094149155073.html)

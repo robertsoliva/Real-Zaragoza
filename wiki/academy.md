@@ -1,6 +1,6 @@
 # Real Zaragoza — Academy / Cantera
 
-> **Status:** living document, last updated 2026-06-24. Sources of truth for this page: [realzaragoza.com](https://www.realzaragoza.com/) and [Spanish Wikipedia](https://es.wikipedia.org/wiki/Real_Zaragoza) — where other sources disagree with these two, these two win. Given the academy is being actively rebuilt right now (see "2026 overhaul" below), treat the structural/personnel details here as time-sensitive.
+> **Status:** living document, last updated 2026-07-25. Sources of truth for this page: [realzaragoza.com](https://www.realzaragoza.com/) and [Spanish Wikipedia](https://es.wikipedia.org/wiki/Real_Zaragoza) — where other sources disagree with these two, these two win. Given the academy is being actively rebuilt right now (see "2026 overhaul" below), treat the structural/personnel details here as time-sensitive.
 
 ## TL;DR
 
@@ -49,7 +49,7 @@ The academy is in the middle of a deliberate relaunch, bundled into the same Mar
 
 Players confirmed to have come up through Real Zaragoza's own academy (not simply players who passed through the first team):
 
-- **Ander Herrera** (b. 14 Aug 1989, Zaragoza) — academy product, debuted with the first team, left for Athletic Club in 2011 at age 22, went on to Manchester United, PSG and the Spain national team. As of June 2026, his return to Zaragoza — fifteen years after leaving, following the end of his Boca Juniors contract — was being actively negotiated as a marquee, symbolic signing for the rebuild in Primera RFEF. **Not yet officially confirmed at time of writing — flag to revisit.**
+- **Ander Herrera** (b. 14 Aug 1989, Zaragoza) — academy product, debuted with the first team, left for Athletic Club in 2011 at age 22, went on to Manchester United, PSG and the Spain national team. **Officially returned to Zaragoza July 2026** (free transfer from Boca Juniors, 1-year contract through June 2027) as a marquee signing for the Primera RFEF rebuild — fifteen years after leaving. In training from July 20. See [squad.md](./squad.md) for full profile.
 - **Jesús Vallejo** (academy product) — rated one of the best young Spanish defenders of his generation before joining Real Madrid; U-19 European champion (Greece, 2015) and U-21 European champion (Italy/San Marino, 2019).
 - **Ángel Lafita** — academy product, went on to a long Primera/Segunda career.
 - **Rubén "Cani" Gracia Calmache** (b. 1981, Zaragoza) — academy product, debuted 2002, key player in the club's promotion back to Primera and in the **2003–04 Copa del Rey** and **2004 Supercopa de España** wins (see [history.md](./history.md)).
@@ -57,12 +57,13 @@ Players confirmed to have come up through Real Zaragoza's own academy (not simpl
 
 For a snapshot of how the pipeline looked in a single season: in **2018–19**, the official site counted ten academy products with first-team minutes — Álvaro Ratón, Julián Delmás, Daniel Lasure, Carlos Nieto, Alberto Zapater, Raúl Guti, Pep Biel, Alberto Soro, Jorge Pombo and Raí Nascimento. This is a dated example, not a current list — useful mainly to show the academy has reliably fed the first team across eras, not just in moments of financial necessity.
 
-## Current academy products in the first team (2025–26 → 2026–27)
+## Current academy products in the first team (2026–27)
 
-- **Iván Azón** — striker, 20 years old, emerged as starting No. 9 during 2025–26 (7 goals, 6 in the league) after Soberón's injury.
-- **Francho Serrano** (Francho Serrano Gracia, b. 17 Oct 2001, Zaragoza) — right-midfielder/midfielder, Spain U-19/U-21 international, academy reference point and a candidate for the captaincy. As of June 2026 his contract was set to expire 30 June, and his renewal — balancing sporting value against the club's financial reality in Primera RFEF — was flagged as one of the key storylines of the summer rebuild.
+- **Francho Serrano** (Francho Serrano Gracia, b. 17 Oct 2001, Zaragoza) — right-midfielder/midfielder, Spain U-19/U-21 international, academy reference point. **Renewal confirmed: signed through 2030** (announced during a tribute act to La Romareda). One of only a handful of players bridging the pre- and post-relegation eras.
 
-Both players' contracts were due to end 30 June 2026 at the time of the last check — **confirm renewal status once pre-season squads are announced.**
+## Notable recent departure
+
+- **Iván Azón** — striker, emerged as starting No. 9 in 2025–26 (7 goals); sold to **Como 1907** (Serie A) in January 2026, with a fee paid to Zaragoza. Currently on loan at Ipswich Town. The sale contributed to the promotion-push budget (along with the Álex Gomes transfer to Venezia).
 
 ## Why this matters for the current rebuild
 
@@ -70,10 +71,9 @@ With the club relegated to Primera RFEF and under financial strain (see [current
 
 ## Open items for this page
 
-- Confirm whether Ander Herrera's return is finalized, and if so, on what terms.
-- Confirm Francho Serrano's and Iván Azón's contract status for 2026–27 once pre-season squads are confirmed.
-- Get a current (2026–27) academy graduate list to replace the dated 2018–19 example — natural candidate for the Transfermarkt data pull tracked in [`../next-actions.md`](../next-actions.md).
-- Verify the precise structure/leadership of Real Zaragoza Femenino's academy beyond Miki Álvarez's role — sourcing here was thinner than the men's side.
+- Get a current (2026–27) academy graduate list to replace the dated 2018–19 example — candidate for the Transfermarkt data pull tracked in [`../next-actions.md`](../next-actions.md).
+- Verify the precise structure/leadership of Real Zaragoza Femenino's academy beyond Miki Álvarez's role.
+- Confirm the Ander Herrera section in [historical graduates] — he's now officially signed and training (see [squad.md](./squad.md)), so the "not yet confirmed" note in that entry can be removed.
 
 ## Sources
 
