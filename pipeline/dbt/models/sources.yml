@@ -13,12 +13,10 @@ sources:
         description: "Raw SofaScore shot events with xG and pitch coordinates. One row per shot per scrape run."
       - name: sofascore_team_match_stats
         description: "Raw SofaScore per-team per-match aggregated stats. One row per (team, match) per scrape run."
-      - name: transfermarkt_squad
-        description: "Zaragoza-only Transfermarkt squad snapshot. Written by scraper_transfermarkt.py."
       - name: transfermarkt_players
-        description: "Multi-league Transfermarkt player data (19 active leagues, 1RFEF excluded). Written by scraper_transfermarkt_leagues.py quarterly."
+        description: "Multi-league Transfermarkt player data (25 active leagues, 1RFEF excluded). Written by scraper_transfermarkt_leagues.py quarterly. Includes all clubs in each league, e.g. Zaragoza via LaLiga2."
       - name: capology_wages
-        description: "Gross wages for ~2500 players across top 5 EU leagues. Written by scraper_capology.py monthly."
+        description: "Gross wages for ~2500 players across top 5 EU leagues. Written by scraper_capology.py quarterly."
 
   - name: wc_2026
     database: real-zaragoza-500608

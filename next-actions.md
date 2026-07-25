@@ -28,6 +28,7 @@ Forward-looking only — pending items by category. Completed items graduate to 
 
 ## Infrastructure
 
+- **Transfermarkt quarterly run (Oct 1 2026)** — `rz-tm-scraper` Cloud Run Job is blocked by Cloudflare from GCP. Must run locally: `python pipeline/cloud-run/scrapers/scraper_transfermarkt_leagues.py` (or `bash pipeline/run_transfermarkt_leagues.sh`). Cloud Scheduler `rz-tm-scraper-quarterly` will fire but do nothing useful from GCP. Until a curl_cffi/local-proxy workaround is found, treat as a manual quarterly task.
 - **Capology enrichment in scouting** — enrich `agg_scouting_player_season` with wage data from `silver.capology_wages` (join on normalised name+club, same pattern as TM join).
 - **Cloud Monitoring alerts** — alert on Cloud Run Job failure (`rz-dbt-refresh`, `rz-tm-scraper`, `rz-capology-scraper`) and optional BQ query cost threshold.
 

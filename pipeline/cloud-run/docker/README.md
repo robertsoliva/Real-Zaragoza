@@ -1,18 +1,13 @@
 # docker/
 
-Container definitions for Cloud Run deployments. **Only Transfermarkt runs on Cloud Run.** SofaScore's Cloud Run job (`rz-scraper-sofascore`) exists but its scheduler is paused — GCP datacenter IPs are blocked by SofaScore's Cloudflare layer.
+Historical Docker configs. The active Cloud Run jobs (`rz-tm-scraper`, `rz-capology-scraper`, `rz-dbt-refresh`) have their own subdirectories under `cloud-run/`.
 
-| File | For |
-|---|---|
-| `Dockerfile` | Transfermarkt Zaragoza-only scraper (`rz-scraper` Cloud Run Job) |
-| `Dockerfile.sofascore` | SofaScore scraper (built, scheduler paused) |
-| `requirements.txt` | Transfermarkt deps |
-| `requirements-sofascore.txt` | SofaScore deps (`curl_cffi`, `pandas`, `google-cloud-bigquery`) |
-| `cloudbuild-sofascore.yaml` | Cloud Build config for SofaScore image |
+| File | For | Status |
+|---|---|---|
+| `Dockerfile.sofascore` | SofaScore Cloud Run image | Job exists, scheduler paused — GCP IPs blocked by Cloudflare |
+| `requirements-sofascore.txt` | SofaScore deps | — |
+| `cloudbuild-sofascore.yaml` | Cloud Build config for SofaScore image | — |
 
-## Rebuild SofaScore image
+## Note on Transfermarkt multi-league
 
-```bash
-cd pipeline/cloud-run/docker
-gcloud builds submit . --config cloudbuild-sofascore.yaml
-```
+`rz-tm-scraper` uses `scraper_transfermarkt_leagues.py` and must run **locally** — GCP datacenter IPs get HTTP 202 (Cloudflare bot challenge) from Transfermarkt league index pages. See `pipeline/run_transfermarkt_leagues.sh` for local usage.

@@ -18,10 +18,10 @@ Build a data foundation to:
 | Source | What | Coverage | Method | Cadence |
 |---|---|---|---|---|
 | **SofaScore** | Matches, player stats, team stats, shot maps | 26 leagues + WC 2026 | curl_cffi Chrome TLS (local only — GCP IPs blocked) | 6 slots/day via launchd |
-| **Transfermarkt** | Market values, contracts, positions, squad | 25 leagues (1RFEF excluded) + Zaragoza-only | httpx + BeautifulSoup | Quarterly (Cloud Run) |
-| **Capology** | Gross wages | Top 5 EU leagues (PL, La Liga, Bundesliga, Ligue 1, Serie A) | requests + BeautifulSoup | Monthly (Cloud Run) |
+| **Transfermarkt** | Market values, contracts, positions, squad | 25 leagues (1RFEF excluded) | httpx + BeautifulSoup (**must run locally** — GCP IPs blocked) | Quarterly |
+| **Capology** | Gross wages | Top 5 EU leagues (PL, La Liga, Bundesliga, Ligue 1, Serie A) | requests + BeautifulSoup | Quarterly (Cloud Run) |
 
-**Why SofaScore can't run on GCP:** Cloudflare blocks all GCP datacenter IPs even with Chrome TLS impersonation. The scraper must run locally via launchd.
+**GCP IP blocking:** SofaScore and Transfermarkt both block GCP datacenter IPs via Cloudflare. Capology does not. SofaScore runs via local launchd. Transfermarkt's multi-league scraper (`rz-tm-scraper`) is configured as a Cloud Run Job but must be triggered manually from a local machine (see `pipeline/run_transfermarkt_leagues.sh`) until a workaround is found.
 
 ---
 
@@ -67,8 +67,8 @@ GCP project: `real-zaragoza-500608` · Region: `europe-west1`
 ```
 SofaScore (local) ──► raw.sofascore_*           ──► bronze (views)
                                                         │
-Transfermarkt (GCP) ─► raw.transfermarkt_players       ▼
-                    ─► raw.transfermarkt_squad    silver (deduped tables)
+Transfermarkt (local) ─► raw.transfermarkt_players     ▼
+                                                 silver (deduped tables)
                                                         │
 Capology (GCP) ──────► raw.capology_wages              ▼
                                                    gold (aggregated tables + dims)
@@ -95,7 +95,7 @@ WC 2026 (local, done) ► wc_2026.sofascore_*  ──► bronze (via UNION ALL)
 | `fct_rz_matches` | match (Zaragoza only) | Form analysis, W/D/L |
 | `agg_player_market_values` | player × club × season (TM latest) | Market value per player |
 | `agg_scouting_player_season` | player × league × season (stats + TM joined) | **Main scouting table** |
-| `agg_rz_squad_finances` | Zaragoza squad (TM latest) | Squad financial overview |
+| `agg_rz_squad_finances` | Zaragoza squad (TM quarterly) | Squad financial overview |
 | `agg_league_player_benchmarks` | league × season × position (≥450 min) | Contextualise player stats |
 | `agg_tm_player_valuations` | player × club × season × ingested_date | Market value history/trends |
 | `agg_player_wage_benchmarks` | league × position_group | Wage P25/median/P75 (top 5 EU only) |
@@ -124,20 +124,18 @@ dbt models live in `pipeline/dbt/`. The pipeline runs as Cloud Run Job `rz-dbt-r
 | Resource | Name | Purpose | Cadence |
 |---|---|---|---|
 | Cloud Run Job | `rz-dbt-refresh` | dbt run (all bronze → silver → gold) | Daily 06:00 Madrid + launchd 11:00/20:00 |
-| Cloud Run Job | `rz-scraper-transfermarkt` | Transfermarkt Zaragoza-only squad scrape | Weekly Tuesdays 05:00 (`rz-weekly-ingest`) |
-| Cloud Run Job | `rz-tm-scraper` | Transfermarkt multi-league scrape | Quarterly (1 Jan/Apr/Jul/Oct 06:00) |
-| Cloud Run Job | `rz-capology-scraper` | Capology wage scrape (top 5 EU leagues) | Monthly (1st of month 06:00) |
+| Cloud Run Job | `rz-tm-scraper` | Transfermarkt multi-league scrape | Quarterly (1 Jan/Apr/Jul/Oct) — **must be triggered from local machine** |
+| Cloud Run Job | `rz-capology-scraper` | Capology wage scrape (top 5 EU leagues) | Quarterly (1 Jan/Apr/Jul/Oct 06:00) |
 | Cloud Scheduler | `rz-dbt-refresh-daily` | Triggers `rz-dbt-refresh` | Daily 06:00 Europe/Madrid |
-| Cloud Scheduler | `rz-weekly-ingest` | Triggers `rz-scraper-transfermarkt` | Tuesdays 05:00 |
-| Cloud Scheduler | `rz-tm-scraper-quarterly` | Triggers `rz-tm-scraper` | 1 Jan/Apr/Jul/Oct 06:00 |
-| Cloud Scheduler | `rz-capology-scraper-monthly` | Triggers `rz-capology-scraper` | 1st monthly 06:00 |
+| Cloud Scheduler | `rz-tm-scraper-quarterly` | Triggers `rz-tm-scraper` | 1 Jan/Apr/Jul/Oct 06:00 (run from local machine instead) |
+| Cloud Scheduler | `rz-capology-scraper-quarterly` | Triggers `rz-capology-scraper` | 1 Jan/Apr/Jul/Oct 06:00 |
 | GCS Bucket | `rz-raw-backups` | Daily Parquet snapshot of all raw tables | After each SofaScore extraction |
 | Artifact Registry | `rz-images` | Docker images for all jobs | europe-west1 |
 | Service account | `622526432554-compute@...` | Default compute SA (BQ write access) | — |
 
 ---
 
-## SofaScore local cadence (launchd)
+## Local extraction cadence (launchd)
 
 Since GCP IPs are blocked, all SofaScore scraping runs locally on macOS via launchd.
 
@@ -176,7 +174,6 @@ gs://rz-raw-backups/
       sofascore_shots/*.parquet
       sofascore_team_match_stats/*.parquet
       transfermarkt_players/*.parquet
-      transfermarkt_squad/*.parquet
       capology_wages/*.parquet
     wc_2026/
       sofascore_matches/*.parquet
@@ -197,7 +194,7 @@ pipeline/
     scrapers/
       scraper_sofascore.py              # SofaScore: 4 tables per run
       scraper_transfermarkt_leagues.py  # TM multi-league: raw.transfermarkt_players
-      scraper_transfermarkt.py          # TM Zaragoza-only: raw.transfermarkt_squad
+      scraper_transfermarkt.py          # TM Zaragoza-only (orphan — job deleted, file preserved)
       scraper_capology.py               # Capology wages: raw.capology_wages
       seasons_lookup.py                 # Helper: discover SofaScore season IDs
     schedules/
@@ -213,7 +210,7 @@ pipeline/
       Dockerfile / cloudbuild.yaml
     tm-scraper/                         # Cloud Run Job image: TM multi-league
     capology-scraper/                   # Cloud Run Job image: Capology
-    docker/                             # Original Docker configs (TM Zaragoza-only)
+    docker/                             # Historical Docker configs (SofaScore only; TM Zaragoza-only job deleted)
     archive/                            # Historical one-off backfill scripts
   dbt/                                  # dbt project
     dbt_project.yml / profiles.yml
