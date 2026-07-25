@@ -2,8 +2,11 @@
 Real Zaragoza — processed-layer refresh job.
 
 Runs all bronze→silver→gold SQL files against BigQuery in dependency order,
-then sets table-level descriptions via the Python client (BQ silently drops
-OPTIONS(description=...) from CTAS when placed before PARTITION/CLUSTER BY).
+then sets table-level descriptions via the Python client.
+
+NOTE: bronze views do not support ALTER TABLE ALTER COLUMN — column descriptions
+for bronze views cannot be set via SQL (BQ only supports ALTER COLUMN on tables).
+The bronze *_descriptions.sql files are intentionally excluded from SQL_ORDER.
 
 Designed to run as a Cloud Run Job, triggered daily by Cloud Scheduler.
 Exit 0 on full success, exit 1 if any model fails.
@@ -32,20 +35,16 @@ SQL_ORDER = [
     "wc_2026/sofascore_shots_descriptions.sql",
     "wc_2026/sofascore_team_match_stats_descriptions.sql",
     # Bronze views (always recreated first)
+    # NOTE: *_descriptions.sql files are excluded here — BQ does not support
+    # ALTER TABLE ALTER COLUMN on views. Column descriptions on bronze views
+    # cannot be set via SQL.
     "bronze/rz_squad.sql",
-    "bronze/rz_squad_descriptions.sql",
     "bronze/tm_players.sql",
-    "bronze/tm_players_descriptions.sql",
     "bronze/capology_wages.sql",
-    "bronze/capology_wages_descriptions.sql",
     "bronze/matches.sql",
-    "bronze/matches_descriptions.sql",
     "bronze/player_stats.sql",
-    "bronze/player_stats_descriptions.sql",
     "bronze/shots.sql",
-    "bronze/shots_descriptions.sql",
     "bronze/team_stats.sql",
-    "bronze/team_stats_descriptions.sql",
     # Silver tables (dedup)
     "silver/rz_squad.sql",
     "silver/rz_squad_descriptions.sql",

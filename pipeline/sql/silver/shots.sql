@@ -1,7 +1,7 @@
 CREATE OR REPLACE TABLE `real-zaragoza-500608.silver.shots`
-OPTIONS(description="GRAIN: one row per shot_id — latest ingestion only. SOURCE: bronze.shots; JOINs silver.matches to resolve team_id/team_name from is_home flag. DEDUP: ROW_NUMBER() OVER (PARTITION BY shot_id ORDER BY ingested_at DESC). NOTES: pitch coordinates (x, y) use SofaScore's 0–100 coordinate system. xg is the expected-goals value for this specific shot. goal_mouth_location is a string label (e.g. 'HighCentre'). PARTITION BY match_date (DAY). CLUSTER BY tournament_id.")
 PARTITION BY match_date
 CLUSTER BY tournament_id
+OPTIONS(description="GRAIN: one row per shot_id — latest ingestion only. SOURCE: bronze.shots; JOINs silver.matches to resolve team_id/team_name from is_home flag. DEDUP: ROW_NUMBER() OVER (PARTITION BY shot_id ORDER BY ingested_at DESC). NOTES: pitch coordinates (x, y) use SofaScore's 0–100 coordinate system. xg is the expected-goals value for this specific shot. goal_mouth_location is a string label (e.g. 'HighCentre'). PARTITION BY match_date (DAY). CLUSTER BY tournament_id.")
 AS
 WITH ranked AS (
   SELECT *,

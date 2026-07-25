@@ -1,7 +1,7 @@
 CREATE OR REPLACE TABLE `real-zaragoza-500608.silver.player_stats`
-OPTIONS(description="GRAIN: one row per (match_id, player_id) — latest ingestion only. SOURCE: bronze.player_stats; JOINs silver.matches to resolve team_id/team_name from is_home flag. DEDUP: ROW_NUMBER() OVER (PARTITION BY match_id, player_id ORDER BY ingested_at DESC). NOTES: team_id and team_name derived from match home/away side, not from player row directly. minutes_played > 0 filter NOT applied here — applied at gold.fct_player_season_stats. PARTITION BY match_date (DAY). CLUSTER BY tournament_id, team_id.")
 PARTITION BY match_date
 CLUSTER BY tournament_id, team_id
+OPTIONS(description="GRAIN: one row per (match_id, player_id) — latest ingestion only. SOURCE: bronze.player_stats; JOINs silver.matches to resolve team_id/team_name from is_home flag. DEDUP: ROW_NUMBER() OVER (PARTITION BY match_id, player_id ORDER BY ingested_at DESC). NOTES: team_id and team_name derived from match home/away side, not from player row directly. minutes_played > 0 filter NOT applied here — applied at gold.fct_player_season_stats. PARTITION BY match_date (DAY). CLUSTER BY tournament_id, team_id.")
 AS
 WITH ranked AS (
   SELECT *,

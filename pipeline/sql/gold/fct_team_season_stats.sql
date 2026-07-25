@@ -1,6 +1,6 @@
 CREATE OR REPLACE TABLE `real-zaragoza-500608.gold.fct_team_season_stats`
-OPTIONS(description="GRAIN: one row per (team_id, team_name, league_name, dataset_source, tournament_id, season_id) — season averages per match. SOURCE: silver.team_stats aggregated by season. NOTES: all stat columns are averages per match (avg_possession, avg_passes, avg_shots, etc.) except matches which is a count. avg_aerial_win_pct computed as AVG of per-match ratios. Use for scouting report origin/destination team style comparisons and league context. CLUSTER BY league_name, season_id.")
 CLUSTER BY league_name, season_id
+OPTIONS(description="GRAIN: one row per (team_id, team_name, league_name, dataset_source, tournament_id, season_id) — season averages per match. SOURCE: silver.team_stats aggregated by season. NOTES: all stat columns are averages per match (avg_possession, avg_passes, avg_shots, etc.) except matches which is a count. avg_aerial_win_pct computed as AVG of per-match ratios. Use for scouting report origin/destination team style comparisons and league context. CLUSTER BY league_name, season_id.")
 AS
 SELECT
   team_id, team_name, league_name, dataset_source, tournament_id, season_id,

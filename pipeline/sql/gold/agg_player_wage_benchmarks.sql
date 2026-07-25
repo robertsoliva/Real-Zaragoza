@@ -3,8 +3,8 @@
 -- giving a combined view useful for scouting budget planning:
 -- what does a player of this value/age/position typically earn?
 CREATE OR REPLACE TABLE `real-zaragoza-500608.gold.agg_player_wage_benchmarks`
-OPTIONS(description="GRAIN: one row per (league_name, position_group) — wage distribution benchmarks across all qualifying players. SOURCE: silver.capology_wages LEFT JOIN silver.tm_players (matched on normalized name+club). NOTES: covers top 5 EU leagues ONLY (PL, La Liga, Bundesliga, Ligue 1, Serie A) — does NOT cover the 2nd-division or non-European leagues in the SofaScore pipeline. position_group uses broad codes (ATT/MID/DEF/GK). avg_wage_to_value_pct = (avg_annual_wage / avg_market_value) × 100. Use for profiling expected salary range for a player of given position/league when scouting from top leagues. CLUSTER BY league_name, position_group.")
 CLUSTER BY league_name, position_group
+OPTIONS(description="GRAIN: one row per (league_name, position_group) — wage distribution benchmarks across all qualifying players. SOURCE: silver.capology_wages LEFT JOIN silver.tm_players (matched on normalized name+club). NOTES: covers top 5 EU leagues ONLY (PL, La Liga, Bundesliga, Ligue 1, Serie A) — does NOT cover the 2nd-division or non-European leagues in the SofaScore pipeline. position_group uses broad codes (ATT/MID/DEF/GK). avg_wage_to_value_pct = (avg_annual_wage / avg_market_value) × 100. Use for profiling expected salary range for a player of given position/league when scouting from top leagues. CLUSTER BY league_name, position_group.")
 AS
 WITH wages AS (
   SELECT

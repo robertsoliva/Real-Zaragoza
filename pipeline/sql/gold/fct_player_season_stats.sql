@@ -1,6 +1,6 @@
 CREATE OR REPLACE TABLE `real-zaragoza-500608.gold.fct_player_season_stats`
-OPTIONS(description="GRAIN: one row per (player_id, team_name, league_name, dataset_source, tournament_id, season_id) — season totals and per-90 rates. SOURCE: silver.player_stats aggregated by season. FILTER: minutes_played > 0 and NOT NULL applied before aggregation. NOTES: primary_position uses ANY_VALUE (most frequent SofaScore position code: G/D/M/F) — use TM position from agg_scouting_player_season for granular role mapping. Per-90 stats divide by total_minutes and multiply by 90. Percentages use SAFE_DIVIDE to avoid division-by-zero. Primary scouting query target — join to agg_scouting_player_season for TM market value. CLUSTER BY league_name, season_id, primary_position.")
 CLUSTER BY league_name, season_id, primary_position
+OPTIONS(description="GRAIN: one row per (player_id, team_name, league_name, dataset_source, tournament_id, season_id) — season totals and per-90 rates. SOURCE: silver.player_stats aggregated by season. FILTER: minutes_played > 0 and NOT NULL applied before aggregation. NOTES: primary_position uses ANY_VALUE (most frequent SofaScore position code: G/D/M/F) — use TM position from agg_scouting_player_season for granular role mapping. Per-90 stats divide by total_minutes and multiply by 90. Percentages use SAFE_DIVIDE to avoid division-by-zero. Primary scouting query target — join to agg_scouting_player_season for TM market value. CLUSTER BY league_name, season_id, primary_position.")
 AS
 SELECT
   player_id, player_name,
