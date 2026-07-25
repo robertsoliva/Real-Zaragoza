@@ -56,6 +56,11 @@ LEAGUES = [
     (38,    "BE1",   "jupiler-pro-league",           "Belgian Pro League",    2025),
     (238,   "PO1",   "liga-portugal",               "Liga Portugal",         2025),
     (35,    "L2",    "2-bundesliga",                "2. Bundesliga",         2025),
+    (17,    "GB1",   "premier-league",              "Premier League",        2025),
+    (8,     "ES1",   "laliga",                      "La Liga",               2025),
+    (35,    "L1",    "bundesliga",                  "Bundesliga",            2025),
+    (23,    "IT1",   "serie-a",                     "Serie A",               2025),
+    (34,    "FR1",   "ligue-1",                     "Ligue 1",               2025),
     # 1RFEF (17073) intentionally excluded — too many teams for automated batch scrape
 ]
 

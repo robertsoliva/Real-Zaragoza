@@ -18,7 +18,6 @@ TABLES=(
     "raw.sofascore_shots"
     "raw.sofascore_team_match_stats"
     "raw.transfermarkt_players"
-    "raw.transfermarkt_squad"
     "raw.capology_wages"
     "wc_2026.sofascore_matches"
     "wc_2026.sofascore_player_match_stats"
