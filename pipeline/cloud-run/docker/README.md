@@ -4,7 +4,7 @@ Container definitions for Cloud Run deployments. **Only Transfermarkt runs on Cl
 
 | File | For |
 |---|---|
-| `Dockerfile` | Transfermarkt scraper (deployed, runs weekly) |
+| `Dockerfile` | Transfermarkt Zaragoza-only scraper (`rz-scraper` Cloud Run Job) |
 | `Dockerfile.sofascore` | SofaScore scraper (built, scheduler paused) |
 | `requirements.txt` | Transfermarkt deps |
 | `requirements-sofascore.txt` | SofaScore deps (`curl_cffi`, `pandas`, `google-cloud-bigquery`) |

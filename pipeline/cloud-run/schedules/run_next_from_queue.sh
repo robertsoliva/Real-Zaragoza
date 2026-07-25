@@ -65,3 +65,9 @@ grep -v "^${TOURNAMENT_ID}[[:space:]]\+${SEASON_ID}[[:space:]]" "$QUEUE" > "${QU
 
 echo "Removed from queue: $NEXT"
 echo "Remaining in queue: $(grep -v '^\s*#' "$QUEUE" | grep -v '^\s*$' | grep -c '.' || true) seasons"
+
+# Back up raw BQ tables to GCS (non-fatal — scrape data is safe in BQ regardless)
+BACKUP_SCRIPT="$(dirname "$0")/backup_raw_to_gcs.sh"
+if [ -f "$BACKUP_SCRIPT" ]; then
+    bash "$BACKUP_SCRIPT" || echo "WARN: GCS backup failed — extraction data is still in BQ"
+fi
