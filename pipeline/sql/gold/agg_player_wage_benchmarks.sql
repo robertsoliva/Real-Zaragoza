@@ -72,4 +72,3 @@ JOIN benchmarks_pct p
   ON  a.league_name    = p.league_name
   AND a.league_tier    = p.league_tier
   AND a.position_group = p.position_group
-ORDER BY a.league_tier, a.league_name, a.position_group
