@@ -25,16 +25,19 @@ Do not guess at column names. If unsure, check the schema file.
 ## Data platform context
 
 **BigQuery project:** `real-zaragoza-500608`  
-**Raw dataset:** `rz_raw`  
-**Tables:**
+**Raw dataset:** `raw` (append-only, never query directly — use silver/gold)  
+**Raw tables:**
 
 | Table | Partition | Cluster |
 |---|---|---|
-| `sofascore_matches` | `match_date` (DAY) | `match_round`, `tournament_id` |
-| `sofascore_player_match_stats` | `match_date` (DAY) | `match_round`, `team_id` |
-| `sofascore_team_match_stats` | `match_date` (DAY) | `match_round`, `team_id` |
-| `sofascore_shots` | `match_date` (DAY) | `match_round` |
-| `transfermarkt_squad` | none | none |
+| `raw.sofascore_matches` | `match_date` (DAY) | `match_round`, `tournament_id` |
+| `raw.sofascore_player_match_stats` | `match_date` (DAY) | `match_round`, `team_id` |
+| `raw.sofascore_team_match_stats` | `match_date` (DAY) | `match_round`, `team_id` |
+| `raw.sofascore_shots` | `match_date` (DAY) | `match_round` |
+| `raw.transfermarkt_squad` | none | none |
+| `raw.transfermarkt_players` | none | none |
+| `raw.capology_wages` | none | none |
+| `wc_2026.sofascore_*` | same structure | WC 2026 (tournament complete) |
 
 **Active leagues + season IDs:**
 
@@ -73,27 +76,33 @@ Do not guess at column names. If unsure, check the schema file.
 
 ## Processed layers
 
-Three separate BQ datasets. SQL source files are in `pipeline/sql/{layer}/` — these are the authoritative definitions; BQ objects are created by running those files.
+Medallion architecture. SQL source files in `pipeline/sql/{layer}/` — authoritative definitions. Refreshed daily by Cloud Run Job `rz-refresh-layers` (06:00 Europe/Madrid).
 
-**`rz_bronze`** — views, live (no refresh needed):
-- `bronze_matches`, `bronze_player_stats`, `bronze_team_stats`, `bronze_shots`, `bronze_squad`
-- Union rz_raw + WC_26; explicit column lists to fix schema position mismatch between scraper versions; adds `dataset_source` tag.
+**`bronze`** — views, always live (no storage):
+- `matches`, `player_stats`, `team_stats`, `shots` — UNION ALL of `raw` + `wc_2026`, adds `dataset_source` tag
+- `rz_squad`, `tm_players`, `capology_wages` — pass-through views of raw TM/Capology tables
 
-**`rz_silver`** — partitioned/clustered tables, rebuilt by `run_refresh_processed.sh` at 11:00 + 20:00:
-- `silver_matches` (key: match_id) — must materialise first
-- `silver_player_stats` (key: match_id + player_id) — team_name fixed via is_home JOIN to silver_matches
-- `silver_team_stats` (key: match_id + team_id)
-- `silver_shots` (key: shot_id) — team_name fixed via is_home JOIN
-- `silver_squad` (key: player_id)
+**`silver`** — partitioned/clustered tables, deduped (ROW_NUMBER, latest ingestion wins):
+- `matches` (key: match_id) — canonical join target; PARTITION BY match_date, CLUSTER BY tournament_id
+- `player_stats` (key: player_id + match_id) — PARTITION BY match_date, CLUSTER BY tournament_id
+- `team_stats` (key: team_id + match_id)
+- `shots` (key: shot_id)
+- `rz_squad` (key: player_id) — latest Zaragoza TM snapshot
+- `tm_players` (key: player_id + club_id + season_id) — multi-league TM
+- `capology_wages` (key: player_name + club_name + league_name) — loans excluded
 
-**`rz_gold`** — tables, rebuilt after silver in the same refresh run:
-- `gold_player_season` (grain: player_id, team_name, league_name, season_id) — full per-90 stats, `primary_position` via ANY_VALUE
-- `gold_team_season` (grain: team_id, team_name, league_name, season_id) — team averages per season
-- `gold_zaragoza_matches` (grain: match_id) — Zaragoza only (team_id="2815"), W/D/L, venue, opponent, team metrics
+**`gold`** — aggregated tables, always query these for analysis:
+- `fct_player_season_stats` — season totals + per-90, grain: player × team × league × season
+- `fct_team_season_stats` — team averages per season
+- `fct_rz_matches` — Zaragoza-only (team_id="2815"), W/D/L, venue, opponent
+- `agg_player_market_values` — TM market values per player × club × season
+- `agg_scouting_player_season` — **main scouting table**: SofaScore stats LEFT JOIN TM values + position
+- `agg_rz_squad_finances` — latest Zaragoza squad, market values + contracts
+- `agg_league_player_benchmarks` — P25/median/P75 stats by league × position (≥450 min)
+- `agg_tm_player_valuations` — all quarterly TM snapshots preserved (value history)
+- `agg_player_wage_benchmarks` — wage P25/median/P75 by position, top 5 EU leagues only
 
-**Known issue:** WC rows ingested before 2026-07-05 have `league_name = "tournament_16"` not `"FIFA World Cup"`. Always filter WC data by `tournament_id = "16"` until fixed.
-
-**Legacy:** `rz_processed` dataset (old single-dataset layout) is deprecated — can be deleted once confirmed unused.
+**Known issue:** WC rows ingested before 2026-07-05 have `league_name = "tournament_16"`. Filter WC data by `tournament_id = "16"` until fixed in `bronze/matches.sql`.
 
 ---
 

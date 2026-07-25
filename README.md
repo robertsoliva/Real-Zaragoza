@@ -2,53 +2,59 @@
 
 Data infrastructure and analysis project for Real Zaragoza CF. The goal is to build a foundation for:
 
-- **Match prediction** — model outcomes for upcoming Zaragoza fixtures using historical form, opponent profiles, and expected-goals data
 - **Signing evaluation** — compare transfer targets against current squad and division-wide benchmarks using per-match player stats and market valuations
-- **Opponent scouting** — aggregate player and team stats across Segunda División and 1RFEF to identify patterns before they show up in results
+- **Match prediction** — model outcomes for upcoming Zaragoza fixtures using historical form, opponent profiles, and xG data
+- **Opponent scouting** — aggregate player and team stats across 26 leagues to identify patterns before they show up in results
 
 ---
 
 ## What's in this repo
 
 ```
-wiki/              Reference knowledge — club history, finances, squad, technical architecture
-pipeline/          Cloud Run scrapers and BigQuery table schemas
+wiki/              Reference knowledge — club history, finances, squad, architecture
+pipeline/          Scrapers, BigQuery SQL, launchd schedules, Cloud Run Jobs
 next-actions.md    Backlog of planned data work and analysis
 ```
 
-**All persistent data lives in Google BigQuery** (`real-zaragoza-500608`). No raw files are committed here.
+**All persistent data lives in Google BigQuery** (`real-zaragoza-500608`). No raw files are committed.
 
 ---
 
-## Data
+## Data platform
 
-| Table | Source | Scope | Refresh |
+Medallion architecture: `raw` → `bronze` (views) → `silver` (deduped tables) → `gold` (aggregated tables).
+
+| Source | Coverage | Method | Cadence |
 |---|---|---|---|
-| `rz_raw.transfermarkt_squad` | Transfermarkt | Squad, market values, contracts | Weekly |
-| `rz_raw.sofascore_matches` | SofaScore | Match results by jornada (LaLiga2 + 1RFEF) | Weekly |
-| `rz_raw.sofascore_player_match_stats` | SofaScore | Per-player stats per match (rating, goals, assists, passes, tackles, duels, xG, xA) | Weekly |
-| `rz_raw.sofascore_shots` | SofaScore | Shot-level data with xG and pitch coordinates | Weekly |
-| `rz_raw.sofascore_team_match_stats` | SofaScore | Team totals per match (possession, shots, passes, duels, big chances) | Weekly |
+| **SofaScore** | 26 leagues + WC 2026 | curl_cffi Chrome TLS (local only) | 6 slots/day via launchd |
+| **Transfermarkt** | 25 leagues (1RFEF excluded) + Zaragoza squad | httpx + BeautifulSoup | Quarterly (Cloud Run) |
+| **Capology** | Top 5 EU leagues (wages) | requests + BeautifulSoup | Monthly (Cloud Run) |
 
-Tables are **append-only, partitioned by match date, clustered by jornada** — past seasons stay queryable alongside the current one.
+**Active leagues (16):** LaLiga2, 1RFEF, Serie B, Ligue 2, Romanian SuperLiga, J1 League, Turkish Süper Lig, Norwegian Eliteserien, Austrian Bundesliga, Korean K League 1, Brasileirao Serie B, Mozzart Bet Superliga, MLS, Allsvenskan, Eerste Divisie, Moldovan Super Liga.
 
-Current coverage: **16 leagues** — LaLiga2, 1RFEF, Serie B, Ligue 2, Romanian SuperLiga, J1 League, Turkish Süper Lig, Norwegian Eliteserien, Austrian Bundesliga, Korean K League 1, Brasileirao Serie B, Mozzart Bet Superliga, MLS, Allsvenskan, Eerste Divisie, Moldovan Super Liga. WC 2026 in a separate dataset (`WC_26`). Backfill in progress; see `pipeline/cloud-run/schedules/sofascore_queue.txt`.
+**Backfilling (10):** Eredivisie, Belgian Pro League, Liga Portugal, Bundesliga, 2. Bundesliga, Premier League, La Liga, Serie A, Ligue 1, + WC 2026 (complete, archived).
+
+Full technical reference: [`wiki/architecture.md`](wiki/architecture.md)
 
 ---
 
 ## Pipeline
 
 ```
-launchd (macOS, local machine)
-  ├── 00:00 / 06:00 / 12:00 / 18:00 → run_next_from_queue.sh → scraper_sofascore.py → rz_raw.sofascore_*
-  ├── 09:00 daily → run_daily_wc26.sh (incremental, WC_26 dataset)
-  └── 11:00 / 20:00 → run_refresh_processed.sh → rz_bronze / rz_silver / rz_gold
+launchd (macOS, local)
+  ├── 00:00 / 04:00 / 08:00 / 12:00 / 16:00 / 20:00 → run_next_from_queue.sh → raw.sofascore_*
+  └── 07:30 Tue → run_weekly_sofascore.sh (incremental, all 26 active seasons)
+
+Cloud Run Jobs (GCP, europe-west1)
+  ├── rz-refresh-layers  → bronze/silver/gold SQL  (daily 06:00)
+  ├── rz-tm-scraper      → raw.transfermarkt_*     (quarterly 1 Jan/Apr/Jul/Oct)
+  └── rz-capology-scraper → raw.capology_wages     (monthly 1st)
+
+launchd (macOS, local)
+  └── 22:00 daily → send_daily_summary.py → email digest to rsolivamachin@gmail.com
 ```
 
-- **Backfill**: queue-driven via `sofascore_queue.txt`, 4 seasons/day, lock file prevents concurrent runs
-- **Weekly incremental** (post-backfill): `INCREMENTAL=true` — scrapes last 14 days only (SofaScore blocks GCP IPs; runs locally)
-
-Full technical reference: [`wiki/architecture.md`](wiki/architecture.md)
+Backfill queue: `pipeline/cloud-run/schedules/sofascore_queue.txt` — 1 season per slot, lock file prevents concurrent runs. **Never run 2+ consecutive seasons manually — triggers 24h Cloudflare IP ban.**
 
 ---
 
@@ -58,9 +64,9 @@ Full technical reference: [`wiki/architecture.md`](wiki/architecture.md)
 
 | Page | Contents |
 |---|---|
-| [`architecture.md`](wiki/architecture.md) | Data sources, pipeline, BQ schemas, GCP setup, open items |
-| [`current-situation.md`](wiki/current-situation.md) | Ownership, board, coaching staff — most volatile |
+| [`architecture.md`](wiki/architecture.md) | Data sources, pipeline, BQ schemas, known issues |
 | [`squad.md`](wiki/squad.md) | 2026-27 squad rebuild: departures, signings, priorities |
+| [`current-situation.md`](wiki/current-situation.md) | Ownership, board, coaching staff |
 | [`finances.md`](wiki/finances.md) | Debt history, wage caps, ownership eras |
 | [`history.md`](wiki/history.md) | Founding, seasons, honours, stadium |
 | [`records.md`](wiki/records.md) | All-time records, Pichichi winners, legendary players |
