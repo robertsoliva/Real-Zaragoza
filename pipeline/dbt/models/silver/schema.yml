@@ -3,36 +3,504 @@ version: 2
 models:
   - name: silver_matches
     description: "GRAIN: one row per match_id — latest ingestion only. Deduped via ROW_NUMBER PARTITION BY match_id ORDER BY ingested_at DESC. Canonical join key for silver_player_stats and silver_team_stats. PARTITION BY match_date (DAY). CLUSTER BY tournament_id, match_round."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [match_id]
     columns:
       - name: match_id
-        description: "SofaScore unique match identifier."
+        description: "SofaScore unique match identifier. Primary key."
+        tests:
+          - not_null
+          - unique
+      - name: match_date
+        description: "Match date (UTC). Partition key."
+        tests:
+          - not_null
+      - name: match_round
+        description: "League round / jornada number. NULL for knockout/cup matches."
       - name: tournament_id
-        description: "SofaScore tournament/competition identifier (e.g. 54 = LaLiga2)."
+        description: "SofaScore competition identifier (e.g. 54 = LaLiga2, 17073 = 1RFEF). Cluster key."
+        tests:
+          - not_null
+      - name: season_id
+        description: "SofaScore season identifier."
+        tests:
+          - not_null
+      - name: league_name
+        description: "Human-readable league name."
       - name: dataset_source
         description: "Origin dataset: 'standard' (pipeline leagues) or 'wc_26' (FIFA World Cup 2026)."
+        tests:
+          - accepted_values:
+              values: ['standard', 'wc_26']
+      - name: home_team_id
+        description: "SofaScore ID of the home team."
+        tests:
+          - not_null
+      - name: home_team_name
+        description: "Home team full name."
+      - name: away_team_id
+        description: "SofaScore ID of the away team."
+        tests:
+          - not_null
+      - name: away_team_name
+        description: "Away team full name."
+      - name: home_score
+        description: "Home team final goals scored. NULL if match not yet finished."
+      - name: away_score
+        description: "Away team final goals scored. NULL if match not yet finished."
+      - name: status
+        description: "Match status: 'finished', 'notstarted', or 'inprogress'."
 
   - name: silver_player_stats
     description: "GRAIN: one row per (match_id, player_id) — latest ingestion only. Team resolved from is_home flag via JOIN with silver_matches. minutes_played > 0 filter applied at gold layer. PARTITION BY match_date (DAY). CLUSTER BY tournament_id, team_id."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [match_id, player_id]
     columns:
+      - name: match_id
+        description: "SofaScore match identifier. FK → silver_matches.match_id."
+        tests:
+          - not_null
       - name: player_id
         description: "SofaScore unique player identifier."
+        tests:
+          - not_null
+      - name: match_date
+        description: "Match date (UTC). Partition key."
+        tests:
+          - not_null
+      - name: match_round
+        description: "League round / jornada number."
+      - name: tournament_id
+        description: "SofaScore competition identifier."
+        tests:
+          - not_null
+      - name: season_id
+        description: "SofaScore season identifier."
+      - name: league_name
+        description: "Human-readable league name."
+      - name: dataset_source
+        description: "Origin dataset: 'standard' or 'wc_26'."
+      - name: player_name
+        description: "Player full name as returned by SofaScore."
       - name: team_id
-        description: "Resolved from match home/away sides via JOIN with silver_matches."
-
-  - name: silver_shots
-    description: "GRAIN: one row per shot_id — latest ingestion only. Pitch coordinates use SofaScore's 0–100 scale. xg is the shot-level expected goals value. PARTITION BY match_date (DAY). CLUSTER BY tournament_id."
+        description: "Resolved from is_home flag via JOIN with silver_matches. SofaScore team identifier."
+      - name: team_name
+        description: "Team name resolved from match."
+      - name: is_home
+        description: "True if the player's team was the home side."
+      - name: position
+        description: "SofaScore broad position code: G (goalkeeper), D (defender), M (midfielder), F (forward)."
+      - name: shirt_number
+        description: "Squad number worn in this match."
+      - name: is_substitute
+        description: "True if the player entered as a substitute."
+      - name: captain
+        description: "True if the player wore the captain's armband in this match."
+      - name: minutes_played
+        description: "Total minutes played. NULL if player did not appear. Gold layer filters to > 0."
+      - name: goals
+        description: "Goals scored in this match."
+      - name: goal_assists
+        description: "Assists (final pass directly before a goal) in this match."
+      - name: rating
+        description: "SofaScore per-match performance rating (1–10 scale)."
+      - name: total_passes
+        description: "Total pass attempts (short, medium, long combined)."
+      - name: accurate_passes
+        description: "Passes successfully reaching a teammate."
+      - name: total_long_balls
+        description: "Total long ball (35m+) attempts."
+      - name: accurate_long_balls
+        description: "Long balls successfully reaching a teammate."
+      - name: total_crosses
+        description: "Total cross attempts from wide positions."
+      - name: accurate_crosses
+        description: "Crosses successfully reaching a teammate."
+      - name: key_passes
+        description: "Passes that directly created a shot attempt by a teammate."
+      - name: total_shots
+        description: "Total shot attempts (on target + off target + blocked + post)."
+      - name: shots_on_target
+        description: "Shots requiring a save by the goalkeeper or that resulted in a goal."
+      - name: aerial_won
+        description: "Aerial duels won (contested headers)."
+      - name: aerial_lost
+        description: "Aerial duels lost."
+      - name: duel_won
+        description: "Total duels won (ground + aerial)."
+      - name: duel_lost
+        description: "Total duels lost."
+      - name: challenge_lost
+        description: "Dribble attempts where the player lost the ball."
+      - name: total_tackle
+        description: "Total tackle attempts (successful + unsuccessful)."
+      - name: won_tackle
+        description: "Tackles that successfully recovered the ball."
+      - name: interceptions
+        description: "Passes intercepted before reaching an opponent."
+      - name: total_clearance
+        description: "Defensive clearances (ball kicked away from defensive danger area)."
+      - name: ball_recovery
+        description: "Loose ball recoveries not classified as tackles or interceptions."
+      - name: dispossessed
+        description: "Times the player lost the ball while under pressure from an opponent."
+      - name: was_fouled
+        description: "Fouls drawn (player was fouled by an opponent)."
+      - name: fouls
+        description: "Fouls committed against an opponent."
+      - name: touches
+        description: "Total ball touches in the match."
+      - name: possession_lost
+        description: "Times the player gave away possession (passes + dribbles combined)."
+      - name: unsuccessful_touch
+        description: "Ball touches that did not result in a controlled action."
+      - name: yellow_cards
+        description: "Yellow cards received in this match (0 or 1; double yellow shows as 2 before red)."
+      - name: red_cards
+        description: "Red cards received (direct red or second yellow)."
+      - name: saves
+        description: "Goalkeeper saves. Non-zero only for GK appearances."
+      - name: expected_goals
+        description: "Cumulative xG for shots taken by this player in this match (SofaScore value)."
+      - name: expected_assists
+        description: "Cumulative xA for key passes by this player in this match (SofaScore value)."
 
   - name: silver_team_stats
     description: "GRAIN: one row per (match_id, team_id) — latest ingestion only; two rows per match. Full match stats including shots, passes, corners, big chances, aerial/ground duels. PARTITION BY match_date (DAY). CLUSTER BY tournament_id, team_id."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [match_id, team_id]
+    columns:
+      - name: match_id
+        description: "SofaScore match identifier. FK → silver_matches.match_id."
+        tests:
+          - not_null
+      - name: match_date
+        description: "Match date (UTC). Partition key."
+        tests:
+          - not_null
+      - name: match_round
+        description: "League round / jornada number."
+      - name: tournament_id
+        description: "SofaScore competition identifier."
+        tests:
+          - not_null
+      - name: season_id
+        description: "SofaScore season identifier."
+      - name: league_name
+        description: "Human-readable league name."
+      - name: team_id
+        description: "SofaScore team identifier."
+        tests:
+          - not_null
+      - name: team_name
+        description: "Team full name."
+      - name: side
+        description: "Team's role in this match: 'home' or 'away'."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['home', 'away']
+      - name: possession_pct
+        description: "Ball possession percentage (0–100)."
+      - name: total_shots
+        description: "Total shot attempts including all outcomes."
+      - name: shots_on_target
+        description: "Shots requiring a goalkeeper save or that scored."
+      - name: shots_off_target
+        description: "Shots that missed the target (wide or high)."
+      - name: blocked_shots
+        description: "Shots blocked by an outfield defender before reaching the goalkeeper."
+      - name: shots_on_woodwork
+        description: "Shots that hit the post or crossbar."
+      - name: shots_inside_box
+        description: "Shot attempts taken from inside the penalty area."
+      - name: shots_outside_box
+        description: "Shot attempts taken from outside the penalty area."
+      - name: big_chances
+        description: "Total big chances (high-probability scoring opportunities by SofaScore definition)."
+      - name: big_chances_scored
+        description: "Big chances converted into goals."
+      - name: big_chances_missed
+        description: "Big chances that did not result in a goal."
+      - name: corners
+        description: "Corner kicks taken."
+      - name: offsides
+        description: "Offside calls against this team."
+      - name: fouls
+        description: "Fouls committed by this team."
+      - name: yellow_cards
+        description: "Yellow cards received by this team."
+      - name: red_cards
+        description: "Red cards received by this team."
+      - name: total_passes
+        description: "Total pass attempts by this team."
+      - name: accurate_passes
+        description: "Passes successfully completed."
+      - name: accurate_long_balls
+        description: "Long balls successfully reaching a teammate."
+      - name: total_long_balls
+        description: "Total long ball attempts."
+      - name: accurate_crosses
+        description: "Crosses successfully reaching a teammate."
+      - name: total_crosses
+        description: "Total cross attempts."
+      - name: touches_in_opp_box
+        description: "Ball touches inside the opposition penalty area."
+      - name: final_third_entries
+        description: "Number of times the ball was successfully played into the final third."
+      - name: final_third_acc
+        description: "Accurate final third entries (SofaScore internal sub-metric)."
+      - name: final_third_total
+        description: "Total final third entry attempts."
+      - name: total_tackles
+        description: "Total tackle attempts by this team."
+      - name: won_tackles
+        description: "Tackles that successfully recovered the ball."
+      - name: interceptions
+        description: "Passes intercepted before reaching an opponent."
+      - name: clearances
+        description: "Defensive clearances made."
+      - name: ball_recoveries
+        description: "Loose ball recoveries."
+      - name: errors_leading_to_shot
+        description: "Defensive errors that directly led to an opponent's shot attempt."
+      - name: goalkeeper_saves
+        description: "Saves made by this team's goalkeeper."
+      - name: ground_duels_won
+        description: "Ground duels (challenges not involving headers) won."
+      - name: total_ground_duels
+        description: "Total ground duel attempts."
+      - name: aerial_duels_won
+        description: "Aerial duels (contested headers) won."
+      - name: total_aerial_duels
+        description: "Total aerial duel attempts."
+      - name: dribbles_completed
+        description: "Successful dribbles past an opponent."
+      - name: total_dribbles
+        description: "Total dribble attempts."
+      - name: dispossessed
+        description: "Times a player was dispossessed under pressure."
+      - name: ingested_date
+        description: "Date this row was written to raw."
+      - name: ingested_at
+        description: "Exact UTC timestamp this row was written to raw."
+      - name: dataset_source
+        description: "Origin dataset: 'standard' or 'wc_26'."
+
+  - name: silver_shots
+    description: "GRAIN: one row per shot_id — latest ingestion only. Pitch coordinates use SofaScore's 0–100 scale. xg is the shot-level expected goals value. PARTITION BY match_date (DAY). CLUSTER BY tournament_id."
+    columns:
+      - name: shot_id
+        description: "SofaScore unique shot event identifier. Primary key."
+        tests:
+          - not_null
+          - unique
+      - name: match_id
+        description: "SofaScore match identifier. FK → silver_matches.match_id."
+        tests:
+          - not_null
+      - name: match_date
+        description: "Match date (UTC). Partition key."
+        tests:
+          - not_null
+      - name: match_round
+        description: "League round / jornada number."
+      - name: tournament_id
+        description: "SofaScore competition identifier."
+      - name: season_id
+        description: "SofaScore season identifier."
+      - name: league_name
+        description: "Human-readable league name."
+      - name: dataset_source
+        description: "Origin dataset: 'standard' or 'wc_26'."
+      - name: player_id
+        description: "SofaScore identifier of the player who took the shot."
+        tests:
+          - not_null
+      - name: player_name
+        description: "Name of the player who took the shot."
+      - name: team_id
+        description: "Shooter's team identifier, resolved from is_home JOIN with silver_matches."
+      - name: team_name
+        description: "Shooter's team name."
+      - name: is_home
+        description: "True if the shooter's team was the home side."
+      - name: minute
+        description: "Match minute when the shot was taken."
+      - name: added_time
+        description: "Stoppage time minutes added, if the shot occurred in added time."
+      - name: time_seconds
+        description: "Exact time of the shot in seconds from kick-off."
+      - name: x
+        description: "Shooter x-coordinate (0–100 pitch scale, 0 = own goal line, 100 = opponent goal line)."
+      - name: y
+        description: "Shooter y-coordinate (0–100 pitch scale, 0 = left touchline, 100 = right touchline)."
+      - name: goal_mouth_x
+        description: "Destination x-coordinate within the goal mouth (if saved/scored)."
+      - name: goal_mouth_y
+        description: "Destination y-coordinate within the goal mouth."
+      - name: goal_mouth_z
+        description: "Destination height within the goal mouth."
+      - name: goal_mouth_location
+        description: "Qualitative goal mouth zone (e.g. 'bottomLeft', 'topRight', 'centre')."
+      - name: block_x
+        description: "x-coordinate where the shot was blocked (if blocked)."
+      - name: block_y
+        description: "y-coordinate where the shot was blocked."
+      - name: body_part
+        description: "Body part used to take the shot: 'foot', 'head', or 'other'."
+      - name: shot_type
+        description: "Shot outcome: 'attempt', 'savedShotAtGoal', 'blockedShot', 'missed', 'post', 'goal'."
+      - name: situation
+        description: "Tactical situation: 'regular', 'setpiece', 'counter', 'penalty', etc."
+      - name: xg
+        description: "Expected goals value for this specific shot (0–1 scale, SofaScore model)."
 
   - name: silver_rz_squad
-    description: "GRAIN: one row per player_id — latest TM snapshot. Zaragoza-only squad data from scraper_transfermarkt.py."
+    description: "GRAIN: one row per player_id — latest TM snapshot for Real Zaragoza. Derived from raw.transfermarkt_players WHERE club_name LIKE '%zaragoza%'. Empty between quarterly TM runs; next run Oct 1 2026."
+    columns:
+      - name: player_id
+        description: "Transfermarkt internal player identifier. Primary key."
+        tests:
+          - not_null
+          - unique
+      - name: name
+        description: "Player full name as listed on Transfermarkt."
+      - name: jersey_number
+        description: "Current squad number. '-' if unassigned."
+      - name: position
+        description: "Transfermarkt position label in Spanish (e.g. 'Defensa central', 'Extremo izquierdo'). More granular than SofaScore."
+      - name: age
+        description: "Player age at the time of scraping."
+      - name: date_of_birth
+        description: "Player date of birth."
+      - name: nationality
+        description: "Primary nationality (first flag listed on TM)."
+      - name: nationality_all
+        description: "Comma-separated list of all nationalities for dual/triple nationals."
+      - name: height
+        description: "Height as reported on TM (e.g. '1,84m')."
+      - name: foot
+        description: "Preferred foot as listed on TM: 'Derecho' (right), 'Izquierdo' (left). NULL if not listed."
+      - name: market_value_eur
+        description: "TM estimated market value in EUR. NULL if not listed."
+      - name: contract_expiry
+        description: "Contract expiry date."
+      - name: joined_date
+        description: "Date the player joined Real Zaragoza."
+      - name: signed_from
+        description: "Previous club name."
+      - name: signing_fee
+        description: "Raw transfer fee string (e.g. 'Libre', '120 mil euro', '?')."
+      - name: season_id
+        description: "Transfermarkt season year (e.g. 2025 = 2025/26 season)."
+      - name: club_id
+        description: "Transfermarkt club (verein) identifier."
+      - name: club_slug
+        description: "Transfermarkt club URL slug."
+      - name: club_name
+        description: "Club full name as listed on TM (will contain 'zaragoza' for this view)."
+      - name: tm_league_code
+        description: "Transfermarkt competition code (e.g. 'ES2' = LaLiga2)."
+      - name: league_name
+        description: "Human-readable league name."
+      - name: ingested_date
+        description: "Date this row was scraped."
+      - name: ingested_at
+        description: "Exact UTC timestamp of the scrape run."
 
   - name: silver_tm_players
-    description: "GRAIN: one row per (player_id, club_id, season_id) — latest quarterly TM scrape. TM position is more granular than SofaScore. For historical value tracking use gold.agg_tm_player_valuations. CLUSTER BY league_name, season_id."
+    description: "GRAIN: one row per (player_id, club_id, season_id) — latest quarterly TM scrape. TM position is more granular than SofaScore. For historical value tracking use gold.agg_tm_player_valuations. CLUSTER BY league_name, season_id. Empty until quarterly run Oct 2026."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [player_id, club_id, season_id]
     columns:
+      - name: player_id
+        description: "Transfermarkt internal player identifier."
+        tests:
+          - not_null
+      - name: name
+        description: "Player full name as listed on Transfermarkt."
+      - name: club_id
+        description: "Transfermarkt club (verein) identifier."
+        tests:
+          - not_null
+      - name: club_slug
+        description: "Transfermarkt club URL slug."
+      - name: club_name
+        description: "Club full name."
+      - name: tm_league_code
+        description: "Transfermarkt competition code (e.g. 'ES2' = LaLiga2, 'IT2' = Serie B)."
+      - name: league_name
+        description: "Human-readable league name."
+      - name: season_id
+        description: "Transfermarkt season year."
+        tests:
+          - not_null
       - name: position
         description: "TM position label — more granular than SofaScore (e.g. 'Centre-Back' vs 'D'). Source of truth for scouting position mapping."
+      - name: age
+        description: "Player age at time of scraping."
+      - name: date_of_birth
+        description: "Player date of birth."
+      - name: nationality
+        description: "Primary nationality."
+      - name: nationality_all
+        description: "Comma-separated list of all nationalities."
+      - name: height
+        description: "Height string as listed on TM (e.g. '1,84m')."
+      - name: foot
+        description: "Preferred foot: 'Derecho' (right) or 'Izquierdo' (left)."
+      - name: market_value_eur
+        description: "TM estimated market value in EUR."
+      - name: contract_expiry
+        description: "Contract expiry date."
+      - name: joined_date
+        description: "Date the player joined this club."
+      - name: signed_from
+        description: "Previous club name."
+      - name: signing_fee
+        description: "Raw transfer fee string (e.g. 'Libre', '2,50 mill. €', '?')."
+      - name: jersey_number
+        description: "Squad number. '-' if unassigned."
+      - name: ingested_date
+        description: "Date this row was scraped."
 
   - name: silver_capology_wages
     description: "GRAIN: one row per (player_name, club_name, league_name) — latest ingestion. Loan players excluded. Adds wage_eur_annual = wage_eur_weekly × 52. Top 5 EU leagues only. CLUSTER BY league_name, position_group."
+    columns:
+      - name: player_name
+        description: "Player name as listed on Capology."
+        tests:
+          - not_null
+      - name: primary_position
+        description: "Detailed position (e.g. 'Centre-Back', 'Left Winger')."
+      - name: position_group
+        description: "Broad position group used for wage benchmarks: GK, DEF, MID, FWD."
+      - name: age
+        description: "Player age at time of scraping."
+      - name: club_name
+        description: "Club name as listed on Capology."
+        tests:
+          - not_null
+      - name: nationality
+        description: "Player nationality."
+      - name: league_name
+        description: "League name: Premier League, La Liga, Bundesliga, Ligue 1, or Serie A."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Premier League', 'La Liga', 'Bundesliga', 'Ligue 1', 'Serie A']
+      - name: league_tier
+        description: "Division tier (1 = top flight for all Capology leagues)."
+      - name: wage_eur_weekly
+        description: "Reported gross weekly wage in EUR."
+      - name: wage_eur_annual
+        description: "Derived annual wage: wage_eur_weekly × 52."
+      - name: active
+        description: "True if the player is currently active at this club per Capology."
+      - name: ingested_date
+        description: "Date this row was scraped."

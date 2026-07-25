@@ -7,4 +7,4 @@ RUN pip install --no-cache-dir dbt-bigquery
 WORKDIR /app
 COPY pipeline/dbt/ .
 
-CMD ["dbt", "run", "--profiles-dir", ".", "--project-dir", "."]
+CMD dbt deps --profiles-dir . --project-dir . && dbt run --profiles-dir . --project-dir .

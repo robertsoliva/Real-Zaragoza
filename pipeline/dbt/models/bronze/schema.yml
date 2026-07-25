@@ -1,23 +1,166 @@
 version: 2
 
+# Column descriptions on bronze models are documentation-only — BigQuery views
+# do not support column-level descriptions via dbt persist_docs. Table descriptions
+# are applied correctly. Column descriptions here appear in dbt docs only.
+
 models:
   - name: bronze_matches
     description: "GRAIN: one row per (match, scrape run) — NOT deduplicated. UNION ALL of raw.sofascore_matches + wc_2026.sofascore_matches. Adds dataset_source tag ('standard' or 'wc_26')."
+    columns:
+      - name: match_id
+        description: "SofaScore unique match identifier."
+      - name: match_date
+        description: "Match date (UTC). Partition key downstream."
+      - name: match_round
+        description: "League round / jornada number."
+      - name: tournament_id
+        description: "SofaScore competition identifier (e.g. 54 = LaLiga2, 17073 = 1RFEF, 16 = WC 2026)."
+      - name: season_id
+        description: "SofaScore season identifier."
+      - name: league_name
+        description: "Human-readable league name."
+      - name: dataset_source
+        description: "'standard' for pipeline leagues; 'wc_26' for FIFA World Cup 2026."
+      - name: home_team_id
+        description: "SofaScore ID of the home team."
+      - name: home_team_name
+        description: "Home team full name."
+      - name: away_team_id
+        description: "SofaScore ID of the away team."
+      - name: away_team_name
+        description: "Away team full name."
+      - name: home_score
+        description: "Home team final goals scored. NULL if match not finished."
+      - name: away_score
+        description: "Away team final goals scored. NULL if match not finished."
+      - name: status
+        description: "Match status from SofaScore: 'finished', 'notstarted', or 'inprogress'."
+      - name: ingested_date
+        description: "Date this row was written to raw (UTC)."
+      - name: ingested_at
+        description: "Exact UTC timestamp this row was written to raw."
 
   - name: bronze_player_stats
     description: "GRAIN: one row per (player, match, scrape run) — NOT deduplicated. ~40 per-match stats per player. UNION ALL of raw + wc_2026 player_match_stats."
+    columns:
+      - name: match_id
+        description: "SofaScore match identifier."
+      - name: player_id
+        description: "SofaScore player identifier."
+      - name: match_date
+        description: "Match date (UTC)."
+      - name: player_name
+        description: "Player full name as returned by SofaScore."
+      - name: position
+        description: "SofaScore broad position code: G (goalkeeper), D (defender), M (midfielder), F (forward)."
+      - name: is_home
+        description: "True if the player's team was the home side in this match."
+      - name: is_substitute
+        description: "True if the player entered the match as a substitute."
+      - name: minutes_played
+        description: "Total minutes played. NULL for players who did not appear."
+      - name: rating
+        description: "SofaScore per-match performance rating (1–10 scale)."
+      - name: expected_goals
+        description: "Cumulative xG for shots taken by this player in this match."
+      - name: expected_assists
+        description: "Cumulative xA for key passes by this player in this match."
+      - name: dataset_source
+        description: "'standard' for pipeline leagues; 'wc_26' for FIFA World Cup 2026."
 
   - name: bronze_shots
     description: "GRAIN: one row per (shot, scrape run) — NOT deduplicated. UNION ALL of raw + wc_2026 shot events with xG and pitch coordinates."
+    columns:
+      - name: shot_id
+        description: "SofaScore unique shot event identifier."
+      - name: match_id
+        description: "SofaScore match identifier."
+      - name: player_id
+        description: "Player who took the shot."
+      - name: xg
+        description: "Expected goals value for this shot (0–1 scale)."
+      - name: x
+        description: "Shooter x-coordinate on a 0–100 pitch scale (0 = own goal line, 100 = opponent goal line)."
+      - name: y
+        description: "Shooter y-coordinate on a 0–100 pitch scale (0 = left touchline, 100 = right touchline)."
+      - name: body_part
+        description: "Body part used: 'foot', 'head', or 'other'."
+      - name: shot_type
+        description: "Shot outcome: 'attempt', 'savedShotAtGoal', 'blockedShot', 'missed', 'post', 'goal'."
+      - name: situation
+        description: "Tactical situation: 'regular', 'setpiece', 'counter', 'penalty', etc."
+      - name: dataset_source
+        description: "'standard' for pipeline leagues; 'wc_26' for FIFA World Cup 2026."
 
   - name: bronze_team_stats
-    description: "GRAIN: one row per (team, match, scrape run) — NOT deduplicated. UNION ALL of raw + wc_2026 team match stats."
+    description: "GRAIN: one row per (team, match, scrape run) — NOT deduplicated. UNION ALL of raw + wc_2026 team match stats. Two rows per match (one per side)."
+    columns:
+      - name: match_id
+        description: "SofaScore match identifier."
+      - name: team_id
+        description: "SofaScore team identifier."
+      - name: side
+        description: "Team's role in the match: 'home' or 'away'."
+      - name: possession_pct
+        description: "Ball possession percentage."
+      - name: big_chances
+        description: "Big chances created (SofaScore definition: high-probability scoring opportunity)."
+      - name: dataset_source
+        description: "'standard' for pipeline leagues; 'wc_26' for FIFA World Cup 2026."
 
   - name: bronze_rz_squad
-    description: "GRAIN: one row per (player, ingestion run) — NOT deduplicated. Pass-through of raw.transfermarkt_squad (Zaragoza-only)."
+    description: "GRAIN: one row per (player, ingestion run) — NOT deduplicated. Zaragoza players from raw.transfermarkt_players (LaLiga2 multi-league scrape) filtered to club_name LIKE '%zaragoza%'. Populated by quarterly local TM run."
+    columns:
+      - name: player_id
+        description: "Transfermarkt internal player identifier."
+      - name: name
+        description: "Player full name as listed on Transfermarkt."
+      - name: position
+        description: "Transfermarkt position label in Spanish (e.g. 'Defensa central', 'Extremo izquierdo')."
+      - name: market_value_eur
+        description: "Transfermarkt estimated market value in EUR."
+      - name: contract_expiry
+        description: "Contract expiry date."
+      - name: ingested_date
+        description: "Date this row was scraped."
 
   - name: bronze_tm_players
-    description: "GRAIN: one row per (player, club, ingestion run) — NOT deduplicated. Pass-through of raw.transfermarkt_players (19 leagues, quarterly)."
+    description: "GRAIN: one row per (player, club, ingestion run) — NOT deduplicated. Pass-through of raw.transfermarkt_players (25 active leagues, 1RFEF excluded). Written by scraper_transfermarkt_leagues.py quarterly from a local machine."
+    columns:
+      - name: player_id
+        description: "Transfermarkt internal player identifier."
+      - name: name
+        description: "Player full name as listed on Transfermarkt."
+      - name: club_id
+        description: "Transfermarkt club (verein) identifier."
+      - name: league_name
+        description: "Human-readable league name."
+      - name: tm_league_code
+        description: "Transfermarkt competition code (e.g. 'ES2' = LaLiga2, 'IT2' = Serie B)."
+      - name: position
+        description: "TM position label in Spanish — more granular than SofaScore (e.g. 'Defensa central' vs 'D')."
+      - name: market_value_eur
+        description: "Transfermarkt estimated market value in EUR."
+      - name: contract_expiry
+        description: "Contract expiry date."
+      - name: ingested_date
+        description: "Date this row was scraped."
 
   - name: bronze_capology_wages
-    description: "GRAIN: one row per (player, club, ingestion run) — NOT deduplicated. Pass-through of raw.capology_wages (top 5 EU leagues, monthly)."
+    description: "GRAIN: one row per (player, club, ingestion run) — NOT deduplicated. Pass-through of raw.capology_wages (top 5 EU leagues: PL, La Liga, Bundesliga, Ligue 1, Serie A). Written by scraper_capology.py quarterly."
+    columns:
+      - name: player_name
+        description: "Player name as listed on Capology."
+      - name: club_name
+        description: "Club name."
+      - name: league_name
+        description: "One of: Premier League, La Liga, Bundesliga, Ligue 1, Serie A."
+      - name: wage_eur_weekly
+        description: "Reported gross weekly wage in EUR."
+      - name: position_group
+        description: "Broad position group: GK, DEF, MID, FWD."
+      - name: on_loan
+        description: "True if player is on loan — loan players are excluded in silver_capology_wages."
+      - name: ingested_date
+        description: "Date this row was scraped."

@@ -3,73 +3,570 @@ version: 2
 models:
   - name: fct_player_season_stats
     description: "GRAIN: one row per (player_id, team_name, league_name, dataset_source, tournament_id, season_id) — season totals and per-90 rates. FILTER: minutes_played > 0. Primary scouting query target. CLUSTER BY league_name, season_id, primary_position."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [player_id, team_name, tournament_id, season_id]
     columns:
       - name: player_id
         description: "SofaScore unique player identifier."
+        tests:
+          - not_null
+      - name: player_name
+        description: "Player name as returned by SofaScore."
       - name: primary_position
-        description: "SofaScore position code (G/D/M/F). Use tm_position from agg_scouting_player_season for granular role mapping."
+        description: "SofaScore broad position: G (goalkeeper), D (defender), M (midfielder), F (forward). Use tm_position from agg_scouting_player_season for granular role mapping."
+      - name: team_name
+        description: "Club name for this season stint."
+      - name: league_name
+        description: "Human-readable league name."
+      - name: dataset_source
+        description: "Origin dataset: 'standard' (pipeline leagues) or 'wc_26' (FIFA World Cup 2026)."
+      - name: tournament_id
+        description: "SofaScore competition identifier."
+      - name: season_id
+        description: "SofaScore season identifier."
+      - name: matches
+        description: "Matches in which the player appeared (minutes_played > 0)."
+      - name: total_minutes
+        description: "Total minutes played across the season."
+        tests:
+          - not_null
+      - name: avg_rating
+        description: "Average SofaScore per-match rating for this season."
+      - name: goals
+        description: "Total goals scored."
+      - name: assists
+        description: "Total assists (final pass before a goal)."
+      - name: shots
+        description: "Total shot attempts."
+      - name: shots_on_target
+        description: "Shots requiring a save or that scored."
+      - name: conversion_pct
+        description: "Goal conversion rate: goals / total_shots × 100. NULL if no shots."
       - name: goals_p90
         description: "Goals per 90 minutes."
       - name: assists_p90
         description: "Assists per 90 minutes."
+      - name: shots_p90
+        description: "Shot attempts per 90 minutes."
+      - name: avg_xg_per_match
+        description: "Average expected goals per match (SofaScore xG, not cumulative)."
+      - name: key_passes
+        description: "Total passes that directly created a shot attempt."
+      - name: key_passes_p90
+        description: "Key passes per 90 minutes."
+      - name: passes
+        description: "Total pass attempts."
+      - name: acc_passes
+        description: "Passes successfully reaching a teammate."
+      - name: pass_acc_pct
+        description: "Pass accuracy: accurate_passes / total_passes × 100."
+      - name: long_balls
+        description: "Total long ball attempts."
+      - name: long_ball_acc_pct
+        description: "Long ball accuracy percentage."
+      - name: crosses
+        description: "Total cross attempts."
+      - name: cross_acc_pct
+        description: "Cross accuracy percentage."
+      - name: tackles
+        description: "Total tackle attempts."
+      - name: tackles_won
+        description: "Tackles that successfully recovered the ball."
+      - name: tackle_win_pct
+        description: "Tackle success rate: won_tackle / total_tackle × 100."
+      - name: interceptions
+        description: "Total interceptions."
+      - name: clearances
+        description: "Total defensive clearances."
+      - name: aerials_won
+        description: "Aerial duels won."
+      - name: aerials_lost
+        description: "Aerial duels lost."
+      - name: aerial_win_pct
+        description: "Aerial duel win rate: aerial_won / (aerial_won + aerial_lost) × 100."
+      - name: duels_won
+        description: "Total duels won (ground + aerial)."
+      - name: duels_lost
+        description: "Total duels lost."
+      - name: duel_win_pct
+        description: "Overall duel win rate: duel_won / (duel_won + duel_lost) × 100."
+      - name: interceptions_p90
+        description: "Interceptions per 90 minutes."
+      - name: tackles_p90
+        description: "Tackle attempts per 90 minutes."
+      - name: touches
+        description: "Total ball touches."
+      - name: touches_p90
+        description: "Ball touches per 90 minutes."
+      - name: fouls_committed
+        description: "Fouls committed against opponents."
+      - name: fouls_won
+        description: "Fouls drawn from opponents."
+      - name: yellows
+        description: "Yellow cards received."
+      - name: reds
+        description: "Red cards received."
+      - name: yellows_p90
+        description: "Yellow cards per 90 minutes (discipline indicator)."
 
   - name: fct_team_season_stats
     description: "GRAIN: one row per (team_id, team_name, league_name, dataset_source, tournament_id, season_id) — season averages per match. CLUSTER BY league_name, season_id."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [team_id, tournament_id, season_id]
+    columns:
+      - name: team_id
+        description: "SofaScore team identifier."
+        tests:
+          - not_null
+      - name: team_name
+        description: "Team full name."
+      - name: league_name
+        description: "Human-readable league name."
+      - name: dataset_source
+        description: "Origin dataset: 'standard' or 'wc_26'."
+      - name: tournament_id
+        description: "SofaScore competition identifier."
+      - name: season_id
+        description: "SofaScore season identifier."
+      - name: matches
+        description: "Matches included in these averages."
+      - name: avg_possession
+        description: "Average ball possession percentage per match."
+      - name: avg_passes
+        description: "Average pass attempts per match."
+      - name: avg_pass_acc_pct
+        description: "Average pass accuracy percentage per match."
+      - name: avg_shots
+        description: "Average shot attempts per match."
+      - name: avg_sot
+        description: "Average shots on target per match."
+      - name: avg_tackles
+        description: "Average tackle attempts per match."
+      - name: avg_interceptions
+        description: "Average interceptions per match."
+      - name: avg_corners
+        description: "Average corners won per match."
+      - name: avg_fouls
+        description: "Average fouls committed per match."
+      - name: avg_yellows
+        description: "Average yellow cards per match."
+      - name: avg_big_chances
+        description: "Average big chances created per match."
+      - name: avg_dribbles_completed
+        description: "Average successful dribbles per match."
+      - name: avg_aerial_won
+        description: "Average aerial duels won per match."
+      - name: avg_aerial_win_pct
+        description: "Average aerial duel win rate per match."
 
   - name: fct_rz_matches
     description: "GRAIN: one row per match where Real Zaragoza (team_id='2815') played. Adds result (W/D/L), venue (home/away), rz_goals, opponent_goals. PARTITION BY match_date (DAY). CLUSTER BY season_id, result."
     columns:
+      - name: match_id
+        description: "SofaScore unique match identifier. Primary key."
+        tests:
+          - not_null
+          - unique
+      - name: match_date
+        description: "Match date. Partition key."
+        tests:
+          - not_null
+      - name: match_round
+        description: "League round / jornada number."
+      - name: league_name
+        description: "Competition name (LaLiga2, 1RFEF, etc.)."
+      - name: season_id
+        description: "SofaScore season identifier."
+      - name: home_team_name
+        description: "Home team name."
+      - name: away_team_name
+        description: "Away team name."
+      - name: home_score
+        description: "Home team final goals."
+      - name: away_score
+        description: "Away team final goals."
       - name: result
         description: "Match result from Zaragoza's perspective: W (win), D (draw), L (loss)."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['W', 'D', 'L']
       - name: venue
         description: "Match venue from Zaragoza's perspective: 'home' or 'away'."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['home', 'away']
+      - name: rz_goals
+        description: "Goals scored by Real Zaragoza in this match."
+      - name: opponent_goals
+        description: "Goals scored by the opponent."
+      - name: opponent
+        description: "Opponent team name."
+      - name: possession_pct
+        description: "Zaragoza's ball possession percentage (from silver_team_stats)."
+      - name: total_shots
+        description: "Zaragoza's total shot attempts."
+      - name: shots_on_target
+        description: "Zaragoza's shots on target."
+      - name: total_passes
+        description: "Zaragoza's total pass attempts."
+      - name: accurate_passes
+        description: "Zaragoza's accurate passes."
+      - name: total_tackles
+        description: "Zaragoza's total tackle attempts."
+      - name: interceptions
+        description: "Zaragoza's interceptions."
+      - name: fouls
+        description: "Fouls committed by Zaragoza."
+      - name: big_chances
+        description: "Big chances created by Zaragoza."
+      - name: corners
+        description: "Corners won by Zaragoza."
 
   - name: agg_player_market_values
-    description: "GRAIN: one row per (player_id, club_id, season_id) — latest TM scrape. TM position is source of truth for scouting (more granular than SofaScore). CLUSTER BY league_name, position, season_id."
+    description: "GRAIN: one row per (player_id, club_id, season_id) — latest TM scrape. TM position is source of truth for scouting (more granular than SofaScore). CLUSTER BY league_name, position, season_id. Empty until quarterly run Oct 2026."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [player_id, club_id, season_id]
+    columns:
+      - name: player_id
+        description: "Transfermarkt internal player identifier."
+        tests:
+          - not_null
+      - name: name
+        description: "Player full name as listed on Transfermarkt."
+      - name: club_id
+        description: "Transfermarkt club identifier."
+      - name: club_name
+        description: "Club full name."
+      - name: club_slug
+        description: "Transfermarkt club URL slug."
+      - name: league_name
+        description: "Human-readable league name."
+      - name: tm_league_code
+        description: "Transfermarkt competition code (e.g. 'ES2', 'IT2')."
+      - name: season_id
+        description: "Transfermarkt season year."
+      - name: position
+        description: "TM position label in Spanish. Source of truth for scouting position mapping."
+      - name: age
+        description: "Player age at time of scraping."
+      - name: date_of_birth
+        description: "Player date of birth."
+      - name: nationality
+        description: "Primary nationality."
+      - name: nationality_all
+        description: "Comma-separated list of all nationalities."
+      - name: height
+        description: "Height string (e.g. '1,84m')."
+      - name: foot
+        description: "Preferred foot: 'Derecho' (right) or 'Izquierdo' (left)."
+      - name: market_value_eur
+        description: "TM estimated market value in EUR."
+      - name: contract_expiry
+        description: "Contract expiry date."
+      - name: joined_date
+        description: "Date the player joined this club."
+      - name: signed_from
+        description: "Previous club."
+      - name: signing_fee
+        description: "Raw transfer fee string."
+      - name: jersey_number
+        description: "Squad number."
+      - name: ingested_date
+        description: "Date this row was scraped."
 
   - name: agg_scouting_player_season
     description: "GRAIN: one row per (sofascore_id, team_name, league_name, season_id) — SofaScore season stats LEFT JOIN TM profile. ~30% miss rate on TM join due to name/diacritic differences. Primary table for scouting reports. CLUSTER BY league_name, season_id, tm_position."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [sofascore_id, team_name, tournament_id, season_id]
     columns:
       - name: sofascore_id
         description: "SofaScore player_id. Join key between SofaScore and TM data."
+        tests:
+          - not_null
+      - name: player_name
+        description: "Player name from SofaScore."
+      - name: team_name
+        description: "Club name for this season stint."
+      - name: league_name
+        description: "Human-readable league name."
+      - name: tournament_id
+        description: "SofaScore competition identifier."
+      - name: season_id
+        description: "SofaScore season identifier."
       - name: tm_position
-        description: "COALESCE(TM position, SofaScore position). Use this for role mapping — more granular than sofascore_position."
+        description: "COALESCE(TM position, SofaScore position). Use for role mapping — TM is more granular (e.g. 'Centre-Back' vs 'D')."
+      - name: sofascore_position
+        description: "SofaScore broad position code (G/D/M/F)."
+      - name: matches
+        description: "Matches appeared in."
+      - name: total_minutes
+        description: "Total minutes played."
+      - name: avg_rating
+        description: "Average SofaScore match rating."
+      - name: goals
+        description: "Total goals."
+      - name: assists
+        description: "Total assists."
+      - name: goals_p90
+        description: "Goals per 90 minutes."
+      - name: assists_p90
+        description: "Assists per 90 minutes."
+      - name: shots_p90
+        description: "Shot attempts per 90 minutes."
+      - name: avg_xg_per_match
+        description: "Average xG per match."
+      - name: key_passes_p90
+        description: "Key passes per 90 minutes."
+      - name: pass_acc_pct
+        description: "Pass accuracy percentage."
+      - name: long_ball_acc_pct
+        description: "Long ball accuracy percentage."
+      - name: cross_acc_pct
+        description: "Cross accuracy percentage."
+      - name: tackles_p90
+        description: "Tackle attempts per 90 minutes."
+      - name: tackle_win_pct
+        description: "Tackle success rate."
+      - name: interceptions_p90
+        description: "Interceptions per 90 minutes."
+      - name: clearances
+        description: "Total defensive clearances."
+      - name: aerial_win_pct
+        description: "Aerial duel win rate."
+      - name: duel_win_pct
+        description: "Overall duel win rate."
+      - name: touches_p90
+        description: "Ball touches per 90 minutes."
+      - name: fouls_committed
+        description: "Total fouls committed."
+      - name: yellows
+        description: "Yellow cards received."
+      - name: yellows_p90
+        description: "Yellow cards per 90 minutes."
+      - name: tm_player_id
+        description: "Transfermarkt player identifier. NULL if TM join found no match (~30% miss rate)."
+      - name: market_value_eur
+        description: "TM market value in EUR. NULL if no TM match."
+      - name: contract_expiry
+        description: "Contract expiry date from TM. NULL if no TM match."
+      - name: age
+        description: "Age at time of TM scraping."
+      - name: date_of_birth
+        description: "Date of birth from TM."
+      - name: nationality
+        description: "Primary nationality from TM."
+      - name: nationality_all
+        description: "All nationalities (comma-separated) from TM."
+      - name: height
+        description: "Height string from TM."
+      - name: foot
+        description: "Preferred foot from TM."
+      - name: signed_from
+        description: "Previous club from TM."
+      - name: tm_club_id
+        description: "Transfermarkt club identifier for this player's current club."
 
   - name: agg_rz_squad_finances
-    description: "GRAIN: one row per player in the latest Zaragoza TM squad snapshot. Ordered by market_value_eur DESC. Use for contract planning and squad cost overview."
+    description: "GRAIN: one row per player in the latest Zaragoza TM squad snapshot. Ordered by market_value_eur DESC. Use for contract planning and squad cost overview. Empty until quarterly TM run Oct 2026."
+    columns:
+      - name: player_id
+        description: "Transfermarkt player identifier."
+        tests:
+          - not_null
+      - name: name
+        description: "Player full name."
+      - name: jersey_number
+        description: "Squad number."
+      - name: position
+        description: "TM position label in Spanish."
+      - name: age
+        description: "Player age at time of scraping."
+      - name: date_of_birth
+        description: "Date of birth."
+      - name: nationality
+        description: "Primary nationality."
+      - name: height
+        description: "Height string from TM."
+      - name: foot
+        description: "Preferred foot."
+      - name: market_value_eur
+        description: "TM estimated market value in EUR. NULL if not listed."
+      - name: contract_expiry
+        description: "Contract expiry date."
+      - name: joined_date
+        description: "Date the player joined Zaragoza."
+      - name: signed_from
+        description: "Previous club."
+      - name: signing_fee
+        description: "Raw transfer fee string."
+      - name: season_id
+        description: "TM season year."
+      - name: ingested_date
+        description: "Date this row was scraped."
 
   - name: agg_league_player_benchmarks
     description: "GRAIN: one row per (league_name, season_id, primary_position) — average per-90 stats. FILTER: total_minutes >= 450. Use to contextualise individual player stats against league/position averages. CLUSTER BY league_name, season_id, primary_position."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [tournament_id, season_id, primary_position]
+    columns:
+      - name: league_name
+        description: "Human-readable league name."
+        tests:
+          - not_null
+      - name: tournament_id
+        description: "SofaScore competition identifier."
+        tests:
+          - not_null
+      - name: season_id
+        description: "SofaScore season identifier."
+        tests:
+          - not_null
+      - name: primary_position
+        description: "SofaScore broad position code (G/D/M/F)."
+        tests:
+          - not_null
+      - name: player_count
+        description: "Number of qualifying players (≥ 450 minutes) used to compute averages."
+      - name: avg_rating
+        description: "Average SofaScore rating for this position group in this league/season."
+      - name: avg_goals_p90
+        description: "League-position average goals per 90 minutes."
+      - name: avg_assists_p90
+        description: "League-position average assists per 90 minutes."
+      - name: avg_shots_p90
+        description: "League-position average shots per 90 minutes."
+      - name: avg_xg_per_match
+        description: "League-position average xG per match."
+      - name: avg_key_passes_p90
+        description: "League-position average key passes per 90 minutes."
+      - name: avg_pass_acc_pct
+        description: "League-position average pass accuracy percentage."
+      - name: avg_tackles_p90
+        description: "League-position average tackle attempts per 90 minutes."
+      - name: avg_interceptions_p90
+        description: "League-position average interceptions per 90 minutes."
+      - name: avg_aerial_win_pct
+        description: "League-position average aerial duel win rate."
+      - name: avg_duel_win_pct
+        description: "League-position average overall duel win rate."
+      - name: avg_touches_p90
+        description: "League-position average touches per 90 minutes."
+      - name: avg_yellows_p90
+        description: "League-position average yellow cards per 90 minutes."
 
   - name: agg_tm_player_valuations
-    description: "GRAIN: one row per (player_id, club_id, season_id, ingested_date) — ALL quarterly TM snapshots preserved (reads raw directly, not silver). snapshot_rank=1 is most recent. Use for market value trend analysis. CLUSTER BY player_id, league_name."
+    description: "GRAIN: one row per (player_id, club_id, season_id, ingested_date) — ALL quarterly TM snapshots preserved (reads raw directly, not silver). snapshot_rank=1 is most recent. Use for market value trend analysis. CLUSTER BY player_id, league_name. Empty until quarterly run Oct 2026."
     columns:
+      - name: player_id
+        description: "Transfermarkt player identifier."
+        tests:
+          - not_null
+      - name: player_name
+        description: "Player full name from TM."
+      - name: club_id
+        description: "Transfermarkt club identifier."
+      - name: club_name
+        description: "Club full name."
+      - name: league_name
+        description: "Human-readable league name."
+      - name: season_id
+        description: "TM season year."
+      - name: position
+        description: "TM position label."
+      - name: age
+        description: "Player age at time of scraping."
+      - name: nationality
+        description: "Primary nationality."
+      - name: market_value_eur
+        description: "TM estimated market value in EUR."
+      - name: contract_expiry
+        description: "Contract expiry date."
+      - name: ingested_date
+        description: "Date this snapshot was scraped. Use to track value changes over time."
       - name: snapshot_rank
         description: "1 = most recent snapshot for this (player, club, season). ORDER BY ingested_date DESC."
 
   - name: agg_player_wage_benchmarks
-    description: "GRAIN: one row per (league_name, position_group) — P25/median/P75/avg gross wages. Top 5 EU leagues only (PL, La Liga, Bundesliga, Ligue 1, Serie A). CLUSTER BY league_name, position_group."
+    description: "GRAIN: one row per (league_name, position_group) — P25/median/P75/avg gross wages. Top 5 EU leagues only (PL, La Liga, Bundesliga, Ligue 1, Serie A). Use for scouting budget planning. CLUSTER BY league_name, position_group."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [league_name, position_group]
+    columns:
+      - name: league_name
+        description: "League name: Premier League, La Liga, Bundesliga, Ligue 1, or Serie A."
+        tests:
+          - not_null
+      - name: league_tier
+        description: "Division tier (1 = top flight for all Capology leagues)."
+      - name: position_group
+        description: "Broad position group: GK, DEF, MID, FWD."
+        tests:
+          - not_null
+      - name: player_count
+        description: "Number of players in this league/position group used for benchmarks."
+      - name: p25_wage_annual
+        description: "25th percentile annual gross wage in EUR. Budget players earn below this."
+      - name: median_wage_annual
+        description: "Median annual gross wage in EUR."
+      - name: p75_wage_annual
+        description: "75th percentile annual gross wage in EUR. High earners are above this."
+      - name: avg_wage_annual
+        description: "Mean annual gross wage in EUR."
+      - name: avg_market_value_eur
+        description: "Mean TM market value in EUR for players in this group (where TM join succeeded)."
+      - name: avg_wage_to_value_pct
+        description: "Average wage-to-value ratio: avg_wage_annual / avg_market_value_eur × 100. Higher values indicate overpaid relative to market value."
 
   - name: dim_league
-    description: "DIMENSION: one row per tournament_id — fixed once inserted. Covers all active pipeline leagues + WC 2026. Fields: tournament_id, league_name, dataset_source, country."
+    description: "DIMENSION: one row per tournament_id — fixed once inserted. Covers all active pipeline leagues + WC 2026. Insert-only (merge_update_columns=['tournament_id']). Fields: tournament_id, league_name, dataset_source, country."
     columns:
       - name: tournament_id
         description: "SofaScore tournament identifier. Natural key — immutable once inserted."
+        tests:
+          - not_null
+          - unique
+      - name: league_name
+        description: "Human-readable league name."
+      - name: dataset_source
+        description: "Origin dataset: 'standard' or 'wc_26'."
       - name: country
-        description: "Country the competition belongs to. 'World' for WC 2026."
+        description: "Country the competition belongs to. 'World' for WC 2026, 'United States' for MLS."
 
   - name: dim_team
-    description: "DIMENSION: one row per team_id — fixed once inserted. team_name captured at first appearance; never updated. Covers all teams seen in silver.matches."
+    description: "DIMENSION: one row per team_id — fixed once inserted. team_name captured at first appearance; never updated. Covers all teams seen in silver.matches. Insert-only."
     columns:
       - name: team_id
         description: "SofaScore team identifier. Natural key — immutable once inserted."
+        tests:
+          - not_null
+          - unique
+      - name: team_name
+        description: "Team name as captured at first appearance in silver.matches."
 
   - name: dim_player
-    description: "DIMENSION: one row per player_id — fixed once inserted. Captures stable attributes (position, nationality, foot, height) at first appearance. Variable attributes (market_value, contract) live in gold fact/agg tables."
+    description: "DIMENSION: one row per player_id — fixed once inserted. Captures stable attributes (position, nationality, foot, height) at first appearance. Variable attributes (market_value, contract) live in gold fact/agg tables. Insert-only."
     columns:
       - name: player_id
         description: "SofaScore player identifier. Natural key — immutable once inserted."
+        tests:
+          - not_null
+          - unique
+      - name: player_name
+        description: "Player name as captured at first appearance."
+      - name: primary_position
+        description: "SofaScore broad position code (G/D/M/F) at first appearance."
       - name: tm_position
         description: "TM granular position (e.g. 'Centre-Back', 'Left Winger'). NULL if no TM match found."
-      - name: primary_position
-        description: "SofaScore broad position code (G/D/M/F)."
+      - name: nationality
+        description: "Primary nationality from TM. NULL if no TM match."
+      - name: foot
+        description: "Preferred foot from TM. NULL if not matched."
+      - name: height
+        description: "Height string from TM (e.g. '1,84m'). NULL if not matched."
