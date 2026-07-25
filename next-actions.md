@@ -13,7 +13,6 @@ Forward-looking only — pending items by category. Completed items graduate to 
 
 ## Sporting analysis
 
-- **Scouting reports on 4 new signings** — Emil Hansson (LW), Edu Espiau (CF), Ander Herrera (MF/DM), Diego González (CB). All 2026-27 confirmed. Data exists for Hansson/Espiau/Herrera in SofaScore pipeline leagues. Use data-scout agent.
 - **LaLiga2 2025-26 squad benchmarks** — produce team style profiles for all LaLiga2 2025-26 sides (`gold.fct_team_season_stats`). Useful for pre-season opponent analysis.
 - **Match outcome model** — predict Zaragoza fixtures using historical form, opponent stats, home/away patterns. Feature set ready in `gold.fct_rz_matches` + `gold.fct_team_season_stats`. Approach TBD (logistic regression / xG-based).
 
@@ -21,7 +20,7 @@ Forward-looking only — pending items by category. Completed items graduate to 
 
 ## Data pipeline
 
-- **1RFEF 2024-25 anomaly** — only ~100 matches loaded (expected ~380+). Likely SofaScore exposes only playoff rounds for this season. Investigate before re-backfilling.
+- **1RFEF 2024-25 anomaly** — only ~100 matches loaded (expected ~380+). Re-queued at top of queue (PRIORITY 0) to re-scrape — will confirm if SofaScore exposes more rounds now or if it's a structural gap (playoff-only coverage for that season).
 - **WC `league_name` fix** — rows from initial WC backfill have `league_name = "tournament_16"` not `"FIFA World Cup"`. Fix: add `CASE WHEN tournament_id = "16" THEN "FIFA World Cup" ELSE league_name END` in `bronze/matches.sql`. Until then filter by `tournament_id = "16"`.
 
 ---

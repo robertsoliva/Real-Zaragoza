@@ -9,12 +9,14 @@
 # NOTE: WC 2026 is a SEPARATE workflow (incremental, BQ_DATASET=WC_26).
 # See run_daily_wc26.sh — tournament_id=16, season_id=58210.
 # -------------------------------------------------------------------------
+# PRIORITY 0 — 1RFEF 2024-25 re-scrape (only ~100 matches loaded, expected ~380+)
+17073  64430  1RFEF_2024-25_retry
+# -------------------------------------------------------------------------
 # PRIORITY 1 — Remaining standard backfill (failed 2026-07-03 due to IP ban)
 # -------------------------------------------------------------------------
 # PRIORITY 2 — New leagues (all IDs confirmed via seasons_lookup.py 2026-07-05)
 # -------------------------------------------------------------------------
 # PRIORITY 3 — Additional leagues (all IDs confirmed via seasons_lookup.py 2026-07-05)
-685  76499  MoldovanSuperLiga_2025-26
 # -------------------------------------------------------------------------
 # PRIORITY 4 — New leagues added 2026-07-22 (IDs confirmed via seasons_lookup.py)
 # Eredivisie (NL 1st): key for Dutch player scouting, covers Hansson's Heracles peak
