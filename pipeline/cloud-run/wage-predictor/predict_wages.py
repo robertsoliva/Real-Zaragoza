@@ -37,6 +37,10 @@ client = bigquery.Client(project=PROJECT, location=LOCATION)
 # Multipliers relative to top-5 EU average wage for an equivalent market value.
 # Top-5 EU = 1.0 (model trained on this data, no adjustment).
 # Sources: KPMG Football Benchmark, CIES Football Observatory, football salary press.
+# Multipliers calibrated as: target_avg_annual / raw_model_avg_annual
+# where raw_model_avg_annual is the per-league average of EXP(predicted_log_wage)*52.
+# Target salaries from KPMG Football Benchmark, CIES Observatory, SportPro (2025).
+# Top-5 EU = 1.0 (model trained directly on their data; raw ≈ reality).
 LEAGUE_MULTIPLIER_SQL = """
   CASE league_name
     WHEN 'Premier League'        THEN 1.00
@@ -44,32 +48,49 @@ LEAGUE_MULTIPLIER_SQL = """
     WHEN 'Bundesliga'            THEN 1.00
     WHEN 'Serie A'               THEN 1.00
     WHEN 'Ligue 1'               THEN 1.00
-    -- Strong secondary European leagues
-    WHEN '2. Bundesliga'         THEN 0.30
-    WHEN 'Eredivisie'            THEN 0.28
-    WHEN 'Turkish Süper Lig'     THEN 0.25
-    WHEN 'Belgian Pro League'    THEN 0.22
-    -- European 2nd tiers + decent secondary
-    WHEN 'LaLiga2'               THEN 0.20
-    WHEN 'Serie B'               THEN 0.18
-    WHEN 'Liga Portugal'         THEN 0.18
-    WHEN 'MLS'                   THEN 0.18
-    WHEN 'J1 League'             THEN 0.16
-    WHEN 'Austrian Bundesliga'   THEN 0.16
-    WHEN 'Ligue 2'               THEN 0.14
-    -- Smaller / lower-wage leagues
-    WHEN 'Allsvenskan'           THEN 0.10
-    WHEN 'Brasileirao Serie B'   THEN 0.10
-    WHEN 'Korean K League 1'     THEN 0.10
-    WHEN 'Norwegian Eliteserien' THEN 0.10
-    WHEN 'Eerste Divisie'        THEN 0.08
-    WHEN 'Romanian SuperLiga'    THEN 0.08
-    WHEN 'Mozzart Bet Superliga' THEN 0.06
-    WHEN '1RFEF'                 THEN 0.07
-    WHEN 'Moldovan Super Liga'   THEN 0.04
-    -- World Cup / unknown: treat as top-tier (players are elite)
+    -- raw €729k → target €600k
+    WHEN '2. Bundesliga'         THEN 0.82
+    -- raw €1010k → target €700k (Galatasaray/Fenerbahce inflate average)
+    WHEN 'Turkish Süper Lig'     THEN 0.69
+    -- raw €471k → target €300k (J1 pays well relative to market values)
+    WHEN 'J1 League'             THEN 0.64
+    -- raw €871k → target €400k (DP rule skews MLS mean up)
+    WHEN 'MLS'                   THEN 0.46
+    -- raw €663k → target €300k
+    WHEN 'Serie B'               THEN 0.45
+    -- raw €676k → target €300k
+    WHEN 'LaLiga2'               THEN 0.44
+    -- raw €1026k → target €400k
+    WHEN 'Eredivisie'            THEN 0.39
+    -- raw €391k → target €150k
+    WHEN 'Korean K League 1'     THEN 0.38
+    -- raw €681k → target €250k
+    WHEN 'Austrian Bundesliga'   THEN 0.37
+    -- raw €997k → target €350k
+    WHEN 'Belgian Pro League'    THEN 0.35
+    -- raw €564k → target €200k
+    WHEN 'Allsvenskan'           THEN 0.35
+    -- raw €642k → target €200k
+    WHEN 'Norwegian Eliteserien' THEN 0.31
+    -- raw €655k → target €200k
+    WHEN 'Ligue 2'               THEN 0.31
+    -- raw €484k → target €150k
+    WHEN 'Romanian SuperLiga'    THEN 0.31
+    -- raw €388k → target €100k
+    WHEN 'Eerste Divisie'        THEN 0.26
+    -- raw €503k → target €120k
+    WHEN 'Brasileirao Serie B'   THEN 0.24
+    -- raw €325k → target €75k
+    WHEN '1RFEF'                 THEN 0.23
+    -- raw €1162k → target €250k (skewed by Benfica/Porto/Sporting squad values)
+    WHEN 'Liga Portugal'         THEN 0.22
+    -- raw €544k → target €100k
+    WHEN 'Mozzart Bet Superliga' THEN 0.18
+    -- raw €266k → target €30k
+    WHEN 'Moldovan Super Liga'   THEN 0.11
+    -- World Cup players are elite; treat as top-tier
     WHEN 'FIFA World Cup'        THEN 1.00
-    ELSE 0.15
+    ELSE 0.30
   END
 """
 

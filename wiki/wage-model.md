@@ -46,35 +46,35 @@ The model is trained on top-5 EU data only. To correct the upward bias for other
 
 Multipliers represent the ratio of average wages relative to the top-5 EU baseline at equivalent market value. Sources: KPMG Football Benchmark, CIES Football Observatory, published salary press reports.
 
-| League | Multiplier | Notes |
-|---|---|---|
-| Premier League | 1.00 | Model baseline |
-| La Liga | 1.00 | Model baseline |
-| Bundesliga | 1.00 | Model baseline |
-| Serie A | 1.00 | Model baseline |
-| Ligue 1 | 1.00 | Model baseline |
-| 2. Bundesliga | 0.30 | Strong German second tier |
-| Eredivisie | 0.28 | Ajax/PSV inflate the average |
-| Turkish Süper Lig | 0.25 | Big clubs but wide spread |
-| Belgian Pro League | 0.22 | |
-| LaLiga2 | 0.20 | Zaragoza's primary competition |
-| Serie B | 0.18 | |
-| Liga Portugal | 0.18 | |
-| MLS | 0.18 | Variable — DPs skew average up |
-| J1 League | 0.16 | |
-| Austrian Bundesliga | 0.16 | |
-| Ligue 2 | 0.14 | |
-| Allsvenskan | 0.10 | |
-| Brasileirao Serie B | 0.10 | |
-| Korean K League 1 | 0.10 | |
-| Norwegian Eliteserien | 0.10 | |
-| Eerste Divisie | 0.08 | Netherlands D2 |
-| Romanian SuperLiga | 0.08 | |
-| 1RFEF | 0.07 | Spain 3rd tier |
-| Mozzart Bet Superliga | 0.06 | Serbia |
-| Moldovan Super Liga | 0.04 | |
+Multipliers are calibrated empirically: `target_avg_annual / raw_model_avg_annual` per league, where `raw_model_avg_annual` is the per-league average of the model's raw output and `target_avg_annual` comes from KPMG Football Benchmark, CIES Observatory, and SportPro salary reports (2025).
 
-These are approximations. Calibration is open (see Open items below).
+| League | Raw model avg (k€/yr) | Target avg (k€/yr) | Multiplier |
+|---|---|---|---|
+| Premier League | 3,316 | 3,316 | 1.00 — model baseline |
+| La Liga | 2,049 | 2,049 | 1.00 — model baseline |
+| Bundesliga | 2,050 | 2,050 | 1.00 — model baseline |
+| Serie A | 2,042 | 2,042 | 1.00 — model baseline |
+| Ligue 1 | 2,020 | 2,020 | 1.00 — model baseline |
+| 2. Bundesliga | 729 | ~600 | 0.82 |
+| Turkish Süper Lig | 1,010 | ~700 | 0.69 — Galatasaray/Fenerbahçe inflate average |
+| J1 League | 471 | ~300 | 0.64 — J1 pays well relative to market values |
+| MLS | 871 | ~400 | 0.46 — DP rule skews mean up |
+| Serie B | 663 | ~300 | 0.45 |
+| LaLiga2 | 676 | ~300 | 0.44 — Zaragoza's competition |
+| Eredivisie | 1,026 | ~400 | 0.39 |
+| Korean K League 1 | 391 | ~150 | 0.38 |
+| Austrian Bundesliga | 681 | ~250 | 0.37 |
+| Belgian Pro League | 997 | ~350 | 0.35 |
+| Allsvenskan | 564 | ~200 | 0.35 |
+| Norwegian Eliteserien | 642 | ~200 | 0.31 |
+| Ligue 2 | 655 | ~200 | 0.31 |
+| Romanian SuperLiga | 484 | ~150 | 0.31 |
+| Eerste Divisie | 388 | ~100 | 0.26 |
+| Brasileirao Serie B | 503 | ~120 | 0.24 |
+| 1RFEF | 325 | ~75 | 0.23 — Spain 3rd tier |
+| Liga Portugal | 1,162 | ~250 | 0.22 — raw skewed by Benfica/Porto/Sporting |
+| Mozzart Bet Superliga | 544 | ~100 | 0.18 — Serbia |
+| Moldovan Super Liga | 266 | ~30 | 0.11 |
 
 ## Limitations
 
