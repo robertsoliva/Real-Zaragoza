@@ -10,7 +10,7 @@ Technical execution layer for the Real Zaragoza data platform. You build what da
 
 Read in order before writing any code:
 
-1. **`pipeline/bq-schemas/`** — all four schema files. Know every column name and type before writing SQL.
+1. **`pipeline/dbt/models/sources.yml`** + **`pipeline/dbt/models/{bronze,silver,gold}/schema.yml`** — all column names and types. `pipeline/bq-schemas/` was deleted (superseded by dbt schemas).
 2. **`pipeline/cloud-run/scrapers/scraper_sofascore.py`** — understand what the scraper writes and how
 3. **`.claude/CLAUDE.md`** — project conventions
 4. **`next-actions.md`** — understand what's in-scope for this session
@@ -36,6 +36,7 @@ Do not guess at column names. If unsure, check the schema file.
 | `raw.sofascore_shots` | `match_date` (DAY) | `match_round` |
 | `raw.transfermarkt_players` | none | none |
 | `raw.capology_wages` | none | none |
+| `raw.bqml_wage_predictions` | none | none — append-only quarterly wage predictions |
 | `wc_2026.sofascore_*` | same structure | WC 2026 (tournament complete) |
 
 **Active leagues + season IDs:**
@@ -43,7 +44,7 @@ Do not guess at column names. If unsure, check the schema file.
 | League | `tournament_id` | Current season_id | Notes |
 |---|---|---|---|
 | LaLiga2 | 54 | 77558 (25/26) | ✅ in BQ |
-| 1RFEF | 17073 | 77727 (25/26) | ✅ both seasons in BQ (24-25 partial — only playoff rounds) |
+| 1RFEF | 17073 | 97382 (26/27) | ✅ 24-25 + 25-26 in BQ; 26-27 queued (PRIORITY 6); TM: E3G1+E3G2 |
 | Serie B | 53 | 79502 (25/26) | ✅ both seasons in BQ |
 | Ligue 2 | 182 | 77357 (25/26) | ✅ both seasons in BQ |
 | Romanian SuperLiga | 152 | 77312 (25/26) | ✅ both seasons in BQ |
@@ -87,15 +88,16 @@ Medallion architecture. dbt model definitions in `pipeline/dbt/models/{bronze,si
 - `team_stats` (key: team_id + match_id)
 - `shots` (key: shot_id)
 - `rz_squad` (key: player_id) — Zaragoza TM snapshot, derived from `raw.transfermarkt_players WHERE LOWER(club_name) LIKE '%zaragoza%'` (quarterly run)
-- `tm_players` (key: player_id + club_id + season_id) — multi-league TM (empty until quarterly run Oct 2026)
+- `tm_players` (key: player_id + club_id + season_id) — all 25 pipeline leagues including 1RFEF; next refresh Oct 1 2026
 - `capology_wages` (key: player_name + club_name + league_name) — loans excluded
+- `bqml_wages` (key: player_name) — latest quarterly BQML wage prediction per player; deduped from `raw.bqml_wage_predictions`
 
 **`gold`** — aggregated tables, always query these for analysis:
 - `fct_player_season_stats` — season totals + per-90, grain: player × team × league × season
 - `fct_team_season_stats` — team averages per season
 - `fct_rz_matches` — Zaragoza-only (team_id="2815"), W/D/L, venue, opponent
 - `agg_player_market_values` — TM market values per player × club × season (empty until quarterly run)
-- `agg_scouting_player_season` — **main scouting table**: SofaScore stats LEFT JOIN TM values + position
+- `agg_scouting_player_season` — **main scouting table**: SofaScore stats LEFT JOIN TM values + position + wage (COALESCE capology_actual / bqml_estimate; `wage_source` column indicates provenance)
 - `agg_rz_squad_finances` — Zaragoza squad from `silver.rz_squad` (populated by quarterly TM local run)
 - `agg_league_player_benchmarks` — P25/median/P75 stats by league × position (≥450 min)
 - `agg_tm_player_valuations` — all quarterly TM snapshots preserved (value history; empty until Oct 2026)

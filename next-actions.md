@@ -6,8 +6,8 @@ Forward-looking only — pending items by category. Completed items graduate to 
 
 ## Active
 
-- **SofaScore backfill (10 leagues)** — Eredivisie, Belgian Pro League, Liga Portugal, Bundesliga, 2. Bundesliga, Premier League, La Liga, Serie A, Ligue 1, + gap fills (J1, MLS, Serie B, Norwegian, Korean). ~21 seasons remaining, 6 slots/day. Expected completion ~2026-07-29.
-- **1RFEF 2026-27 season ID** — season_id=97382 confirmed. Queued at PRIORITY 6 in `sofascore_queue.txt`. Add to `run_weekly_sofascore.sh` once the season starts (Aug 2026).
+- **SofaScore backfill** — Eredivisie, Belgian Pro League, Liga Portugal, Bundesliga, 2. Bundesliga, Premier League, La Liga, Serie A, Ligue 1 + gap fills (J1, MLS, Serie B, Norwegian, Korean). ~5–10 seasons remaining as of 2026-07-26. Expected completion ~2026-07-30.
+- **1RFEF 2026-27** — season_id=97382 confirmed, queued at PRIORITY 6. Add to `run_weekly_sofascore.sh` when the season kicks off (Aug 2026).
 
 ---
 
@@ -20,8 +20,8 @@ Forward-looking only — pending items by category. Completed items graduate to 
 
 ## Infrastructure
 
-- **Transfermarkt quarterly run (Oct 1 2026)** — `rz-tm-scraper` Cloud Run Job is blocked by Cloudflare from GCP. Must run locally: `python pipeline/cloud-run/scrapers/scraper_transfermarkt_leagues.py` (or `bash pipeline/run_transfermarkt_leagues.sh`). Cloud Scheduler `rz-tm-scraper-quarterly` will fire but do nothing useful from GCP. Until a curl_cffi/local-proxy workaround is found, treat as a manual quarterly task.
-- **Wage model lower-league discount** — `ml.wage_regression` is trained on top-5 EU leagues only; predictions for LaLiga2/Serie B etc. are biased upward. Apply a post-prediction league-tier multiplier (e.g. LaLiga2 ≈ 35% of La Liga) once aggregate salary data per division is sourced. See `wiki/wage-model.md` open items.
+- **Transfermarkt quarterly run (Oct 1 2026)** — must run locally (GCP datacenter IPs blocked by Cloudflare). Run: `python pipeline/cloud-run/scrapers/scraper_transfermarkt_leagues.py`. Cloud Scheduler `rz-tm-scraper-quarterly` fires but does nothing useful from GCP.
+- **Wage multiplier calibration** — multipliers in `predict_wages.py` are based on 2025 published averages. Re-check after each TM quarterly run once more per-league salary data becomes available.
 
 ---
 
