@@ -40,6 +40,42 @@ The prediction job runs 1 day after the TM scrape so the model always trains on 
 
 ---
 
+## League multipliers
+
+The model is trained on top-5 EU data only. To correct the upward bias for other leagues, a per-league multiplier is applied post-prediction: `predicted_wage = raw_model_output × league_multiplier`. The raw (pre-multiplier) value is stored in `raw_predicted_wage_eur_weekly` for reference.
+
+Multipliers represent the ratio of average wages relative to the top-5 EU baseline at equivalent market value. Sources: KPMG Football Benchmark, CIES Football Observatory, published salary press reports.
+
+| League | Multiplier | Notes |
+|---|---|---|
+| Premier League | 1.00 | Model baseline |
+| La Liga | 1.00 | Model baseline |
+| Bundesliga | 1.00 | Model baseline |
+| Serie A | 1.00 | Model baseline |
+| Ligue 1 | 1.00 | Model baseline |
+| 2. Bundesliga | 0.30 | Strong German second tier |
+| Eredivisie | 0.28 | Ajax/PSV inflate the average |
+| Turkish Süper Lig | 0.25 | Big clubs but wide spread |
+| Belgian Pro League | 0.22 | |
+| LaLiga2 | 0.20 | Zaragoza's primary competition |
+| Serie B | 0.18 | |
+| Liga Portugal | 0.18 | |
+| MLS | 0.18 | Variable — DPs skew average up |
+| J1 League | 0.16 | |
+| Austrian Bundesliga | 0.16 | |
+| Ligue 2 | 0.14 | |
+| Allsvenskan | 0.10 | |
+| Brasileirao Serie B | 0.10 | |
+| Korean K League 1 | 0.10 | |
+| Norwegian Eliteserien | 0.10 | |
+| Eerste Divisie | 0.08 | Netherlands D2 |
+| Romanian SuperLiga | 0.08 | |
+| 1RFEF | 0.07 | Spain 3rd tier |
+| Mozzart Bet Superliga | 0.06 | Serbia |
+| Moldovan Super Liga | 0.04 | |
+
+These are approximations. Calibration is open (see Open items below).
+
 ## Limitations
 
 - **Top-5 EU data only in training.** The model has never seen a LaLiga2 or Serie B contract; it extrapolates based on market value. Lower-league predictions are systematically biased upward — a player worth €500k at a LaLiga2 club earns less per week than a €500k player at Real Madrid B.

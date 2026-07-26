@@ -60,4 +60,3 @@ LEFT JOIN {{ ref('silver_capology_wages') }} cap
  AND LOWER(TRIM(s.team_name))   = LOWER(TRIM(cap.club_name))
 LEFT JOIN {{ ref('silver_bqml_wages') }} pred
   ON LOWER(TRIM(s.player_name)) = LOWER(TRIM(pred.player_name))
- AND LOWER(TRIM(s.team_name))   = LOWER(TRIM(pred.club_name))
