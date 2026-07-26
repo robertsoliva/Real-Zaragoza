@@ -37,3 +37,4 @@ Dates are `YYYY-MM` (year-month of last edit). Update this table whenever a page
 ## What's not here yet
 
 Tracked in [`../next-actions.md`](../next-actions.md): season-by-season results view (depends on SofaScore backfills), player-level pages to replace the prose roster in `squad.md`, and open items across `current-situation.md`, `squad.md`, and `academy.md` flagged for follow-up once the summer window settles.
+- [website.md](./website.md) — Flask analytics site: Home, Squad, Calculator, Scouting page
