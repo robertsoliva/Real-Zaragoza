@@ -371,6 +371,10 @@ models:
         description: "Previous club from TM."
       - name: tm_club_id
         description: "Transfermarkt club identifier for this player's current club."
+      - name: wage_eur_weekly
+        description: "Reported gross weekly wage in EUR from Capology. NULL for players not in top-5 EU leagues or if name/club match fails."
+      - name: wage_eur_annual
+        description: "wage_eur_weekly × 52. NULL if no Capology match."
 
   - name: agg_rz_squad_finances
     description: "GRAIN: one row per player in the latest Zaragoza TM squad snapshot. Ordered by market_value_eur DESC. Use for contract planning and squad cost overview. Empty until quarterly TM run Oct 2026."

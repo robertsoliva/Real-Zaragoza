@@ -42,9 +42,14 @@ SELECT
   tm.height,
   tm.foot,
   tm.signed_from,
-  tm.club_id                                                                 AS tm_club_id
+  tm.club_id                                                                 AS tm_club_id,
+  cap.wage_eur_weekly,
+  cap.wage_eur_annual
 FROM {{ ref('fct_player_season_stats') }} s
 LEFT JOIN {{ ref('agg_player_market_values') }} tm
   ON LOWER(TRIM(s.player_name))  = LOWER(TRIM(tm.name))
  AND LOWER(TRIM(s.team_name))   = LOWER(TRIM(tm.club_name))
  AND CAST(s.season_id AS STRING) = CAST(tm.season_id AS STRING)
+LEFT JOIN {{ ref('silver_capology_wages') }} cap
+  ON LOWER(TRIM(s.player_name)) = LOWER(TRIM(cap.player_name))
+ AND LOWER(TRIM(s.team_name))   = LOWER(TRIM(cap.club_name))

@@ -10,7 +10,6 @@
 # See run_daily_wc26.sh — tournament_id=16, season_id=58210.
 # -------------------------------------------------------------------------
 # PRIORITY 0 — 1RFEF 2024-25 re-scrape (only ~100 matches loaded, expected ~380+)
-17073  64430  1RFEF_2024-25_retry
 # -------------------------------------------------------------------------
 # PRIORITY 1 — Remaining standard backfill (failed 2026-07-03 due to IP ban)
 # -------------------------------------------------------------------------
@@ -24,8 +23,6 @@
 # Liga Portugal: high relevance for Spanish football ecosystem
 # 2. Bundesliga: one of Europe's strongest 2nd divisions, rich player pool
 # -------------------------------------------------------------------------
-37   61666  Eredivisie_2024-25
-37   77012  Eredivisie_2025-26
 38   61459  BelgianProLeague_2024-25
 38   77040  BelgianProLeague_2025-26
 238  63670  LigaPortugal_2024-25
@@ -58,6 +55,7 @@
 34   77356  Ligue1_2025-26
 # -------------------------------------------------------------------------
 # PRIORITY 6 — Gap fills identified 2026-07-24
+17073  97382  1RFEF_2026-27
 196  87931  J1_2026-catchup
 242  86668  MLS_2026
 53   79502  SerieB_2025-26-catchup
