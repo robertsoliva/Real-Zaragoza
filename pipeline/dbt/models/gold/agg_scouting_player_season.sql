@@ -51,10 +51,17 @@ SELECT
     ELSE NULL
   END                                                                        AS wage_source
 FROM {{ ref('fct_player_season_stats') }} s
-LEFT JOIN {{ ref('agg_player_market_values') }} tm
-  ON LOWER(TRIM(s.player_name))  = LOWER(TRIM(tm.name))
- AND LOWER(TRIM(s.team_name))   = LOWER(TRIM(tm.club_name))
- AND CAST(s.season_id AS STRING) = CAST(tm.season_id AS STRING)
+LEFT JOIN (
+  SELECT *,
+    ROW_NUMBER() OVER (
+      PARTITION BY LOWER(TRIM(name)), LOWER(TRIM(club_name))
+      ORDER BY season_id DESC
+    ) AS _tm_rn
+  FROM {{ ref('agg_player_market_values') }}
+) tm
+  ON LOWER(TRIM(s.player_name)) = LOWER(TRIM(tm.name))
+ AND LOWER(TRIM(s.team_name))  = LOWER(TRIM(tm.club_name))
+ AND tm._tm_rn = 1
 LEFT JOIN {{ ref('silver_capology_wages') }} cap
   ON LOWER(TRIM(s.player_name)) = LOWER(TRIM(cap.player_name))
  AND LOWER(TRIM(s.team_name))   = LOWER(TRIM(cap.club_name))

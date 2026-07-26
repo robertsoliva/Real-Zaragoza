@@ -1,0 +1,426 @@
+{% extends "base.html" %}
+{% block title %}Scouting — RZ Analytics{% endblock %}
+{% block content %}
+
+<h1>Scouting</h1>
+<p style="margin-bottom: 2rem;">Select any player from the database and generate a full scouting report — stats, TM profile, wage estimate, and financial fit for Zaragoza's 2026-27 1RFEF campaign.</p>
+
+<div class="calc-layout">
+  <!-- Selector panel -->
+  <div class="calc-panel">
+    <label>Search player</label>
+    <input type="text" id="search" placeholder="Name or club…" autocomplete="off">
+
+    <label>Filter by league</label>
+    <select id="league-filter">
+      <option value="">All leagues</option>
+      {% set leagues = players | map(attribute='league_name') | unique | sort %}
+      {% for lg in leagues %}
+      <option value="{{ lg }}">{{ lg }}</option>
+      {% endfor %}
+    </select>
+
+    <label>Filter by position</label>
+    <select id="pos-filter">
+      <option value="">All positions</option>
+      <option value="G">Goalkeeper</option>
+      <option value="D">Defender</option>
+      <option value="M">Midfielder</option>
+      <option value="F">Forward</option>
+    </select>
+
+    <label>Player</label>
+    <select id="player-select" size="6" style="height:160px">
+      <option value="">— select a player —</option>
+      {% for p in players %}
+      <option
+        value="{{ p.player_name }}"
+        data-season="{{ p.season_id }}"
+        data-league="{{ p.league_name }}"
+        data-pos="{{ p.sofascore_position }}"
+        data-tm-pos="{{ p.position }}"
+        data-team="{{ p.team_name }}"
+        data-rating="{{ p.avg_rating }}"
+        data-age="{{ p.age or '' }}"
+        data-nat="{{ p.nationality or '' }}"
+        data-mv="{{ p.market_value_eur or '' }}"
+      >
+        {{ p.player_name }} · {{ p.team_name }} · {{ p.league_name }}
+      </option>
+      {% endfor %}
+    </select>
+
+    <div id="quick-info" class="quick-info" style="display:none">
+      <div class="qi-row"><span class="qi-label">Position</span><span id="qi-pos">—</span></div>
+      <div class="qi-row"><span class="qi-label">Age</span><span id="qi-age">—</span></div>
+      <div class="qi-row"><span class="qi-label">Nationality</span><span id="qi-nat">—</span></div>
+      <div class="qi-row"><span class="qi-label">Market value</span><span id="qi-mv">—</span></div>
+      <div class="qi-row"><span class="qi-label">Rating</span><span id="qi-rating">—</span></div>
+    </div>
+
+    <button class="btn-primary" id="scout-btn" disabled>Generate scouting report →</button>
+  </div>
+
+  <!-- Report panel -->
+  <div id="report-panel" class="result-panel calc-panel">
+    <div id="loading" class="loading" style="display:none">Generating scouting report… fetching stats and running analysis</div>
+
+    <div id="report-content" style="display:none">
+
+      <!-- Player header -->
+      <div class="scout-header">
+        <div>
+          <div id="sh-name" class="sh-name"></div>
+          <div id="sh-meta" class="sh-meta"></div>
+        </div>
+        <div id="sh-badges" class="sh-badges"></div>
+      </div>
+
+      <!-- Profile row -->
+      <div class="profile-grid">
+        <div class="pf-card">
+          <div class="pf-label">Nationality</div>
+          <div class="pf-val" id="pf-nat">—</div>
+        </div>
+        <div class="pf-card">
+          <div class="pf-label">Date of birth</div>
+          <div class="pf-val" id="pf-dob">—</div>
+        </div>
+        <div class="pf-card">
+          <div class="pf-label">Height · Foot</div>
+          <div class="pf-val" id="pf-phys">—</div>
+        </div>
+        <div class="pf-card">
+          <div class="pf-label">Previous club</div>
+          <div class="pf-val" id="pf-prev">—</div>
+        </div>
+      </div>
+
+      <!-- Market row -->
+      <div class="market-grid">
+        <div class="mk-card">
+          <div class="mk-label">Market value</div>
+          <div class="mk-val" id="mk-value">—</div>
+        </div>
+        <div class="mk-card">
+          <div class="mk-label">Contract expiry</div>
+          <div class="mk-val" id="mk-expiry">—</div>
+          <div class="mk-sub" id="mk-expiry-note"></div>
+        </div>
+        <div class="mk-card">
+          <div class="mk-label">Estimated wage</div>
+          <div class="mk-val" id="mk-wage">—</div>
+          <div class="mk-sub" id="mk-wage-source"></div>
+        </div>
+      </div>
+
+      <!-- Financial fit -->
+      <div class="fin-fit-section" id="fin-fit-box">
+        <div class="ff-header">
+          <span id="ff-dot" class="ff-dot"></span>
+          <span id="ff-label" class="ff-title">Financial fit</span>
+        </div>
+        <div class="ff-grid">
+          <div class="ff-item">
+            <div class="ff-item-label">Wage tier</div>
+            <div class="ff-item-val" id="ff-wage"></div>
+          </div>
+          <div class="ff-item">
+            <div class="ff-item-label">Transfer route</div>
+            <div class="ff-item-val" id="ff-transfer"></div>
+          </div>
+          <div class="ff-item">
+            <div class="ff-item-label">Age profile</div>
+            <div class="ff-item-val" id="ff-age"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats + benchmarks -->
+      <h2 style="margin-bottom:0.75rem;">Season stats</h2>
+      <div class="stat-section">
+        <div class="stat-group">
+          <div class="sg-title">Attacking</div>
+          <div class="sg-stats">
+            <div class="sg-stat">
+              <div class="sg-val" id="sg-goals">—</div>
+              <div class="sg-label">Goals/90</div>
+              <div class="sg-bar-wrap"><div class="sg-bar" id="sgb-goals"></div></div>
+            </div>
+            <div class="sg-stat">
+              <div class="sg-val" id="sg-assists">—</div>
+              <div class="sg-label">Assists/90</div>
+              <div class="sg-bar-wrap"><div class="sg-bar" id="sgb-assists"></div></div>
+            </div>
+            <div class="sg-stat">
+              <div class="sg-val" id="sg-shots">—</div>
+              <div class="sg-label">Shots/90</div>
+              <div class="sg-bar-wrap"><div class="sg-bar" id="sgb-shots"></div></div>
+            </div>
+            <div class="sg-stat">
+              <div class="sg-val" id="sg-xg">—</div>
+              <div class="sg-label">xG/match</div>
+              <div class="sg-bar-wrap"><div class="sg-bar" id="sgb-xg"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="stat-group">
+          <div class="sg-title">Passing</div>
+          <div class="sg-stats">
+            <div class="sg-stat">
+              <div class="sg-val" id="sg-kp">—</div>
+              <div class="sg-label">Key passes/90</div>
+              <div class="sg-bar-wrap"><div class="sg-bar" id="sgb-kp"></div></div>
+            </div>
+            <div class="sg-stat">
+              <div class="sg-val" id="sg-pass">—</div>
+              <div class="sg-label">Pass acc%</div>
+              <div class="sg-bar-wrap"><div class="sg-bar" id="sgb-pass"></div></div>
+            </div>
+            <div class="sg-stat">
+              <div class="sg-val" id="sg-touches">—</div>
+              <div class="sg-label">Touches/90</div>
+              <div class="sg-bar-wrap"><div class="sg-bar" id="sgb-touches"></div></div>
+            </div>
+            <div class="sg-stat">
+              <div class="sg-val" id="sg-rating">—</div>
+              <div class="sg-label">Avg rating</div>
+              <div class="sg-bar-wrap"><div class="sg-bar" id="sgb-rating"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="stat-group">
+          <div class="sg-title">Defensive</div>
+          <div class="sg-stats">
+            <div class="sg-stat">
+              <div class="sg-val" id="sg-duels">—</div>
+              <div class="sg-label">Duel win%</div>
+              <div class="sg-bar-wrap"><div class="sg-bar" id="sgb-duels"></div></div>
+            </div>
+            <div class="sg-stat">
+              <div class="sg-val" id="sg-aerial">—</div>
+              <div class="sg-label">Aerial win%</div>
+              <div class="sg-bar-wrap"><div class="sg-bar" id="sgb-aerial"></div></div>
+            </div>
+            <div class="sg-stat">
+              <div class="sg-val" id="sg-tackles">—</div>
+              <div class="sg-label">Tackles/90</div>
+              <div class="sg-bar-wrap"><div class="sg-bar" id="sgb-tackles"></div></div>
+            </div>
+            <div class="sg-stat">
+              <div class="sg-val" id="sg-int">—</div>
+              <div class="sg-label">Interceptions/90</div>
+              <div class="sg-bar-wrap"><div class="sg-bar" id="sgb-int"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="bench-note" class="bench-note" style="display:none"></div>
+
+      <!-- Scout verdict -->
+      <h2 style="margin-bottom:0.75rem;">Scout Verdict</h2>
+      <div class="narrative" id="narrative"></div>
+
+      <div class="report-meta" id="report-meta"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const searchEl   = document.getElementById('search');
+const lgFilter   = document.getElementById('league-filter');
+const posFilter  = document.getElementById('pos-filter');
+const selectEl   = document.getElementById('player-select');
+const scoutBtn   = document.getElementById('scout-btn');
+const reportPanel = document.getElementById('report-panel');
+const loadingEl  = document.getElementById('loading');
+const reportContent = document.getElementById('report-content');
+
+let allOptions = Array.from(selectEl.options).slice(1);
+
+function applyFilters() {
+  const q   = searchEl.value.toLowerCase();
+  const lg  = lgFilter.value;
+  const pos = posFilter.value;
+  Array.from(selectEl.options).forEach((opt, i) => {
+    if (i === 0) return;
+    const matchText = !q || opt.text.toLowerCase().includes(q);
+    const matchLg   = !lg  || opt.dataset.league === lg;
+    const matchPos  = !pos || opt.dataset.pos === pos;
+    opt.style.display = matchText && matchLg && matchPos ? '' : 'none';
+  });
+}
+
+searchEl.addEventListener('input', applyFilters);
+lgFilter.addEventListener('change', applyFilters);
+posFilter.addEventListener('change', applyFilters);
+
+function fmtMv(val) {
+  const n = parseFloat(val);
+  if (!n) return '—';
+  if (n >= 1000000) return `€${(n/1000000).toFixed(1)}M`;
+  if (n >= 1000) return `€${(n/1000).toFixed(0)}k`;
+  return `€${n}`;
+}
+
+function fmtWage(annual) {
+  if (!annual || annual === 0) return '—';
+  if (annual >= 1000000) return `€${(annual/1000000).toFixed(2)}M/yr`;
+  if (annual >= 1000) return `€${(annual/1000).toFixed(0)}k/yr`;
+  return `€${annual}/yr`;
+}
+
+selectEl.addEventListener('change', () => {
+  const opt = selectEl.selectedOptions[0];
+  if (!opt || !opt.value) { scoutBtn.disabled = true; return; }
+  scoutBtn.disabled = false;
+
+  const qi = document.getElementById('quick-info');
+  qi.style.display = 'block';
+  document.getElementById('qi-pos').textContent    = opt.dataset.tmPos || opt.dataset.pos || '—';
+  document.getElementById('qi-age').textContent    = opt.dataset.age || '—';
+  document.getElementById('qi-nat').textContent    = opt.dataset.nat || '—';
+  document.getElementById('qi-mv').textContent     = fmtMv(opt.dataset.mv);
+  document.getElementById('qi-rating').textContent = opt.dataset.rating ? parseFloat(opt.dataset.rating).toFixed(2) : '—';
+});
+
+function barPct(playerVal, benchVal, scale) {
+  if (!playerVal || !benchVal || benchVal === 0) return 0;
+  return Math.min((playerVal / (benchVal * scale)) * 50, 100);
+}
+
+function setBar(id, playerVal, benchVal, scale=2) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const pct = barPct(parseFloat(playerVal), parseFloat(benchVal), scale);
+  el.style.width = pct + '%';
+  el.classList.toggle('bar-above', pct > 50);
+}
+
+scoutBtn.addEventListener('click', async () => {
+  const opt = selectEl.selectedOptions[0];
+  if (!opt || !opt.value) return;
+
+  reportPanel.classList.add('visible');
+  loadingEl.style.display = 'block';
+  reportContent.style.display = 'none';
+  scoutBtn.disabled = true;
+
+  const res = await fetch('/api/scout', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      player_name: opt.value,
+      season_id:   opt.dataset.season,
+      league_name: opt.dataset.league,
+    })
+  });
+
+  const data = await res.json();
+  loadingEl.style.display = 'none';
+  scoutBtn.disabled = false;
+
+  if (data.error) {
+    reportContent.innerHTML = `<p style="color:var(--red)">${data.error}</p>`;
+    reportContent.style.display = 'block';
+    return;
+  }
+
+  const p  = data.player;
+  const b  = data.benchmarks;
+  const ff = data.financial_fit;
+
+  // Header
+  document.getElementById('sh-name').textContent = p.player_name;
+  document.getElementById('sh-meta').textContent =
+    `${p.tm_position || p.sofascore_position || '—'} · ${p.team_name} · ${p.league_name} · ${p.total_minutes} mins`;
+
+  const badges = document.getElementById('sh-badges');
+  badges.innerHTML = '';
+  if (p.matches) badges.innerHTML += `<span class="badge">${p.matches} apps</span>`;
+  if (p.avg_rating) badges.innerHTML += `<span class="badge badge-gold">${parseFloat(p.avg_rating).toFixed(2)} rating</span>`;
+
+  // Profile
+  document.getElementById('pf-nat').textContent  = [p.nationality, p.nationality_all && p.nationality_all !== p.nationality ? `(+${p.nationality_all})` : ''].filter(Boolean).join(' ') || '—';
+  document.getElementById('pf-dob').textContent  = p.date_of_birth ? `${p.date_of_birth} (${p.age || '—'} yrs)` : (p.age ? `${p.age} yrs` : '—');
+  document.getElementById('pf-phys').textContent = [p.height, p.foot].filter(Boolean).join(' · ') || '—';
+  document.getElementById('pf-prev').textContent = p.signed_from || '—';
+
+  // Market
+  document.getElementById('mk-value').textContent  = fmtMv(p.market_value_eur);
+  document.getElementById('mk-expiry').textContent = p.contract_expiry || '—';
+  const expNote = document.getElementById('mk-expiry-note');
+  if (ff.contract_months_remaining !== null && ff.contract_months_remaining !== undefined) {
+    const mo = ff.contract_months_remaining;
+    expNote.textContent = mo <= 0 ? 'Expired' : mo <= 6 ? `${mo}m remaining — near-free` : mo <= 13 ? `${mo}m remaining — expiring` : `${mo}m remaining`;
+    expNote.className = 'mk-sub ' + (mo <= 6 ? 'txt-green' : mo <= 13 ? 'txt-amber' : '');
+  } else {
+    expNote.textContent = '';
+  }
+
+  const wageEl = document.getElementById('mk-wage');
+  wageEl.textContent = fmtWage(ff.wage_annual) + (ff.wage_weekly > 0 ? ` (€${Math.round(ff.wage_weekly).toLocaleString()}/wk)` : '');
+  const srcEl = document.getElementById('mk-wage-source');
+  if (ff.wage_source === 'capology_actual') {
+    srcEl.textContent = 'Source: Capology (confirmed)';
+    srcEl.className = 'mk-sub txt-green';
+  } else if (ff.wage_source === 'bqml_estimate') {
+    srcEl.textContent = 'Source: BQML model estimate';
+    srcEl.className = 'mk-sub txt-amber';
+  } else {
+    srcEl.textContent = 'No wage data';
+    srcEl.className = 'mk-sub';
+  }
+
+  // Financial fit
+  const ffBox = document.getElementById('fin-fit-box');
+  ffBox.className = 'fin-fit-section ff-' + ff.overall;
+  document.getElementById('ff-dot').className  = 'ff-dot dot-' + ff.overall;
+  document.getElementById('ff-label').textContent = ff.overall_label;
+  document.getElementById('ff-wage').textContent    = ff.wage_label;
+  document.getElementById('ff-transfer').textContent = ff.transfer_label;
+  document.getElementById('ff-age').textContent     = ff.age_label;
+
+  // Stats
+  const stats = {
+    goals:   [p.goals_p90,          b.avg_goals_p90,     2.5],
+    assists: [p.assists_p90,        b.avg_assists_p90,   2.5],
+    shots:   [p.shots_p90,          b.avg_shots_p90,     2.0],
+    xg:      [p.avg_xg_per_match,   b.avg_xg_per_match,  2.5],
+    kp:      [p.key_passes_p90,     b.avg_key_passes_p90,2.0],
+    pass:    [p.pass_acc_pct,       b.avg_pass_acc_pct,  1.3],
+    touches: [p.touches_p90,        b.avg_touches_p90,   1.5],
+    rating:  [p.avg_rating,         b.avg_rating,        1.3],
+    duels:   [p.duel_win_pct,       b.avg_duel_win_pct,  1.3],
+    aerial:  [p.aerial_win_pct,     b.avg_aerial_win_pct,1.3],
+    tackles: [p.tackles_p90,        b.avg_tackles_p90,   2.0],
+    int:     [p.interceptions_p90,  b.avg_interceptions_p90,2.0],
+  };
+
+  for (const [key, [pv, bv, scale]] of Object.entries(stats)) {
+    const valEl = document.getElementById('sg-' + key);
+    if (valEl) valEl.textContent = pv != null ? parseFloat(pv).toFixed(2) : '—';
+    setBar('sgb-' + key, pv, bv, scale);
+  }
+
+  const benchNote = document.getElementById('bench-note');
+  if (b && b.league_name) {
+    benchNote.textContent = `Bars show performance relative to ${b.league_name} ${p.sofascore_position || ''} average (${b.player_count} players, ≥450 min). Gold = above average.`;
+    benchNote.style.display = 'block';
+  } else {
+    benchNote.style.display = 'none';
+  }
+
+  // Narrative
+  document.getElementById('narrative').textContent = data.narrative;
+
+  // Meta
+  document.getElementById('report-meta').textContent =
+    `Season ${p.season_id} · SofaScore ID ${p.sofascore_id || '—'}` +
+    (p.tm_player_id ? ` · TM ID ${p.tm_player_id}` : '');
+
+  reportContent.style.display = 'block';
+});
+</script>
+
+{% endblock %}

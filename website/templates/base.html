@@ -12,6 +12,7 @@
     <a href="/" {% if request.path == '/' %}class="active"{% endif %}>Home</a>
     <a href="/squad" {% if request.path == '/squad' %}class="active"{% endif %}>Squad</a>
     <a href="/calculator" {% if request.path == '/calculator' %}class="active"{% endif %}>Match Calculator</a>
+    <a href="/scouting" {% if request.path == '/scouting' %}class="active"{% endif %}>Scouting</a>
   </nav>
   <main>
     {% block content %}{% endblock %}

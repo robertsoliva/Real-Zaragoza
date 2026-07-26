@@ -21,6 +21,7 @@ Forward-looking only — pending items by category. Completed items graduate to 
 ## Infrastructure
 
 - **Transfermarkt quarterly run (Oct 1 2026)** — must run locally (GCP datacenter IPs blocked by Cloudflare). Run: `python pipeline/cloud-run/scrapers/scraper_transfermarkt_leagues.py`. Cloud Scheduler `rz-tm-scraper-quarterly` fires but does nothing useful from GCP.
+- **Fix TM scraper column offset bug (Oct 1 2026)** — some TM competition pages have 9 `td.zentriert` cells per player row instead of 8, shifting all columns after nationality by +1. Affects contract_expiry, foot, signed_from (NULL for LaLiga2, Serie B, 2.Bundesliga, Ligue 2, etc.). Height fix was applied in silver_tm_players.sql. The scraper needs column detection by type (regex/header-based) rather than fixed `stats[n::8]` offsets. Fix before the Oct quarterly run.
 - **Wage multiplier calibration** — multipliers in `predict_wages.py` are based on 2025 published averages. Re-check after each TM quarterly run once more per-league salary data becomes available.
 
 ---
@@ -37,7 +38,7 @@ Forward-looking only — pending items by category. Completed items graduate to 
 
 Local demo in `website/`. Launch with `bash website/start.sh` (requires `ANTHROPIC_API_KEY`).
 
-- **Squad cards** — update with 2026-27 confirmed signings (Hansson, Espiau, Herrera, González).
+- **Squad cards** — update with 2026-27 confirmed signings (Hansson, Espiau, Herrera, González). `silver.rz_squad` will be populated after Oct 1 TM quarterly run.
 - **Match results page** — from `gold.fct_rz_matches`.
 - **Player detail pages** — per-player stat breakdown from `gold.fct_player_season_stats`.
 - **League comparison views** — Zaragoza vs. LaLiga2 averages from `gold.agg_league_player_benchmarks`.
