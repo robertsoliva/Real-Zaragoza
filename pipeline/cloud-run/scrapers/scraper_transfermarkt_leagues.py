@@ -3,8 +3,10 @@ Real Zaragoza — multi-league Transfermarkt scraper.
 
 For each active pipeline league, discovers all clubs from the competition
 startseite page, then scrapes each club's /plus/1 squad page. Results are
-appended to raw.transfermarkt_players in BigQuery (separate from the
-single-club raw.transfermarkt_squad table).
+appended to raw.transfermarkt_players in BigQuery.
+
+Covers all 26 active SofaScore pipeline leagues. 1RFEF is split into 2 groups
+on TM (E3G1/E3G2) — both included here, both stored as league_name='1RFEF'.
 
 Usage:
     python scraper_transfermarkt_leagues.py               # all leagues
@@ -61,7 +63,10 @@ LEAGUES = [
     (35,    "L1",    "bundesliga",                  "Bundesliga",            2025),
     (23,    "IT1",   "serie-a",                     "Serie A",               2025),
     (34,    "FR1",   "ligue-1",                     "Ligue 1",               2025),
-    # 1RFEF (17073) intentionally excluded — too many teams for automated batch scrape
+    # 1RFEF: TM publishes Groups 1 and 2 only (20 teams each = 40 total).
+    # Both share SofaScore tournament_id=17073 and league_name="1RFEF".
+    (17073, "E3G1",  "primera-division-r-f-e-f-grupo-i",  "1RFEF",           2025),
+    (17073, "E3G2",  "primera-division-r-f-e-f-grupo-ii", "1RFEF",           2025),
 ]
 
 BASE_URL = "https://www.transfermarkt.es"
