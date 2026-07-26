@@ -504,3 +504,23 @@ models:
         description: "True if the player is currently active at this club per Capology."
       - name: ingested_date
         description: "Date this row was scraped."
+
+  - name: silver_bqml_wages
+    description: "GRAIN: one row per (player_name, club_name) — latest BQML wage prediction. Deduped from raw.bqml_wage_predictions by prediction_date DESC. Use wage_source in agg_scouting_player_season to distinguish actual vs estimated."
+    columns:
+      - name: player_name
+        description: "Player name from silver.tm_players."
+      - name: club_name
+        description: "Club name from silver.tm_players at prediction time."
+      - name: league_name
+        description: "League name from silver.tm_players at prediction time."
+      - name: tm_position
+        description: "Transfermarkt granular position (e.g. Centre-Back, Left Winger)."
+      - name: market_value_eur
+        description: "TM market value used as model input."
+      - name: predicted_wage_eur_weekly
+        description: "BQML linear_reg prediction: EXP(predicted log wage). Trained on Capology × TM top-5 EU data."
+      - name: predicted_wage_eur_annual
+        description: "predicted_wage_eur_weekly × 52."
+      - name: prediction_date
+        description: "Date the prediction was generated (quarterly)."

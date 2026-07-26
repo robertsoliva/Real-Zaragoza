@@ -43,8 +43,13 @@ SELECT
   tm.foot,
   tm.signed_from,
   tm.club_id                                                                 AS tm_club_id,
-  cap.wage_eur_weekly,
-  cap.wage_eur_annual
+  COALESCE(cap.wage_eur_weekly,  pred.predicted_wage_eur_weekly)            AS wage_eur_weekly,
+  COALESCE(cap.wage_eur_annual,  pred.predicted_wage_eur_annual)            AS wage_eur_annual,
+  CASE
+    WHEN cap.wage_eur_weekly         IS NOT NULL THEN 'capology_actual'
+    WHEN pred.predicted_wage_eur_weekly IS NOT NULL THEN 'bqml_estimate'
+    ELSE NULL
+  END                                                                        AS wage_source
 FROM {{ ref('fct_player_season_stats') }} s
 LEFT JOIN {{ ref('agg_player_market_values') }} tm
   ON LOWER(TRIM(s.player_name))  = LOWER(TRIM(tm.name))
@@ -53,3 +58,6 @@ LEFT JOIN {{ ref('agg_player_market_values') }} tm
 LEFT JOIN {{ ref('silver_capology_wages') }} cap
   ON LOWER(TRIM(s.player_name)) = LOWER(TRIM(cap.player_name))
  AND LOWER(TRIM(s.team_name))   = LOWER(TRIM(cap.club_name))
+LEFT JOIN {{ ref('silver_bqml_wages') }} pred
+  ON LOWER(TRIM(s.player_name)) = LOWER(TRIM(pred.player_name))
+ AND LOWER(TRIM(s.team_name))   = LOWER(TRIM(pred.club_name))

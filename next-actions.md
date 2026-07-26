@@ -21,7 +21,7 @@ Forward-looking only — pending items by category. Completed items graduate to 
 ## Infrastructure
 
 - **Transfermarkt quarterly run (Oct 1 2026)** — `rz-tm-scraper` Cloud Run Job is blocked by Cloudflare from GCP. Must run locally: `python pipeline/cloud-run/scrapers/scraper_transfermarkt_leagues.py` (or `bash pipeline/run_transfermarkt_leagues.sh`). Cloud Scheduler `rz-tm-scraper-quarterly` will fire but do nothing useful from GCP. Until a curl_cffi/local-proxy workaround is found, treat as a manual quarterly task.
-- **Cloud Monitoring alerts** — run `bash pipeline/cloud-run/setup_monitoring.sh` once to create email alerts for `rz-dbt-refresh`, `rz-capology-scraper`, `rz-tm-scraper` failures. Script ready; not yet executed.
+- **Wage model lower-league discount** — `ml.wage_regression` is trained on top-5 EU leagues only; predictions for LaLiga2/Serie B etc. are biased upward. Apply a post-prediction league-tier multiplier (e.g. LaLiga2 ≈ 35% of La Liga) once aggregate salary data per division is sourced. See `wiki/wage-model.md` open items.
 
 ---
 

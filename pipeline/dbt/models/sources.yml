@@ -17,6 +17,8 @@ sources:
         description: "Multi-league Transfermarkt player data (25 active leagues, 1RFEF excluded). Written by scraper_transfermarkt_leagues.py quarterly. Includes all clubs in each league, e.g. Zaragoza via LaLiga2."
       - name: capology_wages
         description: "Gross wages for ~2500 players across top 5 EU leagues. Written by scraper_capology.py quarterly."
+      - name: bqml_wage_predictions
+        description: "Append-only BQML wage predictions for all TM players. One row per player per quarterly run. Written by rz-wage-predictor Cloud Run Job."
 
   - name: wc_2026
     database: real-zaragoza-500608
