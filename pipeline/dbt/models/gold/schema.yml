@@ -1,6 +1,37 @@
 version: 2
 
 models:
+  - name: agg_player_profiles
+    description: "GRAIN: one row per (sofascore_id, team_name, tournament_id, season_id) — player archetype cluster assignment. Scored by 7 BQML k-means models (ml.player_cluster_<cb|fb|dm|cm|cam|winger|cf>), one per position group, trained on ml.player_profile_features (MICE-imputed, TM-granular-position-labeled player-seasons, >=450 min). k per group chosen via BQML hyperparameter tuning (Davies-Bouldin), not pre-defined. profile_label is hand-assigned from ML.CENTROIDS() output. SCOPE: only players with a real TM granular position match — SofaScore-only players (broad D/M/F/G fallback) are not covered (ambiguous which of DM/CM/CAM a broad 'M' code maps to). CLUSTER BY position_group, season_id."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [sofascore_id, team_name, tournament_id, season_id]
+    columns:
+      - name: sofascore_id
+        description: "SofaScore player_id."
+        tests:
+          - not_null
+      - name: player_name
+        description: "Player name from SofaScore."
+      - name: team_name
+        description: "Club name for this season stint."
+      - name: league_name
+        description: "Human-readable league name."
+      - name: tournament_id
+        description: "SofaScore competition identifier."
+      - name: season_id
+        description: "SofaScore season identifier."
+      - name: position_group
+        description: "One of CB, FB, DM, CM, CAM, Winger, CF — mapped from TM's granular Spanish position label."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['CB', 'FB', 'DM', 'CM', 'CAM', 'Winger', 'CF']
+      - name: cluster_id
+        description: "Centroid ID from the position group's k-means model (1..k). Not comparable across position groups — cluster_id=2 in CB and cluster_id=2 in CF are unrelated."
+      - name: profile_label
+        description: "Human-readable archetype name, hand-assigned from centroid inspection (e.g. 'Elite Clinical Finisher', 'Ball-Winning DM')."
+
   - name: fct_player_season_stats
     description: "GRAIN: one row per (player_id, team_name, league_name, dataset_source, tournament_id, season_id) — season totals and per-90 rates. FILTER: minutes_played > 0. Primary scouting query target. CLUSTER BY league_name, season_id, primary_position."
     tests:

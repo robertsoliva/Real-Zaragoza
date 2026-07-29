@@ -13,13 +13,12 @@ Forward-looking only — pending items by category. Completed items graduate to 
 
 ## Sporting analysis
 
-- **Player profile clustering** — K-means clustering to define player archetypes within each position. Agreed design:
-  - **Segmentation:** TM position (granular: CB, FB, DM, CM, CAM, Winger, CF) — not SofaScore's broad F/M/D codes. Train only on players with TM position + ≥450 min; apply to SofaScore-only players using SofaScore position as fallback.
-  - **Models:** One BQML k-means per position group (7 models). Train in BQ so labels can be applied via SQL.
-  - **k:** Do NOT pre-define. For each position, run k=2 through k=8 and use elbow + silhouette score to find the optimal k empirically. Name clusters after inspecting centroids (`ML.CENTROIDS()`).
-  - **Features:** Position-specific (e.g. Winger: shots_p90, key_passes_p90, cross_acc_pct, tackles_p90, touches_p90; CF: goals_p90, shots_p90, aerial_win_pct, key_passes_p90, touches_p90, tackles_p90; CB: aerial_win_pct, duel_win_pct, tackles_p90, interceptions_p90, pass_acc_pct, long_ball_acc_pct).
-  - **NULL handling:** MICE imputation (sklearn `IterativeImputer`) — predicts missing stats from correlated features within the same position group. Run in Python, write imputed dataset back to BQ, then train BQML on the clean table.
-  - **Output:** `gold.agg_player_profiles` (player_name, team_name, season_id, position_group, cluster_id, profile_label). Join to `gold.agg_scouting_player_season` for use in scouting reports and website.
+- **Player profile clustering — extend coverage to SofaScore-only players** — `gold.agg_player_profiles` (built 2026-07-29) only covers the ~7k player-seasons with a real TM granular position match. Players with just a broad SofaScore D/M/F/G code aren't scored — there's no safe way to pick a single position group for them (a broad "M" could be DM, CM, or CAM, each scored on different features). Needs a real design decision (e.g. a secondary lightweight classifier D/M/F → 7-group, or just accept the coverage gap) before extending.
+- **Player profile clustering — retrain cadence** — deliberately NOT part of the daily `rz-dbt-refresh` run (`agg_player_profiles` is tagged `player_clustering` and excluded via `--exclude tag:player_clustering` in the Cloud Run job's dbt command, so it's static between manual retrains, not recomputed daily for no reason). Retrain manually every 6-12 months, or opportunistically after a TM quarterly scrape:
+  1. `python3 pipeline/cloud-run/player-clustering/impute_player_features.py` (rebuilds `ml.player_profile_features` from current data)
+  2. `python3 pipeline/cloud-run/player-clustering/train_cluster_models.py` (retrains the 7 k-means models)
+  3. `gcloud run jobs execute rz-dbt-refresh --region=europe-west1 --command=dbt --args=run,--select,tag:player_clustering,--profiles-dir,.,--project-dir,. --wait` (rebuilds just `gold.agg_player_profiles`, reusing the deployed image — no new infra needed)
+- **Player profile clustering — wire into scouting/website** — join `gold.agg_player_profiles` to `gold.agg_scouting_player_season` (on sofascore_id + team_name + tournament_id + season_id) so archetype labels show up in scouting reports and the website scouting page.
 - **LaLiga2 2025-26 squad benchmarks** — produce team style profiles for all LaLiga2 2025-26 sides (`gold.fct_team_season_stats`). Useful for pre-season opponent analysis.
 - **Match outcome model** — predict Zaragoza fixtures using historical form, opponent stats, home/away patterns. Feature set ready in `gold.fct_rz_matches` + `gold.fct_team_season_stats`. Approach TBD (logistic regression / xG-based).
 
