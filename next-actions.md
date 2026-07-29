@@ -13,6 +13,13 @@ Forward-looking only — pending items by category. Completed items graduate to 
 
 ## Sporting analysis
 
+- **Player profile clustering** — K-means clustering to define player archetypes within each position. Agreed design:
+  - **Segmentation:** TM position (granular: CB, FB, DM, CM, CAM, Winger, CF) — not SofaScore's broad F/M/D codes. Train only on players with TM position + ≥450 min; apply to SofaScore-only players using SofaScore position as fallback.
+  - **Models:** One BQML k-means per position group (7 models). Train in BQ so labels can be applied via SQL.
+  - **k:** Do NOT pre-define. For each position, run k=2 through k=8 and use elbow + silhouette score to find the optimal k empirically. Name clusters after inspecting centroids (`ML.CENTROIDS()`).
+  - **Features:** Position-specific (e.g. Winger: shots_p90, key_passes_p90, cross_acc_pct, tackles_p90, touches_p90; CF: goals_p90, shots_p90, aerial_win_pct, key_passes_p90, touches_p90, tackles_p90; CB: aerial_win_pct, duel_win_pct, tackles_p90, interceptions_p90, pass_acc_pct, long_ball_acc_pct).
+  - **NULL handling:** MICE imputation (sklearn `IterativeImputer`) — predicts missing stats from correlated features within the same position group. Run in Python, write imputed dataset back to BQ, then train BQML on the clean table.
+  - **Output:** `gold.agg_player_profiles` (player_name, team_name, season_id, position_group, cluster_id, profile_label). Join to `gold.agg_scouting_player_season` for use in scouting reports and website.
 - **LaLiga2 2025-26 squad benchmarks** — produce team style profiles for all LaLiga2 2025-26 sides (`gold.fct_team_season_stats`). Useful for pre-season opponent analysis.
 - **Match outcome model** — predict Zaragoza fixtures using historical form, opponent stats, home/away patterns. Feature set ready in `gold.fct_rz_matches` + `gold.fct_team_season_stats`. Approach TBD (logistic regression / xG-based).
 

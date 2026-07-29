@@ -11,6 +11,7 @@ set -euo pipefail
 BUCKET="gs://rz-raw-backups"
 DATE=$(date +%Y-%m-%d)
 PROJECT="real-zaragoza-500608"
+BQ=/opt/homebrew/bin/bq
 
 TABLES=(
     "raw.sofascore_matches"
@@ -33,7 +34,7 @@ for full_table in "${TABLES[@]}"; do
     table=$(echo "$full_table" | cut -d. -f2)
     dest="$BUCKET/$DATE/$dataset/$table/*.parquet"
     echo "  $full_table → $dest"
-    bq extract \
+    $BQ extract \
         --project_id="$PROJECT" \
         --destination_format=PARQUET \
         --compression=SNAPPY \

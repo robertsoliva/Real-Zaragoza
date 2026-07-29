@@ -23,11 +23,6 @@
 # Liga Portugal: high relevance for Spanish football ecosystem
 # 2. Bundesliga: one of Europe's strongest 2nd divisions, rich player pool
 # -------------------------------------------------------------------------
-38   61459  BelgianProLeague_2024-25
-38   77040  BelgianProLeague_2025-26
-238  63670  LigaPortugal_2024-25
-238  77806  LigaPortugal_2025-26
-35   63516  Bundesliga_2024-25
 35   77333  Bundesliga_2025-26
 44   63514  2Bundesliga_2024-25
 44   77354  2Bundesliga_2025-26

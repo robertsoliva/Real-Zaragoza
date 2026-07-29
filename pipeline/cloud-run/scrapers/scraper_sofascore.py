@@ -88,6 +88,7 @@ LOCAL_DIR = Path(__file__).parents[3] / "data" / "raw" / "sofascore"
 REQUEST_DELAY    = 5.0   # seconds between match-level API calls (3 endpoints per match)
 ROUND_DELAY      = 20.0  # seconds between rounds (longer pause to avoid IP blocks)
 INCREMENTAL_DAYS = 14
+MAX_CUP_EVENTS   = 50    # safety cap: cuptrees for league seasons can return thousands of IDs
 
 
 # ---------------------------------------------------------------------------
@@ -636,13 +637,21 @@ async def run_scrape() -> None:
                         cup_event_ids.extend(block.get("events") or [])
 
             if cup_event_ids:
-                log.info(f"Cup bracket: {len(cup_event_ids)} events to check")
+                log.info(f"Cup bracket: {len(cup_event_ids)} events found")
+                if len(cup_event_ids) > MAX_CUP_EVENTS:
+                    log.warning(
+                        f"Cup bracket has {len(cup_event_ids)} events (>{MAX_CUP_EVENTS}) — "
+                        f"looks like a full-season tree, not a real playoff. Skipping."
+                    )
+                    cup_event_ids = []
+
                 cup_matches: list[dict] = []
                 cup_players: list[dict] = []
                 cup_shots:   list[dict] = []
                 cup_teams:   list[dict] = []
 
                 for eid in cup_event_ids:
+                    await asyncio.sleep(random.uniform(REQUEST_DELAY * 0.8, REQUEST_DELAY * 1.2))
                     event_data = await client.get(f"/api/v1/event/{eid}")
                     event = (event_data or {}).get("event") or {}
                     if not event:
