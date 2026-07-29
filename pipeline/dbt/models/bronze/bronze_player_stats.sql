@@ -1,7 +1,8 @@
 {{ config(alias='player_stats') }}
 
 SELECT
-  match_id, player_id, match_date, match_round, tournament_id, season_id, league_name,
+  match_id, player_id, match_date, match_round, tournament_id, season_id,
+  CASE tournament_id WHEN '35' THEN 'Bundesliga' WHEN '44' THEN '2. Bundesliga' ELSE league_name END AS league_name,
   player_name, team_id, team_name, is_home, position, shirt_number, is_substitute, captain,
   minutes_played, goals, goal_assists, rating, total_passes, accurate_passes,
   total_long_balls, accurate_long_balls, total_crosses, accurate_crosses, key_passes,
@@ -15,7 +16,8 @@ FROM {{ source('raw', 'sofascore_player_match_stats') }}
 UNION ALL
 
 SELECT
-  match_id, player_id, match_date, match_round, tournament_id, season_id, league_name,
+  match_id, player_id, match_date, match_round, tournament_id, season_id,
+  CASE tournament_id WHEN '35' THEN 'Bundesliga' WHEN '44' THEN '2. Bundesliga' ELSE league_name END AS league_name,
   player_name, team_id, team_name, is_home, position, shirt_number, is_substitute, captain,
   minutes_played, goals, goal_assists, rating, total_passes, accurate_passes,
   total_long_balls, accurate_long_balls, total_crosses, accurate_crosses, key_passes,

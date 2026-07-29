@@ -5,9 +5,14 @@ config-version: 2
 profile: real_zaragoza
 
 model-paths: ["models"]
+seed-paths: ["seeds"]
 macro-paths: ["macros"]
 target-path: "target"
 clean-targets: ["target", "dbt_packages"]
+
+seeds:
+  real_zaragoza:
+    +schema: silver
 
 models:
   real_zaragoza:

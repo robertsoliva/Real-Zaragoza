@@ -1,0 +1,22 @@
+version: 2
+
+seeds:
+  - name: club_name_aliases
+    description: "SofaScore team_name -> Transfermarkt club_name lookup, scoped by league_name. Built by fuzzy-matching (rapidfuzz) + manual review to bridge naming differences between SofaScore and TM's Spanish-language site (translated names, prefix/suffix drift, e.g. 'FC Bayern München' -> 'Bayern Múnich'). Only confident matches (exact, accent-normalized, fuzzy score >=90, or manually confirmed) are included — ambiguous/rejected candidates are omitted rather than risking a false join. Rebuild by rerunning the alias script when new leagues or seasons are added."
+    columns:
+      - name: sofascore_team_name
+        description: "Team name as it appears in gold.fct_player_season_stats."
+        tests:
+          - not_null
+      - name: league_name
+        description: "League scope for the match (matching is restricted within a league to avoid cross-league false positives)."
+        tests:
+          - not_null
+      - name: tm_club_name
+        description: "Corresponding club_name in gold.agg_player_market_values."
+        tests:
+          - not_null
+      - name: match_score
+        description: "rapidfuzz WRatio score (0-100), or 100 for exact/manual matches."
+      - name: match_method
+        description: "How the match was derived: exact, normalized, fuzzy_auto (score>=90), or manual_confirm (hand-reviewed)."

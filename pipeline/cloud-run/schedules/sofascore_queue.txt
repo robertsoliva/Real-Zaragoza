@@ -23,9 +23,6 @@
 # Liga Portugal: high relevance for Spanish football ecosystem
 # 2. Bundesliga: one of Europe's strongest 2nd divisions, rich player pool
 # -------------------------------------------------------------------------
-35   77333  Bundesliga_2025-26
-44   63514  2Bundesliga_2024-25
-44   77354  2Bundesliga_2025-26
 # -------------------------------------------------------------------------
 # PRIORITY 5 — Gap fills identified 2026-07-24
 # J1 2026: data stops 2026-05-24 (~2 month gap). Re-scrape full season to fill.

@@ -2,7 +2,7 @@
     materialized='incremental',
     unique_key='tournament_id',
     incremental_strategy='merge',
-    merge_update_columns=['tournament_id']
+    merge_update_columns=['league_name', 'country']
 ) }}
 
 WITH leagues AS (
@@ -42,7 +42,3 @@ WITH leagues AS (
   FROM {{ ref('silver_matches') }}
 )
 SELECT * FROM leagues
-
-{% if is_incremental() %}
-  WHERE tournament_id NOT IN (SELECT tournament_id FROM {{ this }})
-{% endif %}
