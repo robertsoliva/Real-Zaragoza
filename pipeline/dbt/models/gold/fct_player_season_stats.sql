@@ -1,7 +1,8 @@
 {{ config(cluster_by=['league_name', 'season_id', 'primary_position']) }}
 
 SELECT
-  player_id, player_name,
+  player_id,
+  ANY_VALUE(player_name)                                                                      AS player_name,
   ANY_VALUE(position)                                                                         AS primary_position,
   team_name, league_name, dataset_source, tournament_id, season_id,
   COUNT(DISTINCT match_id)                                                                    AS matches,
@@ -47,4 +48,4 @@ SELECT
   ROUND(SUM(yellow_cards)  / NULLIF(SUM(minutes_played), 0) * 90, 3)                         AS yellows_p90
 FROM {{ ref('silver_player_stats') }}
 WHERE minutes_played IS NOT NULL AND minutes_played > 0
-GROUP BY player_id, player_name, team_name, league_name, dataset_source, tournament_id, season_id
+GROUP BY player_id, team_name, league_name, dataset_source, tournament_id, season_id

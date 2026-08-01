@@ -1,11 +1,23 @@
+# Default target is `dev`, deliberately -- a bare `dbt run`/`dbt build` with no
+# --target flag should never touch production tables by accident. The rz-dbt-refresh
+# Cloud Run Job (the only thing that should ever write to prod) always passes
+# --target prod explicitly; see run_with_lock.py.
 real_zaragoza:
-  target: prod
+  target: dev
   outputs:
     prod:
       type: bigquery
       method: oauth
       project: real-zaragoza-500608
       dataset: bronze
+      location: europe-west1
+      threads: 4
+      timeout_seconds: 300
+    dev:
+      type: bigquery
+      method: oauth
+      project: real-zaragoza-500608
+      dataset: dev_bronze
       location: europe-west1
       threads: 4
       timeout_seconds: 300

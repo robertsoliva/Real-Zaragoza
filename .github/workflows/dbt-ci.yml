@@ -1,0 +1,44 @@
+name: dbt CI (dev)
+
+# Runs on every PR that touches the dbt project: builds + tests the full project
+# against dev_bronze/dev_silver/dev_gold (never prod). This is the review gate --
+# a PR with a red check here has a real, demonstrated problem (see the 2026-08-01
+# commit that fixed a live duplicate-row bug this exact workflow would have caught
+# before merge).
+
+on:
+  pull_request:
+    paths:
+      - "pipeline/dbt/**"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  id-token: write # required for Workload Identity Federation auth to GCP
+
+jobs:
+  dbt-build-dev:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
+          service_account: ${{ vars.WIF_SERVICE_ACCOUNT }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dbt
+        run: pip install dbt-bigquery==1.12.0
+
+      - name: dbt deps
+        working-directory: pipeline/dbt
+        run: dbt deps --profiles-dir . --project-dir .
+
+      - name: dbt build --target dev
+        working-directory: pipeline/dbt
+        run: dbt build --profiles-dir . --project-dir . --target dev --exclude tag:player_clustering

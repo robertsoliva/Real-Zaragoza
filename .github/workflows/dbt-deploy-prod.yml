@@ -1,0 +1,52 @@
+name: Deploy dbt to prod (manual)
+
+# The ONLY path that's supposed to push code changes to production BigQuery tables.
+# Deliberately workflow_dispatch-only -- never fires automatically on push/merge to
+# main, so promotion to prod always requires Robert to manually click "Run workflow"
+# in the GitHub Actions UI and type the confirmation phrase below.
+#
+# What this actually does: rebuilds the rz-dbt-refresh Cloud Run image from the
+# current main branch (same `gcloud builds submit` Robert has been running by hand)
+# and executes the job once immediately, so the change is live right away instead
+# of waiting for the next scheduled refresh. The GitHub Actions service account
+# never touches prod BigQuery tables directly -- it can only ask Cloud Build to
+# rebuild an image and ask Cloud Run to execute the already-existing job, which
+# runs under its own separate identity. See next-actions.md for the IAM setup this
+# depends on.
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "deploy" to rebuild rz-dbt-refresh and run it against production BigQuery'
+        required: true
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy-prod:
+    runs-on: ubuntu-latest
+    if: github.event.inputs.confirm == 'deploy'
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
+          service_account: ${{ vars.WIF_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Rebuild rz-dbt-refresh image
+        run: |
+          gcloud builds submit . \
+            --config pipeline/cloud-run/dbt-refresh/cloudbuild.yaml \
+            --project=real-zaragoza-500608
+
+      - name: Execute rz-dbt-refresh against prod
+        run: |
+          gcloud run jobs execute rz-dbt-refresh \
+            --region=europe-west1 --project=real-zaragoza-500608 --wait

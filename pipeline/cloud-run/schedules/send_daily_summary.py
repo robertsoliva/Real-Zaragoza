@@ -28,6 +28,16 @@ TM_MATCH_PROJECT = "real-zaragoza-500608"
 TM_MATCH_REGRESSION_THRESHOLD_PP = 5.0  # flag a league if its match % drops more than this below baseline
 TM_MATCH_MIN_SAMPLE = 20                # ignore leagues too small to be a meaningful signal
 
+# Quarterly-snapshot raw tables: unlike SofaScore (continuously incremental), these
+# are a single point-in-time snapshot per run -- if a quarterly job silently fails,
+# the whole table sits frozen for a full quarter with no other symptom. table -> (date
+# column, max age in days before flagging; ~1 quarter + grace, jobs run 1-2 days apart).
+QUARTERLY_FRESHNESS_TABLES = {
+    "raw.transfermarkt_players":   ("ingested_date", 100),
+    "raw.capology_wages":          ("ingested_date", 100),
+    "raw.bqml_wage_predictions":   ("prediction_date", 100),
+}
+
 SLOT_ORDER = ["midnight", "4am", "8am", "noon", "4pm", "8pm"]
 
 
@@ -157,6 +167,30 @@ def check_tm_match_quality() -> dict:
     return {"regressions": sorted(regressions, key=lambda r: -r["drop_pp"])}
 
 
+def check_quarterly_freshness() -> dict:
+    """Flag quarterly-snapshot raw tables (TM, Capology, wage predictions) that
+    haven't been refreshed within their expected cadence. Fails soft on any error
+    (never blocks the rest of the digest)."""
+    try:
+        from google.cloud import bigquery
+        client = bigquery.Client(project=TM_MATCH_PROJECT)
+        stale = []
+        for table, (date_col, max_days) in QUARTERLY_FRESHNESS_TABLES.items():
+            row = list(client.query(
+                f"SELECT MAX({date_col}) AS latest FROM `{TM_MATCH_PROJECT}.{table}`"
+            ).result())[0]
+            latest = row.latest
+            if latest is None:
+                stale.append({"table": table, "latest": None, "days_since": None})
+                continue
+            days_since = (date.today() - latest).days
+            if days_since > max_days:
+                stale.append({"table": table, "latest": latest.isoformat(), "days_since": days_since})
+        return {"stale": stale}
+    except Exception as e:
+        return {"error": str(e)}
+
+
 def get_remaining_queue() -> list[tuple]:
     entries = []
     with open(QUEUE_FILE) as f:
@@ -170,7 +204,8 @@ def get_remaining_queue() -> list[tuple]:
     return entries
 
 
-def format_body(runs: list[dict], remaining: list[tuple], tm_match: dict | None = None) -> str:
+def format_body(runs: list[dict], remaining: list[tuple], tm_match: dict | None = None,
+                 freshness: dict | None = None) -> str:
     today = date.today().strftime("%Y-%m-%d")
     lines = [f"SofaScore backfill — {today}", "=" * 48, ""]
 
@@ -217,6 +252,20 @@ def format_body(runs: list[dict], remaining: list[tuple], tm_match: dict | None 
         else:
             lines.append("TM MATCH-QUALITY CHECK  ✅  no league regressed beyond threshold")
 
+    if freshness is not None:
+        lines.append("")
+        if "error" in freshness:
+            lines.append(f"QUARTERLY FRESHNESS CHECK  ⚠️  skipped ({freshness['error']})")
+        elif freshness["stale"]:
+            lines.append(f"QUARTERLY FRESHNESS CHECK  ⚠️  {len(freshness['stale'])} table(s) overdue\n")
+            for s in freshness["stale"]:
+                if s["latest"] is None:
+                    lines.append(f"  ⚠️  {s['table']:<28s}  never populated")
+                else:
+                    lines.append(f"  ⚠️  {s['table']:<28s}  last updated {s['latest']} ({s['days_since']}d ago)")
+        else:
+            lines.append("QUARTERLY FRESHNESS CHECK  ✅  TM / Capology / wage predictions all within cadence")
+
     return "\n".join(lines)
 
 
@@ -237,6 +286,7 @@ def main() -> None:
     runs = parse_slot_logs()
     remaining = get_remaining_queue()
     tm_match = check_tm_match_quality()
+    freshness = check_quarterly_freshness()
 
     today = date.today().strftime("%Y-%m-%d")
     n_ok = sum(1 for r in runs if r["success"])
@@ -247,6 +297,8 @@ def main() -> None:
         subject_flags.append(f"{n_fail} FAILED")
     if tm_match.get("regressions"):
         subject_flags.append(f"{len(tm_match['regressions'])} TM regression(s)")
+    if freshness.get("stale"):
+        subject_flags.append(f"{len(freshness['stale'])} stale table(s)")
     flag_str = f", {', '.join(subject_flags)}" if subject_flags else ""
 
     if runs:
@@ -254,7 +306,7 @@ def main() -> None:
     else:
         subject = f"[RZ] {today} — no runs{flag_str} | {len(remaining)} in queue"
 
-    body = format_body(runs, remaining, tm_match)
+    body = format_body(runs, remaining, tm_match, freshness)
     send_email(subject, body, config)
     print(f"Sent: {subject}")
 
