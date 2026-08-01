@@ -1,368 +1,368 @@
-sofascore_team_name,league_name,tm_club_name,match_score,match_method
-1. FC Heidenheim,Bundesliga,1.FC Heidenheim 1846,95.0,fuzzy_auto
-1. FC Kaiserslautern,2. Bundesliga,1.FC Kaiserslautern,99,normalized
-1. FC Köln,2. Bundesliga,FC Colonia,100,manual_confirm
-1. FC Köln,Bundesliga,FC Colonia,100,manual_confirm
-1. FC Magdeburg,2. Bundesliga,1.FC Magdeburg,99,normalized
-1. FC Nürnberg,2. Bundesliga,1. FC Núremberg​,100,manual_confirm
-1. FC Union Berlin,Bundesliga,1.FC Unión Berlín,99,normalized
-1. FSV Mainz 05,Bundesliga,1.FSV Mainz 05,99,normalized
-AD Alcorcón,1RFEF,AD Alcorcón,100,exact
-AD Ceuta,LaLiga2,AD Ceuta FC,99,normalized
-ADO Den Haag,Eerste Divisie,ADO Den Haag,100,exact
-AFC Ajax,Eredivisie,Ajax de Ámsterdam,90.0,fuzzy_auto
-AFC Unirea 04 Slobozia,Romanian SuperLiga,AFC Unirea 04 Slobozia,100,exact
-AIK,Allsvenskan,AIK,100,exact
-AVS - Futebol SAD,Liga Portugal,Avs Futebol,95.0,fuzzy_auto
-AZ Alkmaar,Eredivisie,AZ Alkmaar,100,exact
-Alanyaspor,Turkish Süper Lig,Alanyaspor,100,exact
-Albacete Balompié,LaLiga2,Albacete Balompié,100,exact
-Algeciras CF,1RFEF,Algeciras CF,100,exact
-Almere City FC,Eerste Divisie,Almere City FC,100,exact
-Almería,LaLiga2,UD Almería,99,normalized
-Amazonas FC,Brasileirao Serie B,Amazonas FC,100,exact
-Amiens SC,Ligue 2,Amiens SC,100,exact
-América Mineiro,Brasileirao Serie B,América Futebol Clube (MG),100,manual_confirm
-Annecy FC,Ligue 2,FC Annecy,99,normalized
-Antalyaspor,Turkish Süper Lig,Antalyaspor,100,exact
-Antequera,1RFEF,Antequera CF,99,normalized
-Arenas Club,1RFEF,Arenas Club,100,exact
-Athletic Club,Brasileirao Serie B,Athletic Club,100,exact
-Athletic Club B U21,1RFEF,Bilbao Athletic,90.0,fuzzy_auto
-Athletico,Brasileirao Serie B,Athletic Club,94.1,fuzzy_auto
-Atlético Goianiense,Brasileirao Serie B,Atlético Clube Goianiense,90.0,fuzzy_auto
-Atlético Madrileño,1RFEF,Atlético Madrileño,100,exact
-Atlético Sanluqueño,1RFEF,Atlético Sanluqueño CF,99,normalized
-Avaí,Brasileirao Serie B,Avaí FC,99,normalized
-Avispa Fukuoka,J1 League,Avispa Fukuoka,100,exact
-BK Häcken,Allsvenskan,BK Häcken,100,exact
-Barakaldo CF,1RFEF,Barakaldo CF,100,exact
-Bari,Serie B,SSC Bari,90.0,fuzzy_auto
-Bastia,Ligue 2,SC Bastia,99,normalized
-Bayer 04 Leverkusen,Bundesliga,Bayer 04 Leverkusen,100,exact
-Başakşehir FK,Turkish Süper Lig,Basaksehir FK,99,normalized
-Benfica,Liga Portugal,SL Benfica,95.0,fuzzy_auto
-Betis Deportivo,1RFEF,Betis Deportivo Balompié,99,normalized
-Beşiktaş JK,Turkish Süper Lig,Besiktas JK,99,normalized
-Bodø/Glimt,Norwegian Eliteserien,FK Bodø/Glimt,99,normalized
-Borussia Dortmund,Bundesliga,Borussia Dortmund,100,exact
-Borussia M'gladbach,Bundesliga,Borussia Mönchengladbach,100,manual_confirm
-Botafogo-SP,Brasileirao Serie B,Botafogo FC,95.0,fuzzy_auto
-Burgos Club de Fútbol,LaLiga2,Burgos CF,90.0,fuzzy_auto
-CD Arenteiro,1RFEF,CD Arenteiro,100,exact
-CD Castellón,LaLiga2,CD Castellón,100,exact
-CD Eldense,1RFEF,CD Eldense,100,exact
-CD Lugo,1RFEF,CD Lugo,100,exact
-CD Nacional,Liga Portugal,CD Nacional,100,exact
-CD Tenerife,1RFEF,CD Tenerife,100,exact
-CD Teruel,1RFEF,CD Teruel,100,exact
-CE Europa,1RFEF,CE Europa,100,exact
-CE Sabadell,1RFEF,CE Sabadell FC,99,normalized
-CF Estrela Amadora,Liga Portugal,CF Estrela Amadora,100,exact
-CF Talavera,1RFEF,CF Talavera de la Reina,90.0,fuzzy_auto
-CFR 1907 Cluj,Romanian SuperLiga,CFR Cluj,100,manual_confirm
-CP Cacereño,1RFEF,CP Cacereño,100,exact
-CSF Spartanii Selemet,Moldovan Super Liga,CSF Spartanii Sportul Selemet,95.0,fuzzy_auto
-Carrarese,Serie B,Carrarese Calcio 1908,90.0,fuzzy_auto
-Casa Pia,Liga Portugal,Casa Pia AC,95.0,fuzzy_auto
-Catanzaro,Serie B,US Catanzaro,95.0,fuzzy_auto
-Celta Fortuna,1RFEF,RC Celta Fortuna,99,normalized
-Cerezo Osaka,J1 League,Cerezo Osaka,100,exact
-Cesena,Serie B,Cesena FC,99,normalized
-Chapecoense,Brasileirao Serie B,Associação Chapecoense de Futebol,90.0,fuzzy_auto
-Clermont Foot,Ligue 2,Clermont Foot 63,95.0,fuzzy_auto
-Clube De Regatas Brasil,Brasileirao Serie B,Clube de Regatas Brasil (AL),95.0,fuzzy_auto
-Coritiba,Brasileirao Serie B,Coritiba Foot Ball Club,90.0,fuzzy_auto
-Criciúma,Brasileirao Serie B,Criciúma EC,95.0,fuzzy_auto
-Cuiabá,Brasileirao Serie B,Cuiabá Esporte Clube (MT),90.0,fuzzy_auto
-Cultural Leonesa,LaLiga2,Cultural Leonesa,100,exact
-Cádiz,LaLiga2,Cádiz CF,99,normalized
-Córdoba,LaLiga2,Córdoba CF,99,normalized
-Dacia Buiucani,Moldovan Super Liga,Dacia Buiucani,100,exact
-Daejeon Hana Citizen,Korean K League 1,Daejeon Hana Citizen,100,exact
-Darmstadt 98,2. Bundesliga,SV Darmstadt 98,99,normalized
-De Graafschap,Eerste Divisie,De Graafschap Doetinchem,90.0,fuzzy_auto
-Degerfors IF,Allsvenskan,Degerfors IF,100,exact
-Deportivo de La Coruña,LaLiga2,RC Deportivo de La Coruña,99,normalized
-Djurgårdens IF,Allsvenskan,Djurgårdens IF,100,exact
-Eibar,LaLiga2,SD Eibar,99,normalized
-Eintracht Braunschweig,2. Bundesliga,Eintracht Braunschweig,100,exact
-Eintracht Frankfurt,Bundesliga,Eintracht Fráncfort​​,100,manual_confirm
-Estoril Praia,Liga Portugal,GD Estoril Praia,95.0,fuzzy_auto
-Excelsior,Eredivisie,Excelsior Rotterdam,90.0,fuzzy_auto
-Eyüpspor,Turkish Süper Lig,Eyüpspor,100,exact
-FC Alverca,Liga Portugal,FC Alverca,100,exact
-FC Andorra,LaLiga2,FC Andorra,100,exact
-FC Anyang,Korean K League 1,FC Anyang,100,exact
-FC Arouca,Liga Portugal,FC Arouca,100,exact
-FC Augsburg,Bundesliga,FC Augsburgo,94.1,fuzzy_auto
-FC Bayern München,Bundesliga,Bayern Múnich,100,manual_confirm
-FC Blau Weiss Linz,Austrian Bundesliga,FC Blau-Weiss Linz,99,normalized
-FC Botoșani,Romanian SuperLiga,FC Botoșani,100,exact
-FC Bălți,Moldovan Super Liga,FC Balti,99,normalized
-FC Cartagena,1RFEF,FC Cartagena,100,exact
-FC Den Bosch,Eerste Divisie,FC Den Bosch,100,exact
-FC Dordrecht,Eerste Divisie,FC Dordrecht,100,exact
-FC Eindhoven,Eerste Divisie,FC Eindhoven,100,exact
-FC Emmen,Eerste Divisie,FC Emmen,100,exact
-FC Farul Constanța,Romanian SuperLiga,FCV Farul Constanta,95.0,fuzzy_auto
-FC Groningen,Eredivisie,FC Groningen,100,exact
-FC Hermannstadt,Romanian SuperLiga,FC Hermannstadt,100,exact
-FC Metaloglobus București,Romanian SuperLiga,FC Metaloglobus Bucharest,90.9,fuzzy_auto
-FC Milsami Orhei,Moldovan Super Liga,FC Milsami Orhei,100,exact
-FC Petrocub Hîncesti,Moldovan Super Liga,FC Petrocub Hincesti,99,normalized
-FC Petrolul Ploiești,Romanian SuperLiga,Petrolul Ploiesti,99,normalized
-FC Politehnica,Moldovan Super Liga,Politehnica UTM Сhișinău,90.0,fuzzy_auto
-FC Porto,Liga Portugal,FC Oporto,90.9,fuzzy_auto
-FC Rapid București,Romanian SuperLiga,FC Rapid 1923,100,manual_confirm
-FC Schalke 04,2. Bundesliga,FC Schalke 04,100,exact
-FC Seoul,Korean K League 1,FC Seoul,100,exact
-FC St. Pauli,Bundesliga,FC St. Pauli,100,exact
-FC Tokyo,J1 League,FC Tokyo,100,exact
-FC Twente,Eredivisie,FC Twente Enschede,90.0,fuzzy_auto
-FC Universitatea Cluj,Romanian SuperLiga,FC Universitatea Cluj,100,exact
-FC Utrecht,Eredivisie,FC Utrecht,100,exact
-FC Volendam,Eredivisie,FC Volendam,100,exact
-FC Zimbru Chişinău,Moldovan Super Liga,FC Zimbru Chisinau,99,normalized
-FCSB,Romanian SuperLiga,FCSB,100,exact
-FCV Dender,Belgian Pro League,FCV Dender EH,95.0,fuzzy_auto
-FK Austria Wien,Austrian Bundesliga,FK Austria Viena,100,manual_confirm
-FK Csíkszereda Miercurea Ciuc,Romanian SuperLiga,FK Csikszereda Miercurea Ciuc,99,normalized
-FK IMT Beograd,Mozzart Bet Superliga,FK IMT Belgrad,90.9,fuzzy_auto
-FK Javor Ivanjica,Mozzart Bet Superliga,FK Javor-Matis Ivanjica,95.0,fuzzy_auto
-FK Mladost Lučani,Mozzart Bet Superliga,FK Mladost Lucani,99,normalized
-FK Napredak Kruševac,Mozzart Bet Superliga,FK Napredak Krusevac,99,normalized
-FK Novi Pazar,Mozzart Bet Superliga,FK Novi Pazar,100,exact
-FK Partizan,Mozzart Bet Superliga,Partizán de Belgrado,90.0,fuzzy_auto
-FK Radnik Surdulica,Mozzart Bet Superliga,FK Radnik Surdulica,100,exact
-FK Radnički 1923,Mozzart Bet Superliga,FK Radnicki 1923 Kragujevac,90.0,fuzzy_auto
-FK Radnički Niš,Mozzart Bet Superliga,FK Radnicki Niš,99,normalized
-FK Spartak Subotica,Mozzart Bet Superliga,FK Spartak Subotica,100,exact
-FK TSC Bačka Topola,Mozzart Bet Superliga,FK TSC Backa Topola,99,normalized
-FK Vojvodina,Mozzart Bet Superliga,FK Vojvodina Novi Sad,90.0,fuzzy_auto
-FK Čukarički,Mozzart Bet Superliga,FK Cukaricki,99,normalized
-FK Železničar Pančevo,Mozzart Bet Superliga,FK Zeleznicar Pancevo,99,normalized
-Fagiano Okayama,J1 League,Fagiano Okayama,100,exact
-Famalicão,Liga Portugal,FC Famalicão,99,normalized
-Fatih Karagümrük,Turkish Süper Lig,Fatih Karagümrük,100,exact
-Fenerbahçe,Turkish Süper Lig,Fenerbahce,99,normalized
-Ferroviária,Brasileirao Serie B,Ferroviária,100,exact
-Feyenoord,Eredivisie,Feyenoord,100,exact
-Fortuna Düsseldorf,2. Bundesliga,Fortuna Düsseldorf,100,exact
-Fortuna Sittard,Eredivisie,Fortuna Sittard,100,exact
-Fredrikstad FK,Norwegian Eliteserien,Fredrikstad FK,100,exact
-Frosinone,Serie B,Frosinone Calcio,90.0,fuzzy_auto
-GAIS,Allsvenskan,GAIS,100,exact
-Galatasaray,Turkish Süper Lig,Galatasaray,100,exact
-Gamba Osaka,J1 League,Gamba Osaka,100,exact
-Gangwon FC,Korean K League 1,Gangwon FC,100,exact
-Gaziantep FK,Turkish Süper Lig,Gaziantep FK,100,exact
-Gençlerbirliği,Turkish Süper Lig,Genclerbirligi Ankara,90.0,fuzzy_auto
-Gil Vicente,Liga Portugal,Gil Vicente FC,99,normalized
-Gimcheon Sangmu FC,Korean K League 1,Gimcheon Sangmu,99,normalized
-Gimnàstic de Tarragona,1RFEF,Gimnàstic de Tarragona,100,exact
-Go Ahead Eagles,Eredivisie,Go Ahead Eagles Deventer,90.0,fuzzy_auto
-Goiás,Brasileirao Serie B,Goiás EC,90.0,fuzzy_auto
-Granada,LaLiga2,Granada CF,99,normalized
-Grazer AK 1902,Austrian Bundesliga,Grazer AK 1902,100,exact
-Grenoble Foot 38,Ligue 2,Grenoble Foot 38,100,exact
-Grêmio Novorizontino,Brasileirao Serie B,Grêmio Novorizontino,100,exact
-Guadalajara,1RFEF,CD Guadalajara,99,normalized
-Guingamp,Ligue 2,EA Guingamp,95.0,fuzzy_auto
-Gwangju FC,Korean K League 1,Gwangju FC,100,exact
-Göztepe,Turkish Süper Lig,Göztepe,100,exact
-Halmstads BK,Allsvenskan,Halmstads BK,100,exact
-Hamburger SV,Bundesliga,Hamburgo SV,100,manual_confirm
-Hammarby IF,Allsvenskan,Hammarby IF,100,exact
-Hannover 96,2. Bundesliga,Hannover 96,100,exact
-Helmond Sport,Eerste Divisie,Helmond Sport,100,exact
-Heracles Almelo,Eredivisie,Heracles Almelo,100,exact
-Huesca,LaLiga2,SD Huesca,99,normalized
-Hércules CF,1RFEF,Hércules CF,100,exact
-IF Brommapojkarna,Allsvenskan,IF Brommapojkarna,100,exact
-IF Elfsborg,Allsvenskan,IF Elfsborg,100,exact
-IFK Göteborg,Allsvenskan,IFK Göteborg,100,exact
-IK Sirius,Allsvenskan,IK Sirius,100,exact
-Incheon United,Korean K League 1,Incheon United,100,exact
-Jeju SK,Korean K League 1,Jeju SK,100,exact
-Jeonbuk Hyundai Motors,Korean K League 1,Jeonbuk Hyundai Motors,100,exact
-Jong AZ Alkmaar,Eerste Divisie,AZ Alkmaar U21,90.0,fuzzy_auto
-Jong Ajax,Eerste Divisie,Ajax Amsterdam U21,100,manual_confirm
-Jong FC Utrecht,Eerste Divisie,FC Utrecht U21,90.0,fuzzy_auto
-Jong PSV Eindhoven,Eerste Divisie,PSV Eindhoven U21,95.0,fuzzy_auto
-Juve Stabia,Serie B,SS Juve Stabia,95.0,fuzzy_auto
-Juventud Torremolinos CF,1RFEF,Juventud Torremolinos CF,100,exact
-KAA Gent,Belgian Pro League,KAA Gante,100,manual_confirm
-KFUM Oslo,Norwegian Eliteserien,KFUM-Kameratene Oslo,100,manual_confirm
-KRC Genk,Belgian Pro League,KRC Genk,100,exact
-KV Mechelen,Belgian Pro League,KV Mechelen,100,exact
-KVC Westerlo,Belgian Pro League,KVC Westerlo,100,exact
-Karlsruher SC,2. Bundesliga,Karlsruher SC,100,exact
-Kashima Antlers,J1 League,Kashima Antlers,100,exact
-Kashiwa Reysol,J1 League,Kashiwa Reysol,100,exact
-Kasımpaşa,Turkish Süper Lig,Kasimpasa,100,manual_confirm
-Kawasaki Frontale,J1 League,Kawasaki Frontale,100,exact
-Kayserispor,Turkish Süper Lig,Kayserispor,100,exact
-Kocaelispor,Turkish Süper Lig,Kocaelispor,100,exact
-Konyaspor,Turkish Süper Lig,Konyaspor,100,exact
-Kristiansund BK,Norwegian Eliteserien,Kristiansund BK,100,exact
-Kyoto Sanga FC,J1 League,Kyoto Sanga,99,normalized
-LASK,Austrian Bundesliga,LASK,100,exact
-Las Palmas,LaLiga2,UD Las Palmas,99,normalized
-Le Mans,Ligue 2,Le Mans FC,99,normalized
-Leganés,LaLiga2,CD Leganés,99,normalized
-Lillestrøm SK,Norwegian Eliteserien,Lillestrøm SK,100,exact
-MVV Maastricht,Eerste Divisie,MVV Maastricht,100,exact
-Machida Zelvia,J1 League,Machida Zelvia,100,exact
-Malmö FF,Allsvenskan,Malmoe FF,94.1,fuzzy_auto
-Mantova,Serie B,Mantova 1911,90.0,fuzzy_auto
-Marbella FC,1RFEF,Marbella FC,100,exact
-Mirandés,LaLiga2,CD Mirandés,99,normalized
-Mjällby AIF,Allsvenskan,Mjällby AIF,100,exact
-Modena,Serie B,Modena FC,99,normalized
-Molde FK,Norwegian Eliteserien,Molde FK,100,exact
-Montpellier,Ligue 2,Montpellier HSC,95.0,fuzzy_auto
-Moreirense,Liga Portugal,Moreirense FC,99,normalized
-Málaga CF,LaLiga2,Málaga CF,100,exact
-Mérida AD,1RFEF,Mérida AD,100,exact
-NAC Breda,Eredivisie,NAC Breda,100,exact
-NEC Nijmegen,Eredivisie,NEC Nijmegen,100,exact
-Nagoya Grampus,J1 League,Nagoya Grampus,100,exact
-Nancy,Ligue 2,AS Nancy-Lorraine,90.0,fuzzy_auto
-OFK Beograd Mozzart Bet,Mozzart Bet Superliga,OFK Beograd,90.0,fuzzy_auto
-Operário-PR,Brasileirao Serie B,Operário Ferroviário Esporte Clube (PR),100,manual_confirm
-Osasuna B,1RFEF,CA Osasuna Promesas,95.0,fuzzy_auto
-Oud-Heverlee Leuven,Belgian Pro League,Oud-Heverlee Leuven,100,exact
-Ourense CF,1RFEF,Ourense CF,100,exact
-PEC Zwolle,Eredivisie,PEC Zwolle,100,exact
-PSV Eindhoven,Eredivisie,PSV Eindhoven,100,exact
-Palermo,Serie B,Palermo FC,99,normalized
-Pau FC,Ligue 2,Pau FC,100,exact
-Paysandu SC,Brasileirao Serie B,Paysandu SC,100,exact
-Pescara,Serie B,Delfino Pescara 1936,90.0,fuzzy_auto
-Pohang Steelers,Korean K League 1,Pohang Steelers,100,exact
-Pontevedra CF,1RFEF,Pontevedra CF,100,exact
-Preußen Münster,2. Bundesliga,Preußen Münster,100,exact
-RAAL La Louvière,Belgian Pro League,RAAL La Louvière,100,exact
-RB Leipzig,Bundesliga,RB Leipzig,100,exact
-RC Sporting Charleroi,Belgian Pro League,R Charleroi SC,100,manual_confirm
-RKC Waalwijk,Eerste Divisie,RKC Waalwijk,100,exact
-RSC Anderlecht,Belgian Pro League,RSC Anderlecht,100,exact
-Racing de Ferrol,1RFEF,Racing Club de Ferrol,99,normalized
-Real Avilés,1RFEF,Real Avilés Industrial,90.0,fuzzy_auto
-Real Madrid Castilla U21,1RFEF,Real Madrid Castilla,99,normalized
-Real Murcia,1RFEF,Real Murcia CF,99,normalized
-Real Racing Club,LaLiga2,Real Racing Club,100,exact
-Real Sociedad B,LaLiga2,Real Sociedad B,100,exact
-Real Valladolid,LaLiga2,Real Valladolid CF,99,normalized
-Real Zaragoza,LaLiga2,Real Zaragoza,100,exact
-Red Bull Salzburg,Austrian Bundesliga,Red Bull Salzburgo,97.1,fuzzy_auto
-Red Star FC,Ligue 2,Red Star FC,100,exact
-Reggiana,Serie B,AC Reggiana 1919,90.0,fuzzy_auto
-Remo,Brasileirao Serie B,Clube do Remo (PA),90.0,fuzzy_auto
-Rio Ave,Liga Portugal,Rio Ave FC,99,normalized
-Roda JC Kerkrade,Eerste Divisie,Roda JC Kerkrade,100,exact
-Rodez AF,Ligue 2,Rodez AF,100,exact
-Rosenborg BK,Norwegian Eliteserien,Rosenborg BK,100,exact
-Royale Union Saint-Gilloise,Belgian Pro League,Union Saint-Gilloise,95.0,fuzzy_auto
-SC Cambuur,Eerste Divisie,SC Cambuur Leeuwarden,90.0,fuzzy_auto
-SC Freiburg,Bundesliga,SC Friburgo,100,manual_confirm
-SC Heerenveen,Eredivisie,SC Heerenveen,100,exact
-SC Oțelul Galați,Romanian SuperLiga,SC Otelul Galati,99,normalized
-SC Paderborn 07,2. Bundesliga,SC Paderborn 07,100,exact
-SC Telstar,Eredivisie,SC Telstar,100,exact
-SCR Altach,Austrian Bundesliga,SCR Altach,100,exact
-SD Ponferradina,1RFEF,SD Ponferradina,100,exact
-SD Tarazona,1RFEF,SD Tarazona,100,exact
-SK Brann,Norwegian Eliteserien,SK Brann,100,exact
-SK Rapid Wien,Austrian Bundesliga,SK Rapid Viena,100,manual_confirm
-SK Sturm Graz,Austrian Bundesliga,SK Sturm Graz,100,exact
-SV 07 Elversberg,2. Bundesliga,SV 07 Elversberg,100,exact
-SV Ried,Austrian Bundesliga,SV Ried,100,exact
-SV Werder Bremen,Bundesliga,SV Werder Bremen,100,exact
-SV Zulte Waregem,Belgian Pro League,Zulte Waregem,99,normalized
-Saint-Étienne,Ligue 2,AS Saint-Étienne,95.0,fuzzy_auto
-Sampdoria,Serie B,UC Sampdoria,95.0,fuzzy_auto
-Samsunspor,Turkish Süper Lig,Samsunspor,100,exact
-Sandefjord Fotball,Norwegian Eliteserien,Sandefjord Fotball,100,exact
-Sanfrecce Hiroshima,J1 League,Sanfrecce Hiroshima,100,exact
-Santa Clara,Liga Portugal,CD Santa Clara,99,normalized
-Sarpsborg 08,Norwegian Eliteserien,Sarpsborg 08 FF,95.0,fuzzy_auto
-Sevilla Atlético,1RFEF,Sevilla Atlético,100,exact
-Sheriff Tiraspol,Moldovan Super Liga,FC Sheriff Tiraspol,99,normalized
-Shimizu S-Pulse,J1 League,Shimizu S-Pulse,100,exact
-Sint-Truidense VV,Belgian Pro League,Sint-Truidense VV,100,exact
-SpVgg Greuther Fürth,2. Bundesliga,SpVgg Greuther Fürth,100,exact
-Sparta Rotterdam,Eredivisie,Sparta Rotterdam,100,exact
-Spezia,Serie B,Spezia,100,exact
-Sporting Braga,Liga Portugal,SC Braga,90.0,fuzzy_auto
-Sporting CP,Liga Portugal,Sporting de Lisboa,90.0,fuzzy_auto
-Sporting Gijón,LaLiga2,Real Sporting de Gijón,100,manual_confirm
-Stade Lavallois,Ligue 2,Stade Lavallois,100,exact
-Stade de Reims,Ligue 2,Stade de Reims,100,exact
-Standard Liège,Belgian Pro League,Standard de Lieja,100,manual_confirm
-Südtirol,Serie B,FC Südtirol,99,normalized
-TOP Oss,Eerste Divisie,TOP Oss,100,exact
-TSG Hoffenheim,Bundesliga,TSG 1899 Hoffenheim,95.0,fuzzy_auto
-TSV Hartberg,Austrian Bundesliga,TSV Hartberg,100,exact
-Tokyo Verdy,J1 League,Tokyo Verdy,100,exact
-Tondela,Liga Portugal,CD Tondela,99,normalized
-Trabzonspor,Turkish Süper Lig,Trabzonspor,100,exact
-Tromsø IL,Norwegian Eliteserien,Tromsø IL,100,exact
-Troyes,Ligue 2,ESTAC Troyes,90.0,fuzzy_auto
-UD Ibiza,1RFEF,UD Ibiza,100,exact
-US Boulogne Côte-d'Opale,Ligue 2,US Boulogne,90.0,fuzzy_auto
-USL Dunkerque,Ligue 2,USL Dunkerque,100,exact
-UTA Arad,Romanian SuperLiga,UTA Arad,100,exact
-Ulsan HD,Korean K League 1,Ulsan HD FC,99,normalized
-Unionistas de Salamanca CF,1RFEF,Unionistas de Salamanca CF,100,exact
-Universitatea Craiova,Romanian SuperLiga,CS Universitatea Craiova,95.0,fuzzy_auto
-Urawa Red Diamonds,J1 League,Urawa Red Diamonds,100,exact
-VVV-Venlo,Eerste Divisie,VVV-Venlo,100,exact
-Venezia,Serie B,Venezia FC,99,normalized
-VfB Stuttgart,Bundesliga,VfB Stuttgart,100,exact
-VfL Wolfsburg,Bundesliga,VfL Wolfsburgo,96.3,fuzzy_auto
-Viking FK,Norwegian Eliteserien,Viking FK,100,exact
-Vila Nova FC,Brasileirao Serie B,Vila Nova Futebol Clube (GO),90.0,fuzzy_auto
-Villarreal B U23,1RFEF,Villarreal CF B,99,normalized
-Virtus Entella,Serie B,Virtus Entella,100,exact
-Vissel Kobe,J1 League,Vissel Kobe,100,exact
-Vitesse,Eerste Divisie,Vitesse Arnhem,90.0,fuzzy_auto
-Vitória SC,Liga Portugal,Vitória Guimarães SC,90.0,fuzzy_auto
-Volta Redonda,Brasileirao Serie B,Volta Redonda Futebol Clube (RJ),90.0,fuzzy_auto
-Västerås SK,Allsvenskan,Västerås SK,100,exact
-Vålerenga IF,Norwegian Eliteserien,Vålerenga Fotball Elite,100,manual_confirm
-WSG Tirol,Austrian Bundesliga,WSG Tirol,100,exact
-Willem II Tilburg,Eerste Divisie,Willem II Tilburg,100,exact
-Wolfsberger AC,Austrian Bundesliga,Wolfsberger AC,100,exact
-Yokohama F. Marinos,J1 League,Yokohama F. Marinos,100,exact
-Yokohama FC,J1 League,Yokohama F. Marinos,90.0,fuzzy_auto
-Zamora CF,1RFEF,Zamora CF,100,exact
-Çaykur Rizespor,Turkish Süper Lig,Caykur Rizespor,99,normalized
-Austin FC,MLS,Austin FC,100,exact
-Charlotte FC,MLS,Charlotte FC,100,exact
-Chicago Fire,MLS,Chicago Fire FC,99,normalized
-Columbus Crew,MLS,Columbus Crew,100,exact
-Empoli,Serie B,Empoli FC,99,normalized
-FC Cincinnati,MLS,FC Cincinnati,100,exact
-FC Dallas,MLS,FC Dallas,100,exact
-Inter Miami CF,MLS,Inter Miami CF,100,exact
-JEF United Chiba,J1 League,JEF United Chiba,100,exact
-Kalmar FF,Allsvenskan,Kalmar FF,100,exact
-Los Angeles FC,MLS,Los Ángeles FC,99,normalized
-Minnesota United,MLS,Minnesota United FC,99,normalized
-Mito Hollyhock,J1 League,Mito HollyHock,100,exact
-Monza,Serie B,AC Monza,90.0,fuzzy_auto
-Nashville SC,MLS,Nashville SC,100,exact
-New York City FC,MLS,New York City FC,100,exact
-Orlando City SC,MLS,Orlando City SC,100,exact
-Padova,Serie B,Calcio Padova,90.0,fuzzy_auto
-Philadelphia Union,MLS,Philadelphia Union,100,exact
-Portland Timbers,MLS,Portland Timbers,100,exact
-Real Salt Lake,MLS,Real Salt Lake City,95.0,fuzzy_auto
-San Diego FC,MLS,San Diego FC,100,exact
-Seattle Sounders FC,MLS,Seattle Sounders FC,100,exact
-US Avellino 1912,Serie B,US Avellino 1912,100,exact
-V-Varen Nagasaki,J1 League,V-Varen Nagasaki,100,exact
-Vancouver Whitecaps,MLS,Vancouver Whitecaps FC,99,normalized
-Örgryte IS,Allsvenskan,Örgryte IS,100,exact
+sofascore_team_name,league_name,tm_club_name,match_score,match_method,sofascore_team_id,tm_club_id
+1. FC Heidenheim,Bundesliga,1.FC Heidenheim 1846,95.0,fuzzy_auto,5885,2036
+1. FC Kaiserslautern,2. Bundesliga,1.FC Kaiserslautern,99,normalized,2675,2
+1. FC Köln,2. Bundesliga,FC Colonia,100,manual_confirm,2671,
+1. FC Köln,Bundesliga,FC Colonia,100,manual_confirm,2671,3
+1. FC Magdeburg,2. Bundesliga,1.FC Magdeburg,99,normalized,2591,187
+1. FC Nürnberg,2. Bundesliga,1. FC Núremberg​,100,manual_confirm,2523,4
+1. FC Union Berlin,Bundesliga,1.FC Unión Berlín,99,normalized,2547,89
+1. FSV Mainz 05,Bundesliga,1.FSV Mainz 05,99,normalized,2556,39
+AD Alcorcón,1RFEF,AD Alcorcón,100,exact,24322,11596
+AD Ceuta,LaLiga2,AD Ceuta FC,99,normalized,2869,8568
+ADO Den Haag,Eerste Divisie,ADO Den Haag,100,exact,2966,1268
+AFC Ajax,Eredivisie,Ajax de Ámsterdam,90.0,fuzzy_auto,2953,610
+AFC Unirea 04 Slobozia,Romanian SuperLiga,AFC Unirea 04 Slobozia,100,exact,44259,29700
+AIK,Allsvenskan,AIK,100,exact,1764,272
+AVS - Futebol SAD,Liga Portugal,Avs Futebol,95.0,fuzzy_auto,483088,110302
+AZ Alkmaar,Eredivisie,AZ Alkmaar,100,exact,2950,1090
+Alanyaspor,Turkish Süper Lig,Alanyaspor,100,exact,6362,11282
+Albacete Balompié,LaLiga2,Albacete Balompié,100,exact,2848,1532
+Algeciras CF,1RFEF,Algeciras CF,100,exact,4489,3705
+Almere City FC,Eerste Divisie,Almere City FC,100,exact,2990,723
+Almería,LaLiga2,UD Almería,99,normalized,2858,3302
+Amazonas FC,Brasileirao Serie B,Amazonas FC,100,exact,336664,87727
+Amiens SC,Ligue 2,Amiens SC,100,exact,1676,1416
+América Mineiro,Brasileirao Serie B,América Futebol Clube (MG),100,manual_confirm,1973,2863
+Annecy FC,Ligue 2,FC Annecy,99,normalized,210894,30204
+Antalyaspor,Turkish Süper Lig,Antalyaspor,100,exact,3056,589
+Antequera,1RFEF,Antequera CF,99,normalized,24323,16022
+Arenas Club,1RFEF,Arenas Club,100,exact,202071,16122
+Athletic Club,Brasileirao Serie B,Athletic Club,100,exact,342775,64918
+Athletic Club B U21,1RFEF,Bilbao Athletic,90.0,fuzzy_auto,24324,6688
+Athletico,Brasileirao Serie B,Athletic Club,94.1,fuzzy_auto,1967,64918
+Atlético Goianiense,Brasileirao Serie B,Atlético Clube Goianiense,90.0,fuzzy_auto,7314,15172
+Atlético Madrileño,1RFEF,Atlético Madrileño,100,exact,24326,3679
+Atlético Sanluqueño,1RFEF,Atlético Sanluqueño CF,99,normalized,77413,21322
+Avaí,Brasileirao Serie B,Avaí FC,99,normalized,7315,2035
+Avispa Fukuoka,J1 League,Avispa Fukuoka,100,exact,3143,9597
+BK Häcken,Allsvenskan,BK Häcken,100,exact,1760,1109
+Barakaldo CF,1RFEF,Barakaldo CF,100,exact,2879,3708
+Bari,Serie B,SSC Bari,90.0,fuzzy_auto,2712,332
+Bastia,Ligue 2,SC Bastia,99,normalized,1655,595
+Bayer 04 Leverkusen,Bundesliga,Bayer 04 Leverkusen,100,exact,2681,15
+Başakşehir FK,Turkish Süper Lig,Basaksehir FK,99,normalized,3086,6890
+Benfica,Liga Portugal,SL Benfica,95.0,fuzzy_auto,3006,294
+Betis Deportivo,1RFEF,Betis Deportivo Balompié,99,normalized,24358,2865
+Beşiktaş JK,Turkish Süper Lig,Besiktas JK,99,normalized,3050,114
+Bodø/Glimt,Norwegian Eliteserien,FK Bodø/Glimt,99,normalized,656,501
+Borussia Dortmund,Bundesliga,Borussia Dortmund,100,exact,2673,16
+Borussia M'gladbach,Bundesliga,Borussia Mönchengladbach,100,manual_confirm,2527,18
+Botafogo-SP,Brasileirao Serie B,Botafogo FC,95.0,fuzzy_auto,1979,9030
+Burgos Club de Fútbol,LaLiga2,Burgos CF,90.0,fuzzy_auto,2854,1536
+CD Arenteiro,1RFEF,CD Arenteiro,100,exact,263555,58946
+CD Castellón,LaLiga2,CD Castellón,100,exact,5067,2502
+CD Eldense,1RFEF,CD Eldense,100,exact,47321,12567
+CD Lugo,1RFEF,CD Lugo,100,exact,24332,11000
+CD Nacional,Liga Portugal,CD Nacional,100,exact,3013,982
+CD Tenerife,1RFEF,CD Tenerife,100,exact,2822,648
+CD Teruel,1RFEF,CD Teruel,100,exact,43751,19301
+CE Europa,1RFEF,CE Europa,100,exact,135672,20528
+CE Sabadell,1RFEF,CE Sabadell FC,99,normalized,24335,11422
+CF Estrela Amadora,Liga Portugal,CF Estrela Amadora,100,exact,3035,2431
+CF Talavera,1RFEF,CF Talavera de la Reina,90.0,fuzzy_auto,202068,47421
+CFR 1907 Cluj,Romanian SuperLiga,CFR Cluj,100,manual_confirm,5287,7769
+CP Cacereño,1RFEF,CP Cacereño,100,exact,2878,11602
+CSF Spartanii Selemet,Moldovan Super Liga,CSF Spartanii Sportul Selemet,95.0,fuzzy_auto,81139,73711
+Carrarese,Serie B,Carrarese Calcio 1908,90.0,fuzzy_auto,2745,4159
+Casa Pia,Liga Portugal,Casa Pia AC,95.0,fuzzy_auto,36365,3268
+Catanzaro,Serie B,US Catanzaro,95.0,fuzzy_auto,2796,4097
+Celta Fortuna,1RFEF,RC Celta Fortuna,99,normalized,24336,8733
+Cerezo Osaka,J1 League,Cerezo Osaka,100,exact,3141,1022
+Cesena,Serie B,Cesena FC,99,normalized,2742,1429
+Chapecoense,Brasileirao Serie B,Associação Chapecoense de Futebol,90.0,fuzzy_auto,21845,17776
+Clermont Foot,Ligue 2,Clermont Foot 63,95.0,fuzzy_auto,1680,3524
+Clube De Regatas Brasil,Brasileirao Serie B,Clube de Regatas Brasil (AL),95.0,fuzzy_auto,22032,11449
+Coritiba,Brasileirao Serie B,Coritiba Foot Ball Club,90.0,fuzzy_auto,1982,776
+Criciúma,Brasileirao Serie B,Criciúma EC,95.0,fuzzy_auto,1984,7178
+Cuiabá,Brasileirao Serie B,Cuiabá Esporte Clube (MT),90.0,fuzzy_auto,49202,28022
+Cultural Leonesa,LaLiga2,Cultural Leonesa,100,exact,2868,4542
+Cádiz,LaLiga2,Cádiz CF,99,normalized,4488,2687
+Córdoba,LaLiga2,Córdoba CF,99,normalized,2850,993
+Dacia Buiucani,Moldovan Super Liga,Dacia Buiucani,100,exact,54679,39003
+Daejeon Hana Citizen,Korean K League 1,Daejeon Hana Citizen,100,exact,7645,6499
+Darmstadt 98,2. Bundesliga,SV Darmstadt 98,99,normalized,2576,105
+De Graafschap,Eerste Divisie,De Graafschap Doetinchem,90.0,fuzzy_auto,2949,642
+Degerfors IF,Allsvenskan,Degerfors IF,100,exact,1807,3641
+Deportivo de La Coruña,LaLiga2,RC Deportivo de La Coruña,99,normalized,2832,897
+Djurgårdens IF,Allsvenskan,Djurgårdens IF,100,exact,1759,1044
+Eibar,LaLiga2,SD Eibar,99,normalized,2839,1533
+Eintracht Braunschweig,2. Bundesliga,Eintracht Braunschweig,100,exact,2557,23
+Eintracht Frankfurt,Bundesliga,Eintracht Fráncfort​​,100,manual_confirm,2674,24
+Estoril Praia,Liga Portugal,GD Estoril Praia,95.0,fuzzy_auto,4500,1465
+Excelsior,Eredivisie,Excelsior Rotterdam,90.0,fuzzy_auto,2967,798
+Eyüpspor,Turkish Süper Lig,Eyüpspor,100,exact,7040,7160
+FC Alverca,Liga Portugal,FC Alverca,100,exact,190328,2521
+FC Andorra,LaLiga2,FC Andorra,100,exact,324871,10718
+FC Anyang,Korean K League 1,FC Anyang,100,exact,32675,38898
+FC Arouca,Liga Portugal,FC Arouca,100,exact,25777,8024
+FC Augsburg,Bundesliga,FC Augsburgo,94.1,fuzzy_auto,2600,167
+FC Bayern München,Bundesliga,Bayern Múnich,100,manual_confirm,2672,27
+FC Blau Weiss Linz,Austrian Bundesliga,FC Blau-Weiss Linz,99,normalized,2113,2157
+FC Botoșani,Romanian SuperLiga,FC Botoșani,100,exact,24798,8818
+FC Bălți,Moldovan Super Liga,FC Balti,99,normalized,353848,83016
+FC Cartagena,1RFEF,FC Cartagena,100,exact,24329,7077
+FC Den Bosch,Eerste Divisie,FC Den Bosch,100,exact,2963,404
+FC Dordrecht,Eerste Divisie,FC Dordrecht,100,exact,2973,1455
+FC Eindhoven,Eerste Divisie,FC Eindhoven,100,exact,2994,3892
+FC Emmen,Eerste Divisie,FC Emmen,100,exact,2965,1283
+FC Farul Constanța,Romanian SuperLiga,FCV Farul Constanta,95.0,fuzzy_auto,3294,29831
+FC Groningen,Eredivisie,FC Groningen,100,exact,2951,202
+FC Hermannstadt,Romanian SuperLiga,FC Hermannstadt,100,exact,260356,58049
+FC Metaloglobus București,Romanian SuperLiga,FC Metaloglobus Bucharest,90.9,fuzzy_auto,79081,37624
+FC Milsami Orhei,Moldovan Super Liga,FC Milsami Orhei,100,exact,53475,30686
+FC Petrocub Hîncesti,Moldovan Super Liga,FC Petrocub Hincesti,99,normalized,167232,46643
+FC Petrolul Ploiești,Romanian SuperLiga,Petrolul Ploiesti,99,normalized,25856,9465
+FC Politehnica,Moldovan Super Liga,Politehnica UTM Сhișinău,90.0,fuzzy_auto,5177,90107
+FC Porto,Liga Portugal,FC Oporto,90.9,fuzzy_auto,3002,720
+FC Rapid București,Romanian SuperLiga,FC Rapid 1923,100,manual_confirm,295403,455
+FC Schalke 04,2. Bundesliga,FC Schalke 04,100,exact,2530,33
+FC Seoul,Korean K League 1,FC Seoul,100,exact,7646,6500
+FC St. Pauli,Bundesliga,FC St. Pauli,100,exact,2526,35
+FC Tokyo,J1 League,FC Tokyo,100,exact,3147,6631
+FC Twente,Eredivisie,FC Twente Enschede,90.0,fuzzy_auto,2955,317
+FC Universitatea Cluj,Romanian SuperLiga,FC Universitatea Cluj,100,exact,7734,6429
+FC Utrecht,Eredivisie,FC Utrecht,100,exact,2948,200
+FC Volendam,Eredivisie,FC Volendam,100,exact,2968,724
+FC Zimbru Chişinău,Moldovan Super Liga,FC Zimbru Chisinau,99,normalized,5265,2714
+FCSB,Romanian SuperLiga,FCSB,100,exact,3301,301
+FCV Dender,Belgian Pro League,FCV Dender EH,95.0,fuzzy_auto,389232,9010
+FK Austria Wien,Austrian Bundesliga,FK Austria Viena,100,manual_confirm,2203,14
+FK Csíkszereda Miercurea Ciuc,Romanian SuperLiga,FK Csikszereda Miercurea Ciuc,99,normalized,283972,37255
+FK IMT Beograd,Mozzart Bet Superliga,FK IMT Belgrad,90.9,fuzzy_auto,308176,32113
+FK Javor Ivanjica,Mozzart Bet Superliga,FK Javor-Matis Ivanjica,95.0,fuzzy_auto,5144,8819
+FK Mladost Lučani,Mozzart Bet Superliga,FK Mladost Lucani,99,normalized,7771,6622
+FK Napredak Kruševac,Mozzart Bet Superliga,FK Napredak Krusevac,99,normalized,7674,788
+FK Novi Pazar,Mozzart Bet Superliga,FK Novi Pazar,100,exact,25736,4633
+FK Partizan,Mozzart Bet Superliga,Partizán de Belgrado,90.0,fuzzy_auto,5152,669
+FK Radnik Surdulica,Mozzart Bet Superliga,FK Radnik Surdulica,100,exact,111127,33328
+FK Radnički 1923,Mozzart Bet Superliga,FK Radnicki 1923 Kragujevac,90.0,fuzzy_auto,43981,4645
+FK Radnički Niš,Mozzart Bet Superliga,FK Radnicki Niš,99,normalized,25737,7567
+FK Spartak Subotica,Mozzart Bet Superliga,FK Spartak Subotica,100,exact,36967,15276
+FK TSC Bačka Topola,Mozzart Bet Superliga,FK TSC Backa Topola,99,normalized,263360,3137
+FK Vojvodina,Mozzart Bet Superliga,FK Vojvodina Novi Sad,90.0,fuzzy_auto,5150,448
+FK Čukarički,Mozzart Bet Superliga,FK Cukaricki,99,normalized,5148,6621
+FK Železničar Pančevo,Mozzart Bet Superliga,FK Zeleznicar Pancevo,99,normalized,282203,59358
+Fagiano Okayama,J1 League,Fagiano Okayama,100,exact,34034,22171
+Famalicão,Liga Portugal,FC Famalicão,99,normalized,49531,3329
+Fatih Karagümrük,Turkish Süper Lig,Fatih Karagümrük,100,exact,4954,6646
+Fenerbahçe,Turkish Süper Lig,Fenerbahce,99,normalized,3052,36
+Ferroviária,Brasileirao Serie B,Ferroviária,100,exact,35285,15882
+Feyenoord,Eredivisie,Feyenoord,100,exact,2959,234
+Fortuna Düsseldorf,2. Bundesliga,Fortuna Düsseldorf,100,exact,2588,38
+Fortuna Sittard,Eredivisie,Fortuna Sittard,100,exact,2957,385
+Fredrikstad FK,Norwegian Eliteserien,Fredrikstad FK,100,exact,687,3837
+Frosinone,Serie B,Frosinone Calcio,90.0,fuzzy_auto,2801,8970
+GAIS,Allsvenskan,GAIS,100,exact,1786,7009
+Galatasaray,Turkish Süper Lig,Galatasaray,100,exact,3061,141
+Gamba Osaka,J1 League,Gamba Osaka,100,exact,3138,596
+Gangwon FC,Korean K League 1,Gangwon FC,100,exact,34220,21459
+Gaziantep FK,Turkish Süper Lig,Gaziantep FK,100,exact,5138,2832
+Gençlerbirliği,Turkish Süper Lig,Genclerbirligi Ankara,90.0,fuzzy_auto,7802,820
+Gil Vicente,Liga Portugal,Gil Vicente FC,99,normalized,3010,2424
+Gimcheon Sangmu FC,Korean K League 1,Gimcheon Sangmu,99,normalized,7647,6505
+Gimnàstic de Tarragona,1RFEF,Gimnàstic de Tarragona,100,exact,2840,5648
+Go Ahead Eagles,Eredivisie,Go Ahead Eagles Deventer,90.0,fuzzy_auto,2979,1435
+Goiás,Brasileirao Serie B,Goiás EC,90.0,fuzzy_auto,1960,3197
+Granada,LaLiga2,Granada CF,99,normalized,33779,16795
+Grazer AK 1902,Austrian Bundesliga,Grazer AK 1902,100,exact,2052,316
+Grenoble Foot 38,Ligue 2,Grenoble Foot 38,100,exact,1671,1290
+Grêmio Novorizontino,Brasileirao Serie B,Grêmio Novorizontino,100,exact,135514,37474
+Guadalajara,1RFEF,CD Guadalajara,99,normalized,24330,16576
+Guingamp,Ligue 2,EA Guingamp,95.0,fuzzy_auto,1654,855
+Gwangju FC,Korean K League 1,Gwangju FC,100,exact,48912,30925
+Göztepe,Turkish Süper Lig,Göztepe,100,exact,3054,1467
+Halmstads BK,Allsvenskan,Halmstads BK,100,exact,1767,1011
+Hamburger SV,Bundesliga,Hamburgo SV,100,manual_confirm,2676,41
+Hammarby IF,Allsvenskan,Hammarby IF,100,exact,1758,1059
+Hannover 96,2. Bundesliga,Hannover 96,100,exact,2541,42
+Helmond Sport,Eerste Divisie,Helmond Sport,100,exact,2974,500
+Heracles Almelo,Eredivisie,Heracles Almelo,100,exact,2977,1304
+Huesca,LaLiga2,SD Huesca,99,normalized,24265,5358
+Hércules CF,1RFEF,Hércules CF,100,exact,2877,7971
+IF Brommapojkarna,Allsvenskan,IF Brommapojkarna,100,exact,1787,1092
+IF Elfsborg,Allsvenskan,IF Elfsborg,100,exact,1762,1101
+IFK Göteborg,Allsvenskan,IFK Göteborg,100,exact,1761,801
+IK Sirius,Allsvenskan,IK Sirius,100,exact,1793,7945
+Incheon United,Korean K League 1,Incheon United,100,exact,7648,2996
+Jeju SK,Korean K League 1,Jeju SK,100,exact,7649,19684
+Jeonbuk Hyundai Motors,Korean K League 1,Jeonbuk Hyundai Motors,100,exact,6908,6502
+Jong AZ Alkmaar,Eerste Divisie,AZ Alkmaar U21,90.0,fuzzy_auto,46161,11368
+Jong Ajax,Eerste Divisie,Ajax Amsterdam U21,100,manual_confirm,46160,8817
+Jong FC Utrecht,Eerste Divisie,FC Utrecht U21,90.0,fuzzy_auto,53067,17596
+Jong PSV Eindhoven,Eerste Divisie,PSV Eindhoven U21,95.0,fuzzy_auto,46168,9715
+Juve Stabia,Serie B,SS Juve Stabia,95.0,fuzzy_auto,5324,5587
+Juventud Torremolinos CF,1RFEF,Juventud Torremolinos CF,100,exact,263407,43454
+KAA Gent,Belgian Pro League,KAA Gante,100,manual_confirm,2903,157
+KFUM Oslo,Norwegian Eliteserien,KFUM-Kameratene Oslo,100,manual_confirm,786,23184
+KRC Genk,Belgian Pro League,KRC Genk,100,exact,2890,1184
+KV Mechelen,Belgian Pro League,KV Mechelen,100,exact,5044,354
+KVC Westerlo,Belgian Pro League,KVC Westerlo,100,exact,2893,968
+Karlsruher SC,2. Bundesliga,Karlsruher SC,100,exact,2553,48
+Kashima Antlers,J1 League,Kashima Antlers,100,exact,3134,2241
+Kashiwa Reysol,J1 League,Kashiwa Reysol,100,exact,3140,6632
+Kasımpaşa,Turkish Süper Lig,Kasimpasa,100,manual_confirm,6063,10484
+Kawasaki Frontale,J1 League,Kawasaki Frontale,100,exact,5127,9598
+Kayserispor,Turkish Süper Lig,Kayserispor,100,exact,3072,3205
+Kocaelispor,Turkish Süper Lig,Kocaelispor,100,exact,3065,120
+Konyaspor,Turkish Süper Lig,Konyaspor,100,exact,3085,2293
+Kristiansund BK,Norwegian Eliteserien,Kristiansund BK,100,exact,957,21101
+Kyoto Sanga FC,J1 League,Kyoto Sanga,99,normalized,3149,593
+LASK,Austrian Bundesliga,LASK,100,exact,2058,413
+Las Palmas,LaLiga2,UD Las Palmas,99,normalized,6577,472
+Le Mans,Ligue 2,Le Mans FC,99,normalized,1672,1164
+Leganés,LaLiga2,CD Leganés,99,normalized,2845,1244
+Lillestrøm SK,Norwegian Eliteserien,Lillestrøm SK,100,exact,664,353
+MVV Maastricht,Eerste Divisie,MVV Maastricht,100,exact,2976,384
+Machida Zelvia,J1 League,Machida Zelvia,100,exact,44409,23568
+Malmö FF,Allsvenskan,Malmoe FF,94.1,fuzzy_auto,1892,496
+Mantova,Serie B,Mantova 1911,90.0,fuzzy_auto,2770,2581
+Marbella FC,1RFEF,Marbella FC,100,exact,24348,12361
+Mirandés,LaLiga2,CD Mirandés,99,normalized,35092,13222
+Mjällby AIF,Allsvenskan,Mjällby AIF,100,exact,1783,2719
+Modena,Serie B,Modena FC,99,normalized,2706,1385
+Molde FK,Norwegian Eliteserien,Molde FK,100,exact,661,687
+Montpellier,Ligue 2,Montpellier HSC,95.0,fuzzy_auto,1642,969
+Moreirense,Liga Portugal,Moreirense FC,99,normalized,3014,979
+Málaga CF,LaLiga2,Málaga CF,100,exact,2830,1084
+Mérida AD,1RFEF,Mérida AD,100,exact,24351,46854
+NAC Breda,Eredivisie,NAC Breda,100,exact,2947,132
+NEC Nijmegen,Eredivisie,NEC Nijmegen,100,exact,2962,467
+Nagoya Grampus,J1 League,Nagoya Grampus,100,exact,3136,1066
+Nancy,Ligue 2,AS Nancy-Lorraine,90.0,fuzzy_auto,1675,1159
+OFK Beograd Mozzart Bet,Mozzart Bet Superliga,OFK Beograd,90.0,fuzzy_auto,5153,53
+Operário-PR,Brasileirao Serie B,Operário Ferroviário Esporte Clube (PR),100,manual_confirm,39634,27214
+Osasuna B,1RFEF,CA Osasuna Promesas,95.0,fuzzy_auto,24328,8516
+Oud-Heverlee Leuven,Belgian Pro League,Oud-Heverlee Leuven,100,exact,2918,2727
+Ourense CF,1RFEF,Ourense CF,100,exact,263550,55398
+PEC Zwolle,Eredivisie,PEC Zwolle,100,exact,2971,1269
+PSV Eindhoven,Eredivisie,PSV Eindhoven,100,exact,2952,383
+Palermo,Serie B,Palermo FC,99,normalized,2715,458
+Pau FC,Ligue 2,Pau FC,100,exact,1685,3166
+Paysandu SC,Brasileirao Serie B,Paysandu SC,100,exact,1997,6347
+Pescara,Serie B,Delfino Pescara 1936,90.0,fuzzy_auto,7935,2921
+Pohang Steelers,Korean K League 1,Pohang Steelers,100,exact,7650,311
+Pontevedra CF,1RFEF,Pontevedra CF,100,exact,4941,5650
+Preußen Münster,2. Bundesliga,Preußen Münster,100,exact,2590,91
+RAAL La Louvière,Belgian Pro League,RAAL La Louvière,100,exact,368506,3901
+RB Leipzig,Bundesliga,RB Leipzig,100,exact,36360,23826
+RC Sporting Charleroi,Belgian Pro League,R Charleroi SC,100,manual_confirm,2898,172
+RKC Waalwijk,Eerste Divisie,RKC Waalwijk,100,exact,2956,235
+RSC Anderlecht,Belgian Pro League,RSC Anderlecht,100,exact,2900,58
+Racing de Ferrol,1RFEF,Racing Club de Ferrol,99,normalized,2843,1176
+Real Avilés,1RFEF,Real Avilés Industrial,90.0,fuzzy_auto,77397,20844
+Real Madrid Castilla U21,1RFEF,Real Madrid Castilla,99,normalized,5069,6767
+Real Murcia,1RFEF,Real Murcia CF,99,normalized,4487,171
+Real Racing Club,LaLiga2,Real Racing Club,100,exact,2835,630
+Real Sociedad B,LaLiga2,Real Sociedad B,100,exact,24360,9899
+Real Valladolid,LaLiga2,Real Valladolid CF,99,normalized,2831,366
+Real Zaragoza,LaLiga2,Real Zaragoza,100,exact,2815,142
+Red Bull Salzburg,Austrian Bundesliga,Red Bull Salzburgo,97.1,fuzzy_auto,2046,409
+Red Star FC,Ligue 2,Red Star FC,100,exact,52874,1154
+Reggiana,Serie B,AC Reggiana 1919,90.0,fuzzy_auto,24516,5621
+Remo,Brasileirao Serie B,Clube do Remo (PA),90.0,fuzzy_auto,2012,10997
+Rio Ave,Liga Portugal,Rio Ave FC,99,normalized,3036,2425
+Roda JC Kerkrade,Eerste Divisie,Roda JC Kerkrade,100,exact,2954,192
+Rodez AF,Ligue 2,Rodez AF,100,exact,6925,11273
+Rosenborg BK,Norwegian Eliteserien,Rosenborg BK,100,exact,1161,195
+Royale Union Saint-Gilloise,Belgian Pro League,Union Saint-Gilloise,95.0,fuzzy_auto,4860,3948
+SC Cambuur,Eerste Divisie,SC Cambuur Leeuwarden,90.0,fuzzy_auto,2970,133
+SC Freiburg,Bundesliga,SC Friburgo,100,manual_confirm,2538,60
+SC Heerenveen,Eredivisie,SC Heerenveen,100,exact,2964,306
+SC Oțelul Galați,Romanian SuperLiga,SC Otelul Galati,99,normalized,3291,4959
+SC Paderborn 07,2. Bundesliga,SC Paderborn 07,100,exact,2561,127
+SC Telstar,Eredivisie,SC Telstar,100,exact,2972,1434
+SCR Altach,Austrian Bundesliga,SCR Altach,100,exact,4856,3551
+SD Ponferradina,1RFEF,SD Ponferradina,100,exact,6195,4032
+SD Tarazona,1RFEF,SD Tarazona,100,exact,254156,41403
+SK Brann,Norwegian Eliteserien,SK Brann,100,exact,1159,1100
+SK Rapid Wien,Austrian Bundesliga,SK Rapid Viena,100,manual_confirm,2055,170
+SK Sturm Graz,Austrian Bundesliga,SK Sturm Graz,100,exact,2051,122
+SV 07 Elversberg,2. Bundesliga,SV 07 Elversberg,100,exact,2598,64
+SV Ried,Austrian Bundesliga,SV Ried,100,exact,2049,266
+SV Werder Bremen,Bundesliga,SV Werder Bremen,100,exact,2534,86
+SV Zulte Waregem,Belgian Pro League,Zulte Waregem,99,normalized,2933,3508
+Saint-Étienne,Ligue 2,AS Saint-Étienne,95.0,fuzzy_auto,1678,618
+Sampdoria,Serie B,UC Sampdoria,95.0,fuzzy_auto,2711,1038
+Samsunspor,Turkish Süper Lig,Samsunspor,100,exact,3053,152
+Sandefjord Fotball,Norwegian Eliteserien,Sandefjord Fotball,100,exact,676,6399
+Sanfrecce Hiroshima,J1 League,Sanfrecce Hiroshima,100,exact,3135,2697
+Santa Clara,Liga Portugal,CD Santa Clara,99,normalized,3011,2423
+Sarpsborg 08,Norwegian Eliteserien,Sarpsborg 08 FF,95.0,fuzzy_auto,822,10217
+Sevilla Atlético,1RFEF,Sevilla Atlético,100,exact,7762,8519
+Sheriff Tiraspol,Moldovan Super Liga,FC Sheriff Tiraspol,99,normalized,5173,2481
+Shimizu S-Pulse,J1 League,Shimizu S-Pulse,100,exact,3133,1062
+Sint-Truidense VV,Belgian Pro League,Sint-Truidense VV,100,exact,2895,475
+SpVgg Greuther Fürth,2. Bundesliga,SpVgg Greuther Fürth,100,exact,2551,65
+Sparta Rotterdam,Eredivisie,Sparta Rotterdam,100,exact,2960,468
+Spezia,Serie B,Spezia,100,exact,2735,3522
+Sporting Braga,Liga Portugal,SC Braga,90.0,fuzzy_auto,2999,1075
+Sporting CP,Liga Portugal,Sporting de Lisboa,90.0,fuzzy_auto,3001,336
+Sporting Gijón,LaLiga2,Real Sporting de Gijón,100,manual_confirm,2852,2448
+Stade Lavallois,Ligue 2,Stade Lavallois,100,exact,1673,1080
+Stade de Reims,Ligue 2,Stade de Reims,100,exact,1682,1421
+Standard Liège,Belgian Pro League,Standard de Lieja,100,manual_confirm,2901,3057
+Südtirol,Serie B,FC Südtirol,99,normalized,2760,4554
+TOP Oss,Eerste Divisie,TOP Oss,100,exact,2978,1228
+TSG Hoffenheim,Bundesliga,TSG 1899 Hoffenheim,95.0,fuzzy_auto,2569,533
+TSV Hartberg,Austrian Bundesliga,TSV Hartberg,100,exact,2075,4467
+Tokyo Verdy,J1 League,Tokyo Verdy,100,exact,3139,3734
+Tondela,Liga Portugal,CD Tondela,99,normalized,38396,7179
+Trabzonspor,Turkish Süper Lig,Trabzonspor,100,exact,3051,449
+Tromsø IL,Norwegian Eliteserien,Tromsø IL,100,exact,660,1293
+Troyes,Ligue 2,ESTAC Troyes,90.0,fuzzy_auto,1652,1095
+UD Ibiza,1RFEF,UD Ibiza,100,exact,24368,13241
+US Boulogne Côte-d'Opale,Ligue 2,US Boulogne,90.0,fuzzy_auto,1711,7042
+USL Dunkerque,Ligue 2,USL Dunkerque,100,exact,6918,9202
+UTA Arad,Romanian SuperLiga,UTA Arad,100,exact,204657,952
+Ulsan HD,Korean K League 1,Ulsan HD FC,99,normalized,7653,3535
+Unionistas de Salamanca CF,1RFEF,Unionistas de Salamanca CF,100,exact,254151,52397
+Universitatea Craiova,Romanian SuperLiga,CS Universitatea Craiova,95.0,fuzzy_auto,116223,40812
+Urawa Red Diamonds,J1 League,Urawa Red Diamonds,100,exact,3145,828
+VVV-Venlo,Eerste Divisie,VVV-Venlo,100,exact,2980,1426
+Venezia,Serie B,Venezia FC,99,normalized,2688,607
+VfB Stuttgart,Bundesliga,VfB Stuttgart,100,exact,2677,79
+VfL Wolfsburg,Bundesliga,VfL Wolfsburgo,96.3,fuzzy_auto,2524,82
+Viking FK,Norwegian Eliteserien,Viking FK,100,exact,1164,239
+Vila Nova FC,Brasileirao Serie B,Vila Nova Futebol Clube (GO),90.0,fuzzy_auto,2021,5677
+Villarreal B U23,1RFEF,Villarreal CF B,99,normalized,24338,11972
+Virtus Entella,Serie B,Virtus Entella,100,exact,43680,20519
+Vissel Kobe,J1 League,Vissel Kobe,100,exact,3146,3958
+Vitesse,Eerste Divisie,Vitesse Arnhem,90.0,fuzzy_auto,2958,499
+Vitória SC,Liga Portugal,Vitória Guimarães SC,90.0,fuzzy_auto,3009,2420
+Volta Redonda,Brasileirao Serie B,Volta Redonda Futebol Clube (RJ),90.0,fuzzy_auto,6982,4176
+Västerås SK,Allsvenskan,Västerås SK,100,exact,1775,5202
+Vålerenga IF,Norwegian Eliteserien,Vålerenga Fotball Elite,100,manual_confirm,1165,76
+WSG Tirol,Austrian Bundesliga,WSG Tirol,100,exact,5405,2446
+Willem II Tilburg,Eerste Divisie,Willem II Tilburg,100,exact,2961,403
+Wolfsberger AC,Austrian Bundesliga,Wolfsberger AC,100,exact,2076,4441
+Yokohama F. Marinos,J1 League,Yokohama F. Marinos,100,exact,3137,3828
+Yokohama FC,J1 League,Yokohama F. Marinos,90.0,fuzzy_auto,7061,3828
+Zamora CF,1RFEF,Zamora CF,100,exact,24379,10907
+Çaykur Rizespor,Turkish Süper Lig,Caykur Rizespor,99,normalized,3064,126
+Austin FC,MLS,Austin FC,100,exact,377973,72309
+Charlotte FC,MLS,Charlotte FC,100,exact,404108,78435
+Chicago Fire,MLS,Chicago Fire FC,99,normalized,2505,432
+Columbus Crew,MLS,Columbus Crew,100,exact,2504,813
+Empoli,Serie B,Empoli FC,99,normalized,2705,749
+FC Cincinnati,MLS,FC Cincinnati,100,exact,215167,51772
+FC Dallas,MLS,FC Dallas,100,exact,2512,8816
+Inter Miami CF,MLS,Inter Miami CF,100,exact,337602,69261
+JEF United Chiba,J1 League,JEF United Chiba,100,exact,3144,672
+Kalmar FF,Allsvenskan,Kalmar FF,100,exact,1891,3654
+Los Angeles FC,MLS,Los Ángeles FC,99,normalized,274650,51828
+Minnesota United,MLS,Minnesota United FC,99,normalized,41618,56089
+Mito Hollyhock,J1 League,Mito HollyHock,100,exact,21901,21975
+Monza,Serie B,AC Monza,90.0,fuzzy_auto,2729,2919
+Nashville SC,MLS,Nashville SC,100,exact,337612,63966
+New York City FC,MLS,New York City FC,100,exact,187643,40058
+Orlando City SC,MLS,Orlando City SC,100,exact,52237,45604
+Padova,Serie B,Calcio Padova,90.0,fuzzy_auto,2741,3037
+Philadelphia Union,MLS,Philadelphia Union,100,exact,39833,25467
+Portland Timbers,MLS,Portland Timbers,100,exact,22007,4291
+Real Salt Lake,MLS,Real Salt Lake City,95.0,fuzzy_auto,5133,6643
+San Diego FC,MLS,San Diego FC,100,exact,1043961,114977
+Seattle Sounders FC,MLS,Seattle Sounders FC,100,exact,22009,9636
+US Avellino 1912,Serie B,US Avellino 1912,100,exact,2730,2331
+V-Varen Nagasaki,J1 League,V-Varen Nagasaki,100,exact,38154,23581
+Vancouver Whitecaps,MLS,Vancouver Whitecaps FC,99,normalized,22010,6321
+Örgryte IS,Allsvenskan,Örgryte IS,100,exact,1766,1118

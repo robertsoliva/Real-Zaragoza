@@ -500,6 +500,9 @@ models:
 
   - name: agg_tm_player_valuations
     description: "GRAIN: one row per (player_id, club_id, season_id, ingested_date) — ALL quarterly TM snapshots preserved (reads raw directly, not silver). snapshot_rank=1 is most recent. Use for market value trend analysis. CLUSTER BY player_id, league_name. Empty until quarterly run Oct 2026."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [player_id, club_id, season_id, ingested_date]
     columns:
       - name: player_id
         description: "Transfermarkt player identifier."

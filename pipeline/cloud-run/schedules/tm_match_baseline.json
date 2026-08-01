@@ -1,0 +1,29 @@
+{
+  "_captured_date": "2026-08-01",
+  "_note": "Per-league % of scouting-relevant players (>=450 min) with a non-null tm_player_id in gold.agg_scouting_player_season, at the time this baseline was captured. Used by send_daily_summary.py to flag leagues that regress more than 5pp below this baseline (club_name_aliases coverage gap, TM scrape miss, etc.). Re-capture deliberately after any change expected to improve match rate (don't silently ratchet down after a real regression -- only refresh after verifying the new lower rate is not itself a bug).",
+  "leagues": {
+    "1RFEF": 44.8,
+    "2. Bundesliga": 54.4,
+    "Allsvenskan": 57.1,
+    "Austrian Bundesliga": 58.1,
+    "Belgian Pro League": 49.8,
+    "Brasileirao Serie B": 48.6,
+    "Bundesliga": 72.2,
+    "Eerste Divisie": 61.4,
+    "Eredivisie": 65.6,
+    "FIFA World Cup": 0.0,
+    "J1 League": 71.6,
+    "Korean K League 1": 20.5,
+    "LaLiga2": 55.6,
+    "Liga Portugal": 59.1,
+    "Ligue 2": 54.2,
+    "Moldovan Super Liga": 38.2,
+    "Mozzart Bet Superliga": 14.2,
+    "Norwegian Eliteserien": 30.3,
+    "Romanian SuperLiga": 48.0,
+    "Serie B": 51.2,
+    "Turkish Süper Lig": 54.1,
+    "tournament_17": 36.2,
+    "Premier League": 36.2
+  }
+}

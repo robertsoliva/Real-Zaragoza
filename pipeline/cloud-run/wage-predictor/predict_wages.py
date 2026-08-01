@@ -20,6 +20,7 @@ Top-5 EU leagues use 1.0 (model trained directly on their data).
 import os
 import logging
 import sys
+from datetime import date
 from google.cloud import bigquery
 
 logging.basicConfig(
@@ -31,6 +32,13 @@ log = logging.getLogger(__name__)
 
 PROJECT = os.environ.get("GCP_PROJECT_ID", "real-zaragoza-500608")
 LOCATION = "europe-west1"
+
+# Bump this whenever LEAGUE_MULTIPLIER_SQL's constants below are re-derived against
+# fresh Capology/press data (not just when this file changes for unrelated reasons).
+# The job logs a warning past MULTIPLIER_STALE_AFTER_DAYS so staleness surfaces in
+# Cloud Run job logs each quarterly run instead of silently drifting.
+MULTIPLIER_LAST_REVIEWED = date(2026, 7, 26)
+MULTIPLIER_STALE_AFTER_DAYS = 100  # ~1 quarter + grace; job runs quarterly, 1 day after the TM scrape
 
 client = bigquery.Client(project=PROJECT, location=LOCATION)
 
@@ -212,6 +220,22 @@ def run(sql: str, desc: str) -> bigquery.QueryJob:
 def main():
     log.info("=== rz-wage-predictor started ===")
     log.info("Project: %s", PROJECT)
+
+    days_since_review = (date.today() - MULTIPLIER_LAST_REVIEWED).days
+    if days_since_review > MULTIPLIER_STALE_AFTER_DAYS:
+        log.warning(
+            "LEAGUE_MULTIPLIER_SQL constants haven't been reviewed in %d days "
+            "(last reviewed %s, threshold %d days). Fresh Capology data from this "
+            "quarter's scrape just landed -- re-derive the multipliers (see the "
+            "calibration method in LEAGUE_MULTIPLIER_SQL's comment) and bump "
+            "MULTIPLIER_LAST_REVIEWED once done.",
+            days_since_review, MULTIPLIER_LAST_REVIEWED, MULTIPLIER_STALE_AFTER_DAYS,
+        )
+    else:
+        log.info(
+            "League multipliers last reviewed %s (%d days ago, within the %d-day threshold).",
+            MULTIPLIER_LAST_REVIEWED, days_since_review, MULTIPLIER_STALE_AFTER_DAYS,
+        )
 
     run(SQL_TRAIN, "train ml.wage_regression")
 

@@ -37,7 +37,6 @@
 # Note: Bundesliga (35) entries were already in Priority 4 mislabeled as 2.Bundesliga —
 # relabeled correctly above. The actual 2.Bundesliga (44) added directly above.
 # -------------------------------------------------------------------------
-17   61627  PremierLeague_2024-25
 17   76986  PremierLeague_2025-26
 8    61643  LaLiga_2024-25
 8    77559  LaLiga_2025-26

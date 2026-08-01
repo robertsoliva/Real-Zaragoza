@@ -9,7 +9,9 @@ SofaScore tournament IDs:
   Norwegian Elitser. = 20       Austrian Bundesliga  = 45
   Korean K League 1  = 410      Eredivisie (NL 1st)  = 37
   Belgian Pro League = 38       Liga Portugal        = 238
-  2. Bundesliga      = 35
+  Bundesliga         = 35       2. Bundesliga        = 44
+  Premier League     = 17       La Liga              = 8
+  Serie A            = 23       Ligue 1              = 34
   Real Zaragoza team_id = 2815
 
 Known season IDs (run seasons_lookup.py to discover others):
@@ -67,7 +69,12 @@ LEAGUE_NAMES: dict[str, str] = {
     "37":    "Eredivisie",
     "38":    "Belgian Pro League",
     "238":   "Liga Portugal",
-    "35":    "2. Bundesliga",
+    "35":    "Bundesliga",
+    "44":    "2. Bundesliga",
+    "17":    "Premier League",
+    "8":     "La Liga",
+    "23":    "Serie A",
+    "34":    "Ligue 1",
 }
 
 # Stat fields used to detect whether SofaScore returned real player stats.

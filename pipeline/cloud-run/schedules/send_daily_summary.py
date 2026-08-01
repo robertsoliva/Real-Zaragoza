@@ -12,6 +12,7 @@ Credentials stored in ~/.realzaragoza/email.conf (not in git):
 """
 
 import glob
+import json
 import re
 import smtplib
 from datetime import date
@@ -22,6 +23,10 @@ from pathlib import Path
 QUEUE_FILE = Path(__file__).parent / "sofascore_queue.txt"
 CONFIG_FILE = Path.home() / ".realzaragoza" / "email.conf"
 LOG_GLOB = "/tmp/sofascore_*_launchd.log"
+TM_MATCH_BASELINE_FILE = Path(__file__).parent / "tm_match_baseline.json"
+TM_MATCH_PROJECT = "real-zaragoza-500608"
+TM_MATCH_REGRESSION_THRESHOLD_PP = 5.0  # flag a league if its match % drops more than this below baseline
+TM_MATCH_MIN_SAMPLE = 20                # ignore leagues too small to be a meaningful signal
 
 SLOT_ORDER = ["midnight", "4am", "8am", "noon", "4pm", "8pm"]
 
@@ -102,6 +107,56 @@ def parse_slot_logs() -> list[dict]:
     return runs
 
 
+def check_tm_match_quality() -> dict:
+    """Compare each league's current TM-match rate (gold.agg_scouting_player_season,
+    players with >=450 min) against the captured baseline in tm_match_baseline.json.
+    Returns {"regressions": [...]} on success, or {"error": "..."} if the check itself
+    failed (e.g. no BQ credentials in this environment) -- never raises, since a failed
+    quality check shouldn't block the rest of the daily digest from sending."""
+    if not TM_MATCH_BASELINE_FILE.exists():
+        return {"error": f"No baseline file at {TM_MATCH_BASELINE_FILE}"}
+
+    try:
+        baseline = json.loads(TM_MATCH_BASELINE_FILE.read_text())["leagues"]
+    except Exception as e:
+        return {"error": f"Could not parse baseline file: {e}"}
+
+    try:
+        from google.cloud import bigquery
+        client = bigquery.Client(project=TM_MATCH_PROJECT)
+        query = f"""
+            SELECT league_name, COUNT(*) AS n, COUNTIF(tm_player_id IS NOT NULL) AS matched
+            FROM `{TM_MATCH_PROJECT}.gold.agg_scouting_player_season`
+            WHERE total_minutes >= 450
+            GROUP BY league_name
+            HAVING COUNT(*) >= {TM_MATCH_MIN_SAMPLE}
+        """
+        current = {
+            row.league_name: row.matched / row.n * 100
+            for row in client.query(query).result()
+        }
+    except Exception as e:
+        return {"error": f"BQ query failed: {e}"}
+
+    regressions = []
+    for league, base_pct in baseline.items():
+        if league.startswith("_"):
+            continue
+        cur_pct = current.get(league)
+        if cur_pct is None:
+            continue  # league not present today (renamed, or below min sample) -- not a regression signal
+        drop = base_pct - cur_pct
+        if drop > TM_MATCH_REGRESSION_THRESHOLD_PP:
+            regressions.append({
+                "league_name": league,
+                "baseline_pct": base_pct,
+                "current_pct": round(cur_pct, 1),
+                "drop_pp": round(drop, 1),
+            })
+
+    return {"regressions": sorted(regressions, key=lambda r: -r["drop_pp"])}
+
+
 def get_remaining_queue() -> list[tuple]:
     entries = []
     with open(QUEUE_FILE) as f:
@@ -115,7 +170,7 @@ def get_remaining_queue() -> list[tuple]:
     return entries
 
 
-def format_body(runs: list[dict], remaining: list[tuple]) -> str:
+def format_body(runs: list[dict], remaining: list[tuple], tm_match: dict | None = None) -> str:
     today = date.today().strftime("%Y-%m-%d")
     lines = [f"SofaScore backfill — {today}", "=" * 48, ""]
 
@@ -146,6 +201,22 @@ def format_body(runs: list[dict], remaining: list[tuple]) -> str:
     else:
         lines.append("  ✅ Queue is empty — backfill complete!")
 
+    if tm_match is not None:
+        lines.append("")
+        if "error" in tm_match:
+            lines.append(f"TM MATCH-QUALITY CHECK  ⚠️  skipped ({tm_match['error']})")
+        elif tm_match["regressions"]:
+            lines.append(f"TM MATCH-QUALITY CHECK  ⚠️  {len(tm_match['regressions'])} league(s) regressed\n")
+            for r in tm_match["regressions"]:
+                lines.append(
+                    f"  ⚠️  {r['league_name']:<24s}  {r['baseline_pct']}% → {r['current_pct']}%  "
+                    f"(-{r['drop_pp']}pp)"
+                )
+            lines.append(f"\n  Threshold: >{TM_MATCH_REGRESSION_THRESHOLD_PP}pp below baseline. "
+                          f"Baseline captured {json.loads(TM_MATCH_BASELINE_FILE.read_text())['_captured_date']}.")
+        else:
+            lines.append("TM MATCH-QUALITY CHECK  ✅  no league regressed beyond threshold")
+
     return "\n".join(lines)
 
 
@@ -165,17 +236,25 @@ def main() -> None:
     config = load_config()
     runs = parse_slot_logs()
     remaining = get_remaining_queue()
+    tm_match = check_tm_match_quality()
 
     today = date.today().strftime("%Y-%m-%d")
     n_ok = sum(1 for r in runs if r["success"])
     n_fail = sum(1 for r in runs if not r["success"])
 
-    if runs:
-        subject = f"[RZ] {today} — {n_ok} OK{f', {n_fail} FAILED' if n_fail else ''} | {len(remaining)} in queue"
-    else:
-        subject = f"[RZ] {today} — no runs | {len(remaining)} in queue"
+    subject_flags = []
+    if n_fail:
+        subject_flags.append(f"{n_fail} FAILED")
+    if tm_match.get("regressions"):
+        subject_flags.append(f"{len(tm_match['regressions'])} TM regression(s)")
+    flag_str = f", {', '.join(subject_flags)}" if subject_flags else ""
 
-    body = format_body(runs, remaining)
+    if runs:
+        subject = f"[RZ] {today} — {n_ok} OK{flag_str} | {len(remaining)} in queue"
+    else:
+        subject = f"[RZ] {today} — no runs{flag_str} | {len(remaining)} in queue"
+
+    body = format_body(runs, remaining, tm_match)
     send_email(subject, body, config)
     print(f"Sent: {subject}")
 

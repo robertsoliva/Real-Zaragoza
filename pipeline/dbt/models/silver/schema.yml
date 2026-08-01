@@ -471,6 +471,9 @@ models:
 
   - name: silver_capology_wages
     description: "GRAIN: one row per (player_name, club_name, league_name) — latest ingestion. Loan players excluded. Adds wage_eur_annual = wage_eur_weekly × 52. Top 5 EU leagues only. CLUSTER BY league_name, position_group."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [player_name, club_name, league_name]
     columns:
       - name: player_name
         description: "Player name as listed on Capology."
@@ -509,7 +512,10 @@ models:
     description: "GRAIN: one row per player_name — latest BQML wage prediction, deduplicated by player name (not club). Club-name join would fail for players who moved between TM scrape and historical seasons, so name-only dedup is intentional."
     columns:
       - name: player_name
-        description: "Player name from silver.tm_players."
+        description: "Player name from silver.tm_players. Grain key -- name-only dedup means two different real people sharing a name would collide here (see next-actions.md Infra + ETL improvements)."
+        tests:
+          - not_null
+          - unique
       - name: club_name
         description: "Club at time of prediction — may differ from the season being scouted if player moved."
       - name: league_name

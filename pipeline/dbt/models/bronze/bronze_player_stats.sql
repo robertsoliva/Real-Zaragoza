@@ -2,7 +2,9 @@
 
 SELECT
   match_id, player_id, match_date, match_round, tournament_id, season_id,
-  CASE tournament_id WHEN '35' THEN 'Bundesliga' WHEN '44' THEN '2. Bundesliga' ELSE league_name END AS league_name,
+  CASE tournament_id WHEN '35' THEN 'Bundesliga' WHEN '44' THEN '2. Bundesliga'
+    WHEN '17' THEN 'Premier League' WHEN '8' THEN 'La Liga' WHEN '23' THEN 'Serie A' WHEN '34' THEN 'Ligue 1'
+    ELSE league_name END AS league_name,
   player_name, team_id, team_name, is_home, position, shirt_number, is_substitute, captain,
   minutes_played, goals, goal_assists, rating, total_passes, accurate_passes,
   total_long_balls, accurate_long_balls, total_crosses, accurate_crosses, key_passes,
@@ -17,7 +19,9 @@ UNION ALL
 
 SELECT
   match_id, player_id, match_date, match_round, tournament_id, season_id,
-  CASE tournament_id WHEN '35' THEN 'Bundesliga' WHEN '44' THEN '2. Bundesliga' ELSE league_name END AS league_name,
+  CASE tournament_id WHEN '35' THEN 'Bundesliga' WHEN '44' THEN '2. Bundesliga'
+    WHEN '17' THEN 'Premier League' WHEN '8' THEN 'La Liga' WHEN '23' THEN 'Serie A' WHEN '34' THEN 'Ligue 1'
+    ELSE league_name END AS league_name,
   player_name, team_id, team_name, is_home, position, shirt_number, is_substitute, captain,
   minutes_played, goals, goal_assists, rating, total_passes, accurate_passes,
   total_long_balls, accurate_long_balls, total_crosses, accurate_crosses, key_passes,

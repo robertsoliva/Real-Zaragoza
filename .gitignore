@@ -26,3 +26,9 @@ Extracció/
 # Generated reports — output artifacts, not source code
 reports/
 website/reports/
+
+# dbt local run artifacts
+pipeline/dbt/target/
+pipeline/dbt/dbt_packages/
+pipeline/dbt/logs/
+pipeline/dbt/.user.yml
