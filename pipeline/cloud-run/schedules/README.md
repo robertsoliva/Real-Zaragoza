@@ -8,10 +8,10 @@ Shell runners and launchd plists that control when scrapers and refresh jobs fir
 |---|---|---|
 | `run_next_from_queue.sh` | launchd 6×/day (00:00, 04:00, 08:00, 12:00, 16:00, 20:00) | Pops next season from `sofascore_queue.txt`, runs it, removes it, runs GCS backup |
 | `run_weekly_sofascore.sh` | launchd Tuesdays 07:30 | Incremental update for all active seasons (last 14 days) |
-| `run_refresh_processed.sh` | launchd 11:00 + 20:00 | Triggers `rz-dbt-refresh` Cloud Run Job |
-| `backup_raw_to_gcs.sh` | Called by `run_next_from_queue.sh` | Exports all raw BQ tables to `gs://rz-raw-backups/YYYY-MM-DD/` as Parquet |
+| `run_refresh_processed.sh` | launchd 11:00 + 20:00 | Triggers `rz-dbt-refresh` Cloud Run Job. Fires alongside Cloud Scheduler's 06:00 trigger with no coordination between them — safe since 2026-08-01: the job itself (`pipeline/cloud-run/dbt-refresh/run_with_lock.py`) takes a BigQuery-backed lock (`ops.pipeline_locks`) before running dbt, regardless of which trigger fired it. |
+| `backup_raw_to_gcs.sh` | Called by `run_next_from_queue.sh` | Exports all raw BQ tables to `gs://rz-raw-backups/YYYY-MM-DD/` as Parquet (includes `transfermarkt_players`/`capology_wages`/`bqml_wage_predictions`, not just SofaScore) |
 | `run_daily_wc26.sh` | *(archived — WC 2026 complete)* | WC incremental scrape; plists unloaded |
-| `send_daily_summary.py` | `com.realzaragoza.daily-email.plist` | Daily pipeline summary email |
+| `send_daily_summary.py` | `com.realzaragoza.daily-email.plist` | Daily pipeline summary email. Also checks (added 2026-08-01): per-league TM-match-rate regression vs. `tm_match_baseline.json` (>5pp drop flagged), and quarterly-job freshness for TM/Capology/wage-predictor (>100 days since last update flagged). Both fail soft — a check error is noted in the email, never blocks it from sending. **Open issue**: the email itself reportedly needs re-authenticating daily due to a permissions problem (root cause not yet identified — Gmail app-password or local `gcloud`/BQ token expiry are the likely suspects) — worth fixing before relying on these alerts long-term. |
 
 ## launchd plists
 

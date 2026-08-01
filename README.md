@@ -46,15 +46,17 @@ launchd (macOS, local)
   └── 07:30 Tue → run_weekly_sofascore.sh (incremental, all 26 active seasons)
 
 Cloud Run Jobs (GCP, europe-west1)
-  ├── rz-refresh-layers  → bronze/silver/gold SQL  (daily 06:00)
-  ├── rz-tm-scraper      → raw.transfermarkt_*     (quarterly 1 Jan/Apr/Jul/Oct)
-  └── rz-capology-scraper → raw.capology_wages     (monthly 1st)
+  ├── rz-dbt-refresh     → bronze/silver/gold (dbt)  (daily 06:00 + launchd 11:00/20:00, lock-guarded)
+  ├── rz-tm-scraper      → raw.transfermarkt_*       (quarterly 1 Jan/Apr/Jul/Oct)
+  └── rz-capology-scraper → raw.capology_wages       (quarterly 1 Jan/Apr/Jul/Oct)
 
 launchd (macOS, local)
   └── 22:00 daily → send_daily_summary.py → email digest to rsolivamachin@gmail.com
 ```
 
 Backfill queue: `pipeline/cloud-run/schedules/sofascore_queue.txt` — 1 season per slot, lock file prevents concurrent runs. **Never run 2+ consecutive seasons manually — triggers 24h Cloudflare IP ban.**
+
+dbt changes go through CI/CD, not straight to prod: PRs run `dbt build` against dev-only BigQuery datasets (GitHub Actions), and only a manually-triggered workflow deploys to production. Detail: [`wiki/architecture.md`](wiki/architecture.md#devprod-split--cicd).
 
 ---
 

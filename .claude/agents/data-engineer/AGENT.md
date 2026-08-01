@@ -76,7 +76,11 @@ Do not guess at column names. If unsure, check the schema file.
 
 ## Processed layers
 
-Medallion architecture. dbt model definitions in `pipeline/dbt/models/{bronze,silver,gold}/`. Schema in `pipeline/dbt/models/{bronze,silver,gold}/schema.yml`. Refreshed daily by Cloud Run Job `rz-dbt-refresh` (06:00 Europe/Madrid via Cloud Scheduler + launchd 11:00/20:00).
+Medallion architecture. dbt model definitions in `pipeline/dbt/models/{bronze,silver,gold}/`. Schema in `pipeline/dbt/models/{bronze,silver,gold}/schema.yml`. Refreshed daily by Cloud Run Job `rz-dbt-refresh` (06:00 Europe/Madrid via Cloud Scheduler + launchd 11:00/20:00), lock-guarded via `ops.pipeline_locks` (see `pipeline/cloud-run/dbt-refresh/run_with_lock.py`) so overlapping triggers can't collide.
+
+**Dev/prod split (added 2026-08-01):** `dev_bronze`/`dev_silver`/`dev_gold` mirror the tables below for CI/local dev work — `profiles.yml` defaults to `target: dev`, so any ad-hoc `dbt run` you execute locally hits these, never prod. Only the deployed `rz-dbt-refresh` container (`--target prod` explicit) and the manual `dbt-deploy-prod.yml` GitHub Actions workflow write to the real `bronze`/`silver`/`gold` datasets below. Full detail: `wiki/architecture.md#devprod-split--cicd`.
+
+**Seeds** (`pipeline/dbt/seeds/`): `club_name_aliases.csv` (SofaScore↔TM club name/ID bridge) and `player_id_map.csv` (SofaScore↔TM player identity crosswalk — built 2026-08-01, **not wired into any model**, see `wiki/architecture.md` Known data issues before using it for anything).
 
 **`bronze`** — views, always live (no storage):
 - `matches`, `player_stats`, `team_stats`, `shots` — UNION ALL of `raw` + `wc_2026`, adds `dataset_source` tag
@@ -106,7 +110,7 @@ Medallion architecture. dbt model definitions in `pipeline/dbt/models/{bronze,si
 - `dim_team` — team name lookup, insert-only (team_id as key)
 - `dim_player` — fixed player attributes (position, nationality, foot, height), insert-only
 
-**Known issue:** WC rows ingested before 2026-07-05 have `league_name = "tournament_16"`. Filter WC data by `tournament_id = "16"` until fixed in the bronze matches dbt model.
+**Known issue:** WC rows ingested before 2026-07-05 have `league_name = "tournament_16"`. Filter WC data by `tournament_id = "16"` until fixed in the bronze matches dbt model. (Same class of bug also hit tournament_id 17/8/23/34 — Premier League/La Liga/Serie A/Ligue 1 — fixed 2026-08-01 in the scraper and all 4 bronze models.)
 
 ---
 
