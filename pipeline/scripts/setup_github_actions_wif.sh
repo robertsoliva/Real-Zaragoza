@@ -29,40 +29,54 @@ POOL_ID="github-pool"
 PROVIDER_ID="github-provider"
 SA_NAME="github-actions-dbt"
 SA_EMAIL="${SA_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 PROJECT_NUMBER=$(gcloud projects describe "$PROJECT_ID" --format='value(projectNumber)')
 
+# Idempotent throughout -- safe to re-run after a partial failure (e.g. the
+# "This feature requires allowlisting" error step 4 used to hit, now fixed
+# below by using the BigQuery API's stable access_entries mechanism instead
+# of `bq add-iam-policy-binding`, which needs an unenabled preview feature).
+
 echo "=== 1. Workload Identity Pool ==="
-gcloud iam workload-identity-pools create "$POOL_ID" \
-  --project="$PROJECT_ID" --location="global" \
-  --display-name="GitHub Actions Pool"
+if gcloud iam workload-identity-pools describe "$POOL_ID" --project="$PROJECT_ID" --location="global" >/dev/null 2>&1; then
+  echo "  already exists -- skipping"
+else
+  gcloud iam workload-identity-pools create "$POOL_ID" \
+    --project="$PROJECT_ID" --location="global" \
+    --display-name="GitHub Actions Pool"
+fi
 
 echo "=== 2. OIDC Provider, restricted to $REPO only ==="
-gcloud iam workload-identity-pools providers create-oidc "$PROVIDER_ID" \
-  --project="$PROJECT_ID" --location="global" \
-  --workload-identity-pool="$POOL_ID" \
-  --display-name="GitHub Provider" \
-  --attribute-mapping="google.subject=assertion.sub,attribute.repository=assertion.repository" \
-  --attribute-condition="assertion.repository=='${REPO}'" \
-  --issuer-uri="https://token.actions.githubusercontent.com"
+if gcloud iam workload-identity-pools providers describe "$PROVIDER_ID" --project="$PROJECT_ID" --location="global" --workload-identity-pool="$POOL_ID" >/dev/null 2>&1; then
+  echo "  already exists -- skipping"
+else
+  gcloud iam workload-identity-pools providers create-oidc "$PROVIDER_ID" \
+    --project="$PROJECT_ID" --location="global" \
+    --workload-identity-pool="$POOL_ID" \
+    --display-name="GitHub Provider" \
+    --attribute-mapping="google.subject=assertion.sub,attribute.repository=assertion.repository" \
+    --attribute-condition="assertion.repository=='${REPO}'" \
+    --issuer-uri="https://token.actions.githubusercontent.com"
+fi
 
 echo "=== 3. Dedicated service account ==="
-gcloud iam service-accounts create "$SA_NAME" \
-  --project="$PROJECT_ID" \
-  --display-name="GitHub Actions - dbt CI/CD"
+if gcloud iam service-accounts describe "$SA_EMAIL" --project="$PROJECT_ID" >/dev/null 2>&1; then
+  echo "  already exists -- skipping"
+else
+  gcloud iam service-accounts create "$SA_NAME" \
+    --project="$PROJECT_ID" \
+    --display-name="GitHub Actions - dbt CI/CD"
+fi
 
 echo "=== 4. Least-privilege dataset-level grants (not project-wide) ==="
+# Uses the BigQuery API's access_entries (stable, no allowlisting needed) --
+# NOT `bq add-iam-policy-binding`, which requires a preview feature.
 for ds in raw wc_2026; do
-  bq add-iam-policy-binding \
-    --member="serviceAccount:${SA_EMAIL}" \
-    --role="roles/bigquery.dataViewer" \
-    "${PROJECT_ID}:${ds}"
+  python3 "$SCRIPT_DIR/grant_dataset_access.py" "$PROJECT_ID" "$ds" "roles/bigquery.dataViewer" "$SA_EMAIL"
 done
 for ds in dev_bronze dev_silver dev_gold; do
-  bq add-iam-policy-binding \
-    --member="serviceAccount:${SA_EMAIL}" \
-    --role="roles/bigquery.dataEditor" \
-    "${PROJECT_ID}:${ds}"
+  python3 "$SCRIPT_DIR/grant_dataset_access.py" "$PROJECT_ID" "$ds" "roles/bigquery.dataEditor" "$SA_EMAIL"
 done
 
 echo "=== 5. Project-level grants needed to run jobs / trigger deploys ==="

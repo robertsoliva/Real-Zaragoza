@@ -533,6 +533,45 @@ models:
       - name: snapshot_rank
         description: "1 = most recent snapshot for this (player, club, season). ORDER BY ingested_date DESC."
 
+  - name: agg_capology_wage_history
+    description: "GRAIN: one row per (player_name, club_name, league_name, ingested_date) — ALL quarterly Capology snapshots preserved (reads raw directly, not silver). snapshot_rank=1 is most recent. Mirrors agg_tm_player_valuations for wages. Top 5 EU leagues only. Loans and non-positive wages excluded (same filters as silver_capology_wages). Use for wage trend analysis over time. CLUSTER BY league_name, position_group."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [player_name, club_name, league_name, ingested_date]
+    columns:
+      - name: player_name
+        description: "Player name as listed on Capology."
+        tests:
+          - not_null
+      - name: primary_position
+        description: "Detailed position (e.g. 'Centre-Back', 'Left Winger')."
+      - name: position_group
+        description: "Broad position group: GK, DEF, MID, FWD."
+      - name: age
+        description: "Player age at time of scraping."
+      - name: club_name
+        description: "Club name as listed on Capology."
+        tests:
+          - not_null
+      - name: nationality
+        description: "Player nationality."
+      - name: league_name
+        description: "League name: Premier League, La Liga, Bundesliga, Ligue 1, or Serie A."
+        tests:
+          - not_null
+      - name: league_tier
+        description: "Division tier (1 = top flight for all Capology leagues)."
+      - name: wage_eur_weekly
+        description: "Reported gross weekly wage in EUR at this snapshot."
+      - name: wage_eur_annual
+        description: "Derived annual wage: wage_eur_weekly × 52."
+      - name: active
+        description: "True if the player was active at this club per Capology at the time of this snapshot."
+      - name: ingested_date
+        description: "Date this snapshot was scraped. Use to track wage changes over time."
+      - name: snapshot_rank
+        description: "1 = most recent snapshot for this (player, club, league). ORDER BY ingested_date DESC."
+
   - name: agg_player_wage_benchmarks
     description: "GRAIN: one row per (league_name, position_group) — P25/median/P75/avg gross wages. Top 5 EU leagues only (PL, La Liga, Bundesliga, Ligue 1, Serie A). Use for scouting budget planning. CLUSTER BY league_name, position_group."
     tests:
