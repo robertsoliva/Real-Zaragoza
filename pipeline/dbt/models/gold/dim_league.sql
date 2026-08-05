@@ -32,6 +32,7 @@ WITH leagues AS (
       WHEN '196'   THEN 'Japan'
       WHEN '210'   THEN 'Serbia'
       WHEN '238'   THEN 'Portugal'
+      WHEN '239'   THEN 'Portugal'
       WHEN '242'   THEN 'United States'
       WHEN '390'   THEN 'Brazil'
       WHEN '410'   THEN 'South Korea'

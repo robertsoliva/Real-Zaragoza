@@ -69,6 +69,7 @@ LEAGUE_NAMES: dict[str, str] = {
     "37":    "Eredivisie",
     "38":    "Belgian Pro League",
     "238":   "Liga Portugal",
+    "239":   "Liga Portugal 2",
     "35":    "Bundesliga",
     "44":    "2. Bundesliga",
     "17":    "Premier League",

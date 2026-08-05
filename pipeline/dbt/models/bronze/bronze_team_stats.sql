@@ -3,7 +3,7 @@
 SELECT
   match_id, match_date, match_round, tournament_id, season_id,
   CASE tournament_id WHEN '35' THEN 'Bundesliga' WHEN '44' THEN '2. Bundesliga'
-    WHEN '17' THEN 'Premier League' WHEN '8' THEN 'La Liga' WHEN '23' THEN 'Serie A' WHEN '34' THEN 'Ligue 1'
+    WHEN '17' THEN 'Premier League' WHEN '8' THEN 'La Liga' WHEN '23' THEN 'Serie A' WHEN '34' THEN 'Ligue 1' WHEN '239' THEN 'Liga Portugal 2'
     ELSE league_name END AS league_name,
   team_id, team_name, side, possession_pct, total_shots, shots_on_target,
   shots_off_target, blocked_shots, shots_on_woodwork, shots_inside_box, shots_outside_box,
@@ -21,7 +21,7 @@ UNION ALL
 SELECT
   match_id, match_date, match_round, tournament_id, season_id,
   CASE tournament_id WHEN '35' THEN 'Bundesliga' WHEN '44' THEN '2. Bundesliga'
-    WHEN '17' THEN 'Premier League' WHEN '8' THEN 'La Liga' WHEN '23' THEN 'Serie A' WHEN '34' THEN 'Ligue 1'
+    WHEN '17' THEN 'Premier League' WHEN '8' THEN 'La Liga' WHEN '23' THEN 'Serie A' WHEN '34' THEN 'Ligue 1' WHEN '239' THEN 'Liga Portugal 2'
     ELSE league_name END AS league_name,
   team_id, team_name, side, possession_pct, total_shots, shots_on_target,
   shots_off_target, blocked_shots, shots_on_woodwork, shots_inside_box, shots_outside_box,

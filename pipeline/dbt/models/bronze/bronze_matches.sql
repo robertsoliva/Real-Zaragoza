@@ -9,6 +9,7 @@ SELECT
        WHEN tournament_id = '8'  THEN 'La Liga'
        WHEN tournament_id = '23' THEN 'Serie A'
        WHEN tournament_id = '34' THEN 'Ligue 1'
+       WHEN tournament_id = '239' AND league_name = 'tournament_239' THEN 'Liga Portugal 2'
        ELSE league_name END AS league_name,
   home_team_id, home_team_name, away_team_id, away_team_name,
   home_score, away_score, status, ingested_date, ingested_at,
@@ -26,6 +27,7 @@ SELECT
        WHEN tournament_id = '8'  THEN 'La Liga'
        WHEN tournament_id = '23' THEN 'Serie A'
        WHEN tournament_id = '34' THEN 'Ligue 1'
+       WHEN tournament_id = '239' AND league_name = 'tournament_239' THEN 'Liga Portugal 2'
        ELSE league_name END AS league_name,
   home_team_id, home_team_name, away_team_id, away_team_name,
   home_score, away_score, status, ingested_date, ingested_at,
