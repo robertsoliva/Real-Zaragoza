@@ -1,6 +1,6 @@
 # Real Zaragoza — Current Situation
 
-> **Status:** living document, last updated 2026-07-25. Sources of truth: [realzaragoza.com](https://www.realzaragoza.com/) and [Spanish Wikipedia](https://es.wikipedia.org/wiki/Real_Zaragoza); where day-to-day news and these two disagree, these two win. Several roles remain in flux — those lines are flagged explicitly.
+> **Status:** living document, last updated 2026-08-06. Sources of truth: [realzaragoza.com](https://www.realzaragoza.com/) and [Spanish Wikipedia](https://es.wikipedia.org/wiki/Real_Zaragoza); where day-to-day news and these two disagree, these two win. Several roles remain in flux — those lines are flagged explicitly.
 
 ## TL;DR
 
@@ -23,7 +23,7 @@
 
 The club is coming off the **2025–26 Segunda División season**, which ended in relegation to **Primera Federación (Primera RFEF)** — the third tier, and outside professional football — confirmed 24 May 2026 after finishing bottom (22nd) of Segunda. See [history.md](./history.md) for the full context (first time in the third tier in 77 years). The season was marked by three different head coaches and the dismissal of a sporting director mid-season. The club enters 2026–27 in its deepest institutional crisis in 94 years, and is also playing away from its historic home while La Romareda is rebuilt (see Stadium below).
 
-The club has been placed in **Group II of 1ª RFEF** for 2026–27; **Nàstic** is confirmed as their first opponent.
+The club has been placed in **Group II of 1ª RFEF** for 2026–27; first match confirmed **Sunday 30 August, 21:30, away vs Nàstic** (Nou Estadi Costa Daurada).
 
 ## Ownership
 
@@ -31,9 +31,9 @@ The club has been placed in **Group II of 1ª RFEF** for 2026–27; **Nàstic** 
 
 - **Ownership history:** Solans family 1992–2006 → Agapito Iglesias 2006–2014 (the "Dark Era," see [history.md](./history.md)) → **Fundación Real Zaragoza 2032**, led by former Telefónica president **César Alierta**, majority shareholder 2019–2022 (Alierta died in 2026) → Jorge Mas–led consortium (**Real Z LLC**, April 2022) → **A.GAIN Capital** as majority shareholder (July 14, 2026), alongside Mas and Forcén.
 - The June 2026 €20M capital increase was funded by Mas and Forcén, consolidating control within Real Z LLC at the expense of the other 2022 partners (Jiménez de Parga, Amber Capital/Oughourlian). A.GAIN then entered as majority shareholder a few weeks later via a separate agreement with Real Z LLC.
-- **"Institutional president" idea:** Mas had signalled he might hand day-to-day representation to a non-shareholding "institutional president." As of the July 25 check, **Mas is still listed as President** on the official organigrama. With A.GAIN's arrival and Baroli as GM, this restructuring may be considered fulfilled without a separate "institutional president" being named — **flag to monitor**.
+- **"Institutional president" idea:** Mas had signalled he might hand day-to-day representation to a non-shareholding "institutional president." Re-checked directly against the official organigrama 2026-08-06 (unchanged since the July 25 check): **Mas is still listed as President**, Baroli as Director General, no "presidente institucional" role appears anywhere in the chart. With A.GAIN's arrival and Baroli as GM, this restructuring may be considered fulfilled without a separate "institutional president" being named — **flag to monitor, but two checks 12 days apart now show no movement**.
 
-## Board of Directors (per official organigrama, checked 2026-07-25)
+## Board of Directors (per official organigrama, checked 2026-07-25, re-verified unchanged 2026-08-06)
 
 | Role | Person | Notes |
 |---|---|---|
@@ -90,3 +90,5 @@ The club does not currently play at its historic home. **La Romareda** was demol
 - [Ibai Gómez firma como entrenador del Zaragoza — Infobae](https://www.infobae.com/espana/agencias/2026/06/04/ibai-gomez-firma-como-entrenador-del-zaragoza-por-una-temporada-con-opcion-de-otras-dos/)
 - [Diego Serrano toma las riendas del Deportivo Aragón — Sport Aragón](https://www.sportaragon.com/articulo/real-zaragoza/diego-serrano-toma-riendas-deportivo-aragon-temporada-2026-27/20260623132744155114.html)
 - [Ibercaja Estadio — Wikipedia](https://es.wikipedia.org/wiki/Ibercaja_Estadio)
+- [El Real Zaragoza ya conoce su horario para la primera jornada contra el Nástic — official site](https://www.realzaragoza.com/noticias/el-real-zaragoza-ya-conoce-su-horario-para-la-primera-jornada-contra-el-nastic)
+- [Organigrama — official site, re-verified 2026-08-06](https://www.realzaragoza.com/organigrama)

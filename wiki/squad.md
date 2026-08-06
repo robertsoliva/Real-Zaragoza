@@ -1,15 +1,16 @@
 # Real Zaragoza — Squad (2026–27 preseason)
 
-> **Status:** living document, last updated 2026-07-25. Preseason is underway (started 20 July). Transfer window still open — treat the squad as provisional. Sources of truth: [realzaragoza.com](https://www.realzaragoza.com/) and [Spanish Wikipedia](https://es.wikipedia.org/wiki/Real_Zaragoza); official `/plantilla` page not yet reflecting the 2026-27 squad — cross-reference against official news posts and Aragonese press.
+> **Status:** living document, last updated 2026-08-06. Preseason is underway (started 20 July). Transfer window still open — treat the squad as provisional. Sources of truth: [realzaragoza.com](https://www.realzaragoza.com/) and [Spanish Wikipedia](https://es.wikipedia.org/wiki/Real_Zaragoza); official `/plantilla` page not yet reflecting the 2026-27 squad — cross-reference against official news posts and Aragonese press.
 
 ## TL;DR
 
 - Near-total rebuild: ~26 departures (9 contracts expired, 2 loan returns, transfers out, more pending), **15 arrivals confirmed** as of July 22
 - Primera RFEF wage-cap constraints are the direct driver of the scale of turnover
-- Preseason underway since 20 July; 8 friendlies scheduled (July 29 – August 22)
-- Placed in **Group II of 1ª RFEF** for 2026-27; Nàstic is first opponent (last weekend of August)
+- Preseason underway since 20 July; 8 friendlies scheduled (July 29 – August 22) — Barbastro friendly already played (lost 1-2)
+- Placed in **Group II of 1ª RFEF** for 2026-27; first match confirmed **Sunday 30 August, 21:30, away vs Nàstic** (Nou Estadi Costa Daurada)
 - Striker gap filled: Edu Espiau confirmed CF; Ander Herrera returns as squad leader; Emil Hansson provides winger depth
-- Still pursuing central defenders (Lalo confirmed ≥2 needed)
+- **Samed Baždar sold** (Sint-Truidense VV, Belgium, 2026-08-04) — resolves his previously-uncertain future
+- Still pursuing a central defender (Rubén Iranzo or Xavi Sintes, neither confirmed as of 2026-08-05); Adrián Liso's delayed exit still unresolved as of 2026-08-06
 
 ## Model
 
@@ -38,12 +39,15 @@ The club used a four-captain system in 2025–26: Francho Serrano, Keidi Bare, R
 - **Transfer out confirmed:** **Álex Gomes** — permanent transfer to Venezia (Serie A, recently promoted). 18-year-old academy product; had received call-ups to Spain U-18. Fee undisclosed but described as significant — proceeds contribute to the promotion-push budget. (source: Sport Aragón, 2026-07-04)
 - **Loan out confirmed:** **Sebastian Kóša** — loan at FC Košice (Slovakia), 2026-27. (source: official site, 2026-07)
 - **Loan out confirmed (post-July 7):** **Iker García** — loan to Arenas de Getxo. (source: official site, 2026-07)
-- **At risk of release on salary-cap grounds** (reported, not yet confirmed as final): Dani Gómez, Valery, Keidi Bare.
+- **At risk of release on salary-cap grounds** (reported, not yet confirmed as final): Dani Gómez, Valery, Keidi Bare. (Some aggregated squad-tracker sources suggest these may already be resolved via contract termination post-relegation, but no single dated article confirms this — leaving as unresolved pending a clearer source.)
+- **Sold:** **Samed Baždar** — to **Sint-Truidense VV** (Belgium), confirmed 2026-08-04. €1.5M upfront + €250k performance bonuses + Real Zaragoza retains 20% of any future sale. Originally cost €3M from Partizan Belgrade two years prior — recovers roughly half that outlay, with the sell-on clause offering a path to recouping the rest. Represented Bosnia & Herzegovina at FIFA World Cup 2026 (eliminated Round of 16 vs. USA, did not feature) before the move. (source: El Desmarque, 2026-08-04)
 - Sporting director Lalo Arantegui has been reported as targeting a total of **26 departures** — this is a near-total squad rebuild driven by Primera RFEF wage-cap constraints.
 
 ## Players returning from loan (futures unclear)
 
-The three players regarded as the most successful loanees last season are back at the club with uncertain roles: **Adrián Liso**, **Pau Sans**, **Samed Baždar**. Press describes their outlooks as "very different from each other" — i.e. don't assume all three are kept. Note: Samed Baždar represented Bosnia &amp; Herzegovina at **FIFA World Cup 2026** — Bosnia were eliminated in the Round of 16, losing 2-0 to the United States (Baždar did not feature in that match). He is now available for preseason. (source: official site, 2026-07-05)
+Two players regarded among the most successful loanees last season are back at the club with uncertain roles: **Adrián Liso**, **Pau Sans** (a third, Samed Baždar, has since been sold — see Confirmed departures above). Press describes their outlooks as differing — don't assume both are kept.
+
+**Adrián Liso** — his exit is a stated priority for Lalo Arantegui (needed to fund a CF and CB signing) but remains unresolved as of 2026-08-06. Asking price reportedly dropped from an initial €5M to ~€3M + a sell-on percentage as negotiations have dragged. Interested clubs reported: Sevilla, Alavés, Espanyol, Valencia, Venezia, Mallorca — no concrete offer yet. With his departure delayed and competitive football approaching, he rejoined training and is expected to feature in the Andorra friendly to maintain fitness. (source: El Desmarque, 2026-08-06)
 
 ## Confirmed 2026 summer signings (so far)
 
@@ -69,7 +73,7 @@ Preseason started 20 July (medical tests July 16-17). Week of July 21-25 at the 
 | Date | Match | Venue |
 |---|---|---|
 | July 29 | Real Zaragoza vs FC Utebo | Boltaña (6:30 PM) |
-| Aug 1 | UD Barbastro vs Real Zaragoza | Away (6:30 PM) |
+| Aug 1 | UD Barbastro vs Real Zaragoza — **RZ lost 1-2** | Away (6:30 PM) |
 | Aug 6 | Real Zaragoza vs FC Andorra | Home (6:30 PM) |
 | Aug 8 | Real Zaragoza vs Real Sociedad B | Home (7:30 PM) |
 | Aug 14 | UD Logroñés vs Real Zaragoza | Away (8:30 PM) |
@@ -77,23 +81,23 @@ Preseason started 20 July (medical tests July 16-17). Week of July 21-25 at the 
 | Aug 21 | Real Zaragoza vs Bilbao Athletic | Home (7:30 PM) |
 | Aug 22 | CD Numancia vs Real Zaragoza | Los Pajaritos, Soria (8:00 PM) |
 
-Primer partido oficial: vs **Nàstic** (1ª RFEF Group II, last weekend of August).
+Primer partido oficial: **vs Nàstic, Sunday 30 August, 21:30, away at Nou Estadi Costa Daurada** (1ª RFEF Group II, jornada 1). (source: official site)
 
-## Remaining market priorities (as of 2026-07-22)
+## Remaining market priorities (updated 2026-08-06)
 
-- At least **2 central defenders** — Lalo Arantegui confirmed this publicly; Diego González is the first but at least one more is needed.
+- **One more central defender** — Diego González was the first of at least 2 Lalo Arantegui said were needed. As of 2026-08-05, two options under consideration: **Rubén Iranzo** (Valencia CF, can play CB or RB, preferred option but Valencia's own squad situation is creating uncertainty) and **Xavi Sintes** (free agent, ex-Córdoba, prefers a LaLiga Hypermotion move and previously rejected a Zaragoza offer — could be revisited). Neither confirmed. Final defensive shape also depends on whether Hugo Carrillo and Hugo Barrachina stay, since Diego González's arrival may push one out on loan. (source: El Desmarque, 2026-08-05)
 - A **left winger** — Emil Hansson was signed, but Pau Sans is considered as an option for a second option on that flank.
-- Outcome still pending for Samed Baždar — Lalo stated the club rejected two offers and that explaining to a post-World Cup player he must play in Primera RFEF is "difficult"; his stay is not yet confirmed as permanent.
-- Salary-cap cases still unresolved: Dani Gómez, Valery, Keidi Bare.
+- **Adrián Liso's exit** is now the key that unlocks the rest of the market — see "Players returning from loan" above; the club wants to bring in a CF and a CB but needs his sale to fund it.
+- Salary-cap cases still reported as unresolved: Dani Gómez, Valery, Keidi Bare (see caveat above).
 
 ## Open items for this page
 
 - Replace this whole page's prose roster with a structured table once the **Transfermarkt data pull** is live.
 - Re-check `realzaragoza.com/plantilla` once the club publishes the official 2026–27 squad list.
-- Confirm formal 2026–27 captaincy announcement.
-- Confirm final outcome for the three "at risk" salary-cap cases (Dani Gómez, Valery, Keidi Bare).
-- Confirm whether Samed Baždar stays or is sold (Lalo said "next week" on July 22 — not yet resolved as of July 25).
-- Confirm whether Adrián Liso is sold (Lalo also mentioned this on July 22 as "next week").
+- Confirm formal 2026–27 captaincy announcement — still not made as of 2026-08-06.
+- Confirm final outcome for the three "at risk" salary-cap cases (Dani Gómez, Valery, Keidi Bare) — conflicting/unsourced signals as of 2026-08-06, see caveat above.
+- Confirm whether Adrián Liso is sold — asking price has dropped (~€5M → ~€3M + sell-on) but still unresolved as of 2026-08-06; his departure is blocking the club's remaining CF/CB business.
+- Confirm which central defender target (Rubén Iranzo or Xavi Sintes) is signed, if either.
 - Fill in profiles for Anartz Peña, Jaume Jardí, Raúl Pereira (position/age/career detail missing).
 - Fill in Hugo Carrillo's profile (returned from loan at Real Unión de Irún).
 
@@ -125,3 +129,8 @@ Primer partido oficial: vs **Nàstic** (1ª RFEF Group II, last weekend of Augus
 - [Lalo Arantegui confirma a Ander Herrera, cuatro fichajes más y la situación de Baždar — El Desmarque](https://www.eldesmarque.com/futbol/mercado-de-fichajes/20260708/lalo-arantegui-confirma-ander-herrera-cuatro-fichajes-mas-situacion-inusual-real-zaragoza_18_019658546.html)
 - [Confirmados los horarios de los partidos amistosos de pretemporada — official site](https://www.realzaragoza.com/noticias/confirmados-los-horarios-de-los-partidos-amistosos-de-pretemporada)
 - [Hugo Carrillo cedido al Real Unión de Irún — official site](https://www.realzaragoza.com/noticias/hugo-carrillo-jugara-cedido-en-el-real-union-de-irun)
+- [Las cifras de la salida de Samed Bazdar — El Desmarque](https://www.eldesmarque.com/futbol/mercado-de-fichajes/20260804/cifras-salida-samed-bazdar-real-zaragoza_18_019880129.html)
+- [Lalo Arantegui valora un fichaje para la defensa entre dos opciones — El Desmarque](https://www.eldesmarque.com/futbol/mercado-de-fichajes/20260805/lalo-arantegui-fichaje-defensa-real-zaragoza-dos-opciones-eleccion-ibai-gomez_18_019887541.html)
+- [Adrián Liso toma una decisión... Lalo Arantegui altera el plan inicial — El Desmarque](https://www.eldesmarque.com/futbol/mercado-de-fichajes/20260806/adrian-liso-decision-real-zaragoza-mercado-fichajes-lalo-arantegui-altera-plan_18_019895313.html)
+- [Derrota frente al Barbastro en el segundo amistoso de pretemporada (1-2) — official site](https://www.realzaragoza.com/noticias/derrota-frente-al-barbastro-en-el-segundo-amistoso-de-pretemporada-1-2)
+- [El Real Zaragoza ya conoce su horario para la primera jornada contra el Nástic — official site](https://www.realzaragoza.com/noticias/el-real-zaragoza-ya-conoce-su-horario-para-la-primera-jornada-contra-el-nastic)

@@ -1,12 +1,12 @@
 # Real Zaragoza — Academy / Cantera
 
-> **Status:** living document, last updated 2026-07-25. Sources of truth for this page: [realzaragoza.com](https://www.realzaragoza.com/) and [Spanish Wikipedia](https://es.wikipedia.org/wiki/Real_Zaragoza) — where other sources disagree with these two, these two win. Given the academy is being actively rebuilt right now (see "2026 overhaul" below), treat the structural/personnel details here as time-sensitive.
+> **Status:** living document, last updated 2026-08-06. Sources of truth for this page: [realzaragoza.com](https://www.realzaragoza.com/) and [Spanish Wikipedia](https://es.wikipedia.org/wiki/Real_Zaragoza) — where other sources disagree with these two, these two win. Given the academy is being actively rebuilt right now (see "2026 overhaul" below), treat the structural/personnel details here as time-sensitive.
 
 ## TL;DR
 
 - Training base: Ciudad Deportiva (km 8 Valencia road, Zaragoza), operating since 1974; six pitches across five youth age groups
 - 2026 overhaul: new cantera director Javier Garcés; "ADN de juego" shared identity; "contrato hucha" early-commitment contracts to deter poaching
-- Key current academy products: Iván Azón (striker, 7 goals 2025–26) and Francho Serrano (captain, contract renewal unresolved as of June 2026)
+- Key current academy products: Iván Azón (striker, 7 goals 2025–26) and Francho Serrano (captain, **renewed through 2030** — see [squad.md](./squad.md))
 - Notable graduates: Ander Herrera, Jesús Vallejo, Alberto Zapater, Rubén "Cani" Gracia
 - Academy is the explicit engine of the Primera RFEF rebuild — budget necessity and stated sporting philosophy
 
@@ -73,7 +73,7 @@ With the club relegated to Primera RFEF and under financial strain (see [current
 
 - Get a current (2026–27) academy graduate list to replace the dated 2018–19 example — candidate for the Transfermarkt data pull tracked in [`../next-actions.md`](../next-actions.md).
 - Verify the precise structure/leadership of Real Zaragoza Femenino's academy beyond Miki Álvarez's role.
-- Confirm the Ander Herrera section in [historical graduates] — he's now officially signed and training (see [squad.md](./squad.md)), so the "not yet confirmed" note in that entry can be removed.
+- Iván Azón's contract status not yet checked against current news — still an open item (unlike Francho, not yet confirmed either way).
 
 ## Sources
 
