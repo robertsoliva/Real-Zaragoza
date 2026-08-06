@@ -37,18 +37,6 @@
 # Note: Bundesliga (35) entries were already in Priority 4 mislabeled as 2.Bundesliga —
 # relabeled correctly above. The actual 2.Bundesliga (44) added directly above.
 # -------------------------------------------------------------------------
-17   76986  PremierLeague_2025-26
-8    61643  LaLiga_2024-25
-8    77559  LaLiga_2025-26
-23   63515  SerieA_2024-25
-23   76457  SerieA_2025-26
-34   61736  Ligue1_2024-25
-34   77356  Ligue1_2025-26
 # -------------------------------------------------------------------------
 # PRIORITY 6 — Gap fills identified 2026-07-24
-17073  97382  1RFEF_2026-27
-196  87931  J1_2026-catchup
-242  86668  MLS_2026
-53   79502  SerieB_2025-26-catchup
-20   87809  NorwegianEliteserien_2026
-410  88606  KoreanKLeague1_2026
+# 17073  97382  1RFEF_2026-27  -- season hasn't started yet (kicks off Aug 2026), nothing to scrape. Re-add once it's live.
