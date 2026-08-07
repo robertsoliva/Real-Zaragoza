@@ -90,6 +90,41 @@ FROM `real-zaragoza-500608.gold.agg_rz_squad_finances`
 ORDER BY market_value_eur DESC NULLS LAST
 ```
 
+### 8. Percentile rank vs. league position peers (REQUIRED — see Percentile Rank section below)
+
+No precomputed percentile table exists yet — `gold.agg_league_player_benchmarks` only stores averages, not quantiles. Compute live with a window function, scoped to the target's own league + season + primary position, same ≥450-minute qualifying bar used everywhere else:
+
+```sql
+SELECT
+  player_name, league_name, season_id, primary_position, total_minutes,
+  ROUND(PERCENT_RANK() OVER (PARTITION BY league_name, season_id, primary_position ORDER BY goals_p90)         * 100) AS pctl_goals_p90,
+  ROUND(PERCENT_RANK() OVER (PARTITION BY league_name, season_id, primary_position ORDER BY assists_p90)       * 100) AS pctl_assists_p90,
+  ROUND(PERCENT_RANK() OVER (PARTITION BY league_name, season_id, primary_position ORDER BY shots_p90)         * 100) AS pctl_shots_p90,
+  ROUND(PERCENT_RANK() OVER (PARTITION BY league_name, season_id, primary_position ORDER BY key_passes_p90)    * 100) AS pctl_key_passes_p90,
+  ROUND(PERCENT_RANK() OVER (PARTITION BY league_name, season_id, primary_position ORDER BY pass_acc_pct)      * 100) AS pctl_pass_acc_pct,
+  ROUND(PERCENT_RANK() OVER (PARTITION BY league_name, season_id, primary_position ORDER BY tackles_p90)       * 100) AS pctl_tackles_p90,
+  ROUND(PERCENT_RANK() OVER (PARTITION BY league_name, season_id, primary_position ORDER BY interceptions_p90) * 100) AS pctl_interceptions_p90,
+  ROUND(PERCENT_RANK() OVER (PARTITION BY league_name, season_id, primary_position ORDER BY aerial_win_pct)    * 100) AS pctl_aerial_win_pct,
+  ROUND(PERCENT_RANK() OVER (PARTITION BY league_name, season_id, primary_position ORDER BY duel_win_pct)      * 100) AS pctl_duel_win_pct,
+  ROUND(PERCENT_RANK() OVER (PARTITION BY league_name, season_id, primary_position ORDER BY avg_rating)        * 100) AS pctl_rating
+FROM `real-zaragoza-500608.gold.fct_player_season_stats`
+WHERE total_minutes >= 450
+  AND league_name = '{ORIGIN_LEAGUE}' AND season_id = '{ORIGIN_SEASON}' AND primary_position = '{SOFASCORE_POSITION_CODE}'
+QUALIFY LOWER(player_name) LIKE LOWER('%{PLAYER_NAME}%')
+```
+
+`PERCENT_RANK()` computes across every qualifying row in the partition (window functions apply before `QUALIFY` filters down to the target row), so this returns the target's true rank among all ≥450-min peers at his position in his own league/season — 92 means he outranks 92% of them on that stat.
+
+**If the target doesn't clear 450 minutes** (as with a fringe/cameo player), percentiles are not statistically meaningful — do not compute or fabricate a rank. State plainly in the report that percentile rank is unavailable due to insufficient minutes, and note the threshold the player would need to clear.
+
+### 9. Player archetype cluster (if available)
+```sql
+SELECT player_name, team_name, league_name, season_id, position_group, profile_label
+FROM `real-zaragoza-500608.gold.agg_player_profiles`
+WHERE LOWER(player_name) LIKE LOWER('%{PLAYER_NAME}%')
+```
+K-means archetype labels (7 position groups: CB, FB, DM, CM, CAM, Winger, CF), retrained manually every 6-12 months — see `next-actions.md` for retrain cadence and coverage caveats. Coverage is partial: only ~7k player-seasons with a real TM granular position match and ≥450 minutes at the time of the last retrain. If the query returns nothing, state that no archetype is available (don't guess one) — most likely because the player falls below the minutes bar, his league wasn't in the training snapshot yet, or a retrain hasn't happened since his data landed.
+
 ---
 
 ## Output: HTML artifact visualization (REQUIRED)
@@ -123,6 +158,8 @@ Use the template at `.claude/agents/data-scout/report_template.html` as your bas
 - **Squad rows**: include the target as a highlighted row (`highlight: true`). Only include **confirmed or likely 2026-27 Zaragoza squad members** (per `wiki/squad.md`) — never include other scouting targets or departed players.
 - **Missing data**: if a BQ stat is NULL/absent, use `"N/A"` as the display value and `0` as the barPct; note in `dataCoverageNote`
 - **Team fit**: use the most recent season available for both teams; if destination has no BQ data, use 1RFEF benchmark from season 64430 (possession: 50.1%, passes: 375, shots: 10.7, fouls: 13.6, aerial: ~13)
+- **Percentile rank** (from Query 8): each row's `value` is 0–100, already the percentile itself — no further normalization. Color tiers are automatic in the template (≥67 green, 34–66 amber, <34 red). If the target doesn't clear 450 minutes, leave `percentiles: []` and use `percentileNote` to state why (don't fabricate a rank) — the template renders a "not computable" placeholder automatically.
+- **Archetype badge** (from Query 9): set `archetype` to the `profile_label` string if `gold.agg_player_profiles` returns a row, otherwise `""` — the header badge hides itself when empty.
 
 ### Positional Need — formation-aware scoring
 

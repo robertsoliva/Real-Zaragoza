@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Scout Report — {{PLAYER_NAME}}</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
   :root {
     --rz-blue: #003087;
@@ -95,13 +94,30 @@
   .radar-wrap { height: 230px; display: flex; align-items: center; justify-content: center; }
 
   /* ── Stat grid ── */
-  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-  .stat-item { display: flex; flex-direction: column; gap: 2px; }
-  .stat-label { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.4px; }
-  .stat-value { font-size: 18px; font-weight: 700; color: var(--rz-blue); line-height: 1; }
-  .stat-context { font-size: 10px; color: var(--text-secondary); }
-  .stat-bar-wrap { height: 3px; background: #e2e8f0; border-radius: 2px; margin-top: 2px; }
-  .stat-bar { height: 100%; border-radius: 2px; background: var(--rz-blue-mid); }
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; }
+  .stat-item { display: flex; flex-direction: column; gap: 3px; }
+  .stat-label { font-size: 10px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.4px; }
+  .stat-value { font-size: 15px; font-weight: 700; color: var(--rz-blue); line-height: 1; }
+
+  /* ── Pill bars (stat grid + percentile rows) — same scale as the rest of the dashboard.
+     tone-blue (stat grid) is neutral: raw stats have no universal "high=good" direction
+     (0 yellow cards is good, 0 tackles/90 isn't necessarily bad for a CAM). Only the
+     percentile rows use quality-tiered color, since a percentile IS inherently good/bad. ── */
+  .bigbar-track { height: 15px; border-radius: 7.5px; background: #10192b; overflow: hidden; position: relative; margin-top: 1px; }
+  .bigbar-fill {
+    height: 100%; border-radius: 7.5px;
+    display: flex; align-items: center; justify-content: flex-end;
+    padding-right: 6px; min-width: 18px; box-sizing: border-box;
+    transition: width 0.2s ease;
+  }
+  .bigbar-fill.tone-blue   { background: linear-gradient(90deg, #5b9bdb, #0050b3); }
+  .bigbar-fill.tier-high   { background: linear-gradient(90deg, #8bd382, #4f9d57); }
+  .bigbar-fill.tier-medium { background: linear-gradient(90deg, #f3c869, #dfa22e); }
+  .bigbar-fill.tier-low    { background: linear-gradient(90deg, #f2928f, #ce4a5b); }
+  .bigbar-num { font-size: 9px; font-weight: 800; color: #16281a; }
+  .bigbar-fill.tone-blue .bigbar-num   { color: #fff; }
+  .bigbar-fill.tier-low .bigbar-num    { color: #3a0f14; }
+  .bigbar-fill.tier-medium .bigbar-num { color: #3a2a06; }
 
   /* ── Bucket headers ── */
   .bucket-title {
@@ -181,6 +197,37 @@
     border-top: 1px solid var(--border);
     margin-top: 4px;
   }
+
+  /* ── Radar + league bars: inline SVG/CSS only — Claude Artifacts' CSP blocks
+     external scripts (Chart.js from a CDN), so these must stay dependency-free ── */
+  .radar-label { font-size: 8.5px; fill: #4a5568; }
+  .radar-grid { fill: none; stroke: #d1dce8; stroke-width: 1; }
+  .radar-axis { stroke: #d1dce8; stroke-width: 1; }
+  .radar-shape { fill: rgba(0,80,179,0.15); stroke: var(--rz-blue-mid); stroke-width: 2; }
+  .radar-point { fill: var(--rz-blue-mid); }
+
+  .league-legend { display: flex; gap: 12px; font-size: 10px; color: var(--text-secondary); margin-bottom: 8px; align-items: center; }
+  .league-row { margin-bottom: 10px; }
+  .league-row-label { font-size: 10px; color: var(--text-secondary); margin-bottom: 4px; }
+  .league-bar-track { height: 10px; background: #e2e8f0; border-radius: 4px; overflow: hidden; margin-bottom: 3px; }
+  .league-bar-fill { height: 100%; border-radius: 4px; }
+
+  /* ── Percentile rank rows — same big-pill look as the stat grid ── */
+  .pctl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; }
+  .pctl-row { display: flex; flex-direction: column; gap: 3px; }
+  .pctl-label { font-size: 10px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.4px; }
+
+  /* ── Archetype badge ── */
+  .archetype-badge {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 2px 9px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.35);
+  }
 </style>
 </head>
 <body>
@@ -198,6 +245,8 @@
       <span>🏟 {{CURRENT_CLUB}}</span>
       <span>📅 {{REPORT_DATE}}</span>
     </div>
+    <!-- archetype badge — omit entirely if gold.agg_player_profiles has no match -->
+    <div class="archetype-badge" id="archetypeBadge" style="display:none;"></div>
     <!-- data coverage warning if needed -->
     <!-- <div class="data-coverage"><strong>Data note:</strong> {{DATA_COVERAGE_NOTE}}</div> -->
   </div>
@@ -220,7 +269,7 @@
     <div class="card-header">Performance Radar</div>
     <div class="card-body">
       <div class="radar-wrap">
-        <canvas id="radarChart" width="220" height="220"></canvas>
+        <svg id="radarSvg" viewBox="0 0 240 240" width="220" height="220"></svg>
       </div>
     </div>
   </div>
@@ -261,6 +310,15 @@
     </div>
   </div>
 
+  <!-- ── Percentile rank vs. league position peers ── -->
+  <div class="card full-width">
+    <div class="card-header">Percentile Rank — vs. {{ORIGIN_LEAGUE}} {{POSITION}}s (≥450 min)</div>
+    <div class="card-body">
+      <div id="percentileRows" class="pctl-grid"></div>
+      <div style="margin-top:6px; font-size:10px; color:var(--text-secondary);" id="percentileNote"></div>
+    </div>
+  </div>
+
   <!-- ── Team fit comparison ── -->
   <div class="card">
     <div class="card-header">Team Fit — Style Comparison</div>
@@ -280,9 +338,11 @@
   <div class="card">
     <div class="card-header">League Context</div>
     <div class="card-body">
-      <div id="leagueComparisonChart" style="height:160px;">
-        <canvas id="leagueChart"></canvas>
+      <div class="league-legend">
+        <span><span class="dot" style="background:#64748b"></span> <span id="leagueOriginLabel"></span></span>
+        <span><span class="dot" style="background:var(--rz-blue-mid)"></span> <span id="leagueDestLabel"></span></span>
       </div>
+      <div id="leagueRows"></div>
       <div style="margin-top:10px; font-size:11px; color:var(--text-secondary);">
         <strong>Level:</strong> <span id="levelAdjLabel"></span><br>
         <strong>Adjustment:</strong> <span id="leagueAdjText"></span>
@@ -341,6 +401,7 @@ const REPORT = {
   nationality: "{{NATIONALITY}}",
   currentClub: "{{CURRENT_CLUB}}",
   reportDate:  "{{REPORT_DATE}}",
+  archetype:   "{{ARCHETYPE_LABEL}}",   // from gold.agg_player_profiles; set to "" if no match — badge is hidden when empty
 
   overallScore: {{OVERALL_SCORE}},           // average of 6 verdictDims, rounded to 1dp
   recommendationShort: "{{RECOMMENDATION_SHORT}}", // ≥8.5→"SIGN NOW" | 7.0-8.4→"SIGN" | 6.5-7.0→"ROTATION" | 5.5-6.5→"MONITOR" | 5.0-5.5→"PROBABLY PASS" | <5→"PASS"
@@ -360,33 +421,51 @@ const REPORT = {
     // Rating: raw (already 1-10)
   },
 
-  // Stat buckets — each item: { label, value, context, barPct }
+  // Stat buckets — each item: { label, value, barPct }. No "context" field — the template
+  // renders label/value/bar only (matching the rest of the dashboard's compact style).
   attacking: [
-    { label:"Goals/90",      value:"{{A_GOALS_P90}}",   context:"{{A_GOALS}} goals total",   barPct:{{A_GOALS_BAR}} },
-    { label:"Assists/90",    value:"{{A_AST_P90}}",     context:"{{A_ASSISTS}} assists",      barPct:{{A_AST_BAR}} },
-    { label:"Shots/90",      value:"{{A_SHOTS_P90}}",   context:"{{A_SHOTS}} total",          barPct:{{A_SHOTS_BAR}} },
-    { label:"Conversion %",  value:"{{A_CONV}}%",       context:"on target {{A_SOT}}",        barPct:{{A_CONV_BAR}} },
-    { label:"xG/match",      value:"{{A_XG}}",          context:"expected goals",             barPct:{{A_XG_BAR}} },
-    { label:"Key passes/90", value:"{{A_KP90}}",        context:"chance creation",            barPct:{{A_KP_BAR}} },
+    { label:"Goals/90",      value:"{{A_GOALS_P90}}",   barPct:{{A_GOALS_BAR}} },
+    { label:"Assists/90",    value:"{{A_AST_P90}}",     barPct:{{A_AST_BAR}} },
+    { label:"Shots/90",      value:"{{A_SHOTS_P90}}",   barPct:{{A_SHOTS_BAR}} },
+    { label:"Conversion %",  value:"{{A_CONV}}%",       barPct:{{A_CONV_BAR}} },
+    { label:"xG/match",      value:"{{A_XG}}",          barPct:{{A_XG_BAR}} },
+    { label:"Key passes/90", value:"{{A_KP90}}",        barPct:{{A_KP_BAR}} },
   ],
   passing: [
-    { label:"Pass Acc %",    value:"{{P_ACC}}%",        context:"{{P_LONG_ACC}}% long ball",  barPct:{{P_ACC_BAR}} },
-    { label:"Touches/90",    value:"{{P_TOUCHES}}",     context:"involvement",                barPct:{{P_TOUCH_BAR}} },
-    { label:"Long ball Acc", value:"{{P_LONG}}%",       context:"long passes",                barPct:{{P_LONG_BAR}} },
-    { label:"Cross Acc %",   value:"{{P_CROSS}}%",      context:"crossing",                   barPct:{{P_CROSS_BAR}} },
+    { label:"Pass Acc %",    value:"{{P_ACC}}%",        barPct:{{P_ACC_BAR}} },
+    { label:"Touches/90",    value:"{{P_TOUCHES}}",     barPct:{{P_TOUCH_BAR}} },
+    { label:"Long ball Acc", value:"{{P_LONG}}%",       barPct:{{P_LONG_BAR}} },
+    { label:"Cross Acc %",   value:"{{P_CROSS}}%",      barPct:{{P_CROSS_BAR}} },
   ],
   defensive: [
-    { label:"Tackles/90",    value:"{{D_TACK90}}",      context:"{{D_TACK_WIN}}% won",        barPct:{{D_TACK_BAR}} },
-    { label:"Interc./90",    value:"{{D_INT90}}",       context:"reading of play",            barPct:{{D_INT_BAR}} },
-    { label:"Aerial Win %",  value:"{{D_AIR}}%",        context:"{{D_AIR_TOT}} contested",   barPct:{{D_AIR_BAR}} },
-    { label:"Duel Win %",    value:"{{D_DUEL}}%",       context:"all duels",                  barPct:{{D_DUEL_BAR}} },
+    { label:"Tackles/90",    value:"{{D_TACK90}}",      barPct:{{D_TACK_BAR}} },
+    { label:"Interc./90",    value:"{{D_INT90}}",       barPct:{{D_INT_BAR}} },
+    { label:"Aerial Win %",  value:"{{D_AIR}}%",        barPct:{{D_AIR_BAR}} },
+    { label:"Duel Win %",    value:"{{D_DUEL}}%",       barPct:{{D_DUEL_BAR}} },
   ],
   physical: [
-    { label:"Avg Rating",    value:"{{PH_RATING}}",     context:"SofaScore",                  barPct:{{PH_RATING_BAR}} },
-    { label:"Fouls Won/90",  value:"{{PH_FW90}}",       context:"{{PH_FC}} committed",        barPct:{{PH_FW_BAR}} },
-    { label:"Yellows",       value:"{{PH_YELL}}",       context:"cards",                      barPct:{{PH_YELL_BAR}} },
-    { label:"Minutes",       value:"{{PH_MINS}}",       context:"{{PH_APPS}} apps",           barPct:{{PH_MINS_BAR}} },
+    { label:"Avg Rating",    value:"{{PH_RATING}}",     barPct:{{PH_RATING_BAR}} },
+    { label:"Fouls Won/90",  value:"{{PH_FW90}}",       barPct:{{PH_FW_BAR}} },
+    { label:"Yellows",       value:"{{PH_YELL}}",       barPct:{{PH_YELL_BAR}} },
+    { label:"Minutes",       value:"{{PH_MINS}}",       barPct:{{PH_MINS_BAR}} },
   ],
+
+  // Percentile rank vs. league position peers (≥450 min qualifying bar — Query 8).
+  // Leave the array empty and set percentileNote to explain why (e.g. minutes threshold not met)
+  // if the target doesn't qualify — never fabricate a percentile.
+  percentiles: [
+    { label:"Goals/90",       value:{{PCTL_GOALS}} },
+    { label:"Assists/90",     value:{{PCTL_ASSISTS}} },
+    { label:"Shots/90",       value:{{PCTL_SHOTS}} },
+    { label:"Key passes/90",  value:{{PCTL_KP}} },
+    { label:"Pass Acc %",     value:{{PCTL_PASSACC}} },
+    { label:"Tackles/90",     value:{{PCTL_TACKLES}} },
+    { label:"Interceptions/90", value:{{PCTL_INT}} },
+    { label:"Aerial Win %",   value:{{PCTL_AERIAL}} },
+    { label:"Duel Win %",     value:{{PCTL_DUEL}} },
+    { label:"Rating",         value:{{PCTL_RATING}} },
+  ],
+  percentileNote: "{{PERCENTILE_NOTE}}",  // e.g. "vs. 142 Liga Portugal midfielders with ≥450 minutes in 2025-26"
 
   // Team fit comparison
   originTeam: "{{ORIGIN_TEAM}}",
@@ -465,47 +544,87 @@ function tagClass(t) {
   return 'tag-low';
 }
 
-// ── Radar chart ──────────────────────────────────────────────────────────
-new Chart(document.getElementById('radarChart'), {
-  type: 'radar',
-  data: {
-    labels: REPORT.radar.labels,
-    datasets: [{
-      label: REPORT.player,
-      data: REPORT.radar.values,
-      backgroundColor: 'rgba(0,80,179,0.15)',
-      borderColor: RZ_BLUE_MID,
-      borderWidth: 2,
-      pointBackgroundColor: RZ_BLUE_MID,
-      pointRadius: 4,
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: true,
-    scales: {
-      r: {
-        min: 0, max: 10,
-        ticks: { display: false, stepSize: 2 },
-        grid: { color: '#d1dce8' },
-        pointLabels: { font: { size: 10 }, color: '#4a5568' },
-        angleLines: { color: '#d1dce8' },
-      }
-    },
-    plugins: { legend: { display: false } }
-  }
-});
+// ── Radar chart (inline SVG, no external deps) ──────────────────────────
+function renderRadar(svgId, labels, values, maxVal) {
+  const svg = document.getElementById(svgId);
+  const n = labels.length;
+  const cx = 120, cy = 120, maxR = 90;
+  const ns = 'http://www.w3.org/2000/svg';
+  const angleFor = i => -Math.PI / 2 + i * (2 * Math.PI / n);
+  const pointFor = (i, val) => {
+    const r = (val / maxVal) * maxR;
+    const a = angleFor(i);
+    return [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+  };
+
+  [0.2, 0.4, 0.6, 0.8, 1.0].forEach(frac => {
+    const pts = labels.map((_, i) => pointFor(i, maxVal * frac).join(',')).join(' ');
+    const poly = document.createElementNS(ns, 'polygon');
+    poly.setAttribute('points', pts);
+    poly.setAttribute('class', 'radar-grid');
+    svg.appendChild(poly);
+  });
+
+  labels.forEach((label, i) => {
+    const [ex, ey] = pointFor(i, maxVal);
+    const line = document.createElementNS(ns, 'line');
+    line.setAttribute('x1', cx); line.setAttribute('y1', cy);
+    line.setAttribute('x2', ex); line.setAttribute('y2', ey);
+    line.setAttribute('class', 'radar-axis');
+    svg.appendChild(line);
+
+    const a = angleFor(i);
+    const lx = cx + (maxR + 18) * Math.cos(a);
+    const ly = cy + (maxR + 18) * Math.sin(a);
+    const text = document.createElementNS(ns, 'text');
+    text.setAttribute('x', lx); text.setAttribute('y', ly);
+    text.setAttribute('text-anchor', Math.cos(a) > 0.3 ? 'start' : Math.cos(a) < -0.3 ? 'end' : 'middle');
+    text.setAttribute('dominant-baseline', 'middle');
+    text.setAttribute('class', 'radar-label');
+    text.textContent = label;
+    svg.appendChild(text);
+  });
+
+  const shapePts = labels.map((_, i) => pointFor(i, values[i]).join(',')).join(' ');
+  const shape = document.createElementNS(ns, 'polygon');
+  shape.setAttribute('points', shapePts);
+  shape.setAttribute('class', 'radar-shape');
+  svg.appendChild(shape);
+
+  labels.forEach((_, i) => {
+    const [px, py] = pointFor(i, values[i]);
+    const dot = document.createElementNS(ns, 'circle');
+    dot.setAttribute('cx', px); dot.setAttribute('cy', py); dot.setAttribute('r', 3.5);
+    dot.setAttribute('class', 'radar-point');
+    svg.appendChild(dot);
+  });
+}
+renderRadar('radarSvg', REPORT.radar.labels, REPORT.radar.values, 10);
+
+// ── Archetype badge ───────────────────────────────────────────────────────
+if (REPORT.archetype) {
+  const badge = document.getElementById('archetypeBadge');
+  badge.textContent = `🧬 ${REPORT.archetype}`;
+  badge.style.display = 'inline-block';
+}
 
 // ── Stat buckets ─────────────────────────────────────────────────────────
+// Percentile tiering (green/amber/red) only applies where "higher = better" is universally
+// true — a raw stat like "Yellows" or "Tackles/90" has no such direction, so these bars
+// stay a neutral blue. CSS min-width keeps the number legible even for near-zero bars.
+function barTier(pct) { return pct >= 67 ? 'high' : pct >= 34 ? 'medium' : 'low'; }
+
 function renderStatGrid(containerId, items) {
   const el = document.getElementById(containerId);
-  el.innerHTML = items.map(s => `
+  el.innerHTML = items.map(s => {
+    const pct = Math.min(s.barPct, 100);
+    return `
     <div class="stat-item">
       <div class="stat-label">${s.label}</div>
       <div class="stat-value">${s.value}</div>
-      <div class="stat-context">${s.context}</div>
-      <div class="stat-bar-wrap"><div class="stat-bar" style="width:${Math.min(s.barPct,100)}%"></div></div>
-    </div>`).join('');
+      <div class="bigbar-track"><div class="bigbar-fill tone-blue" style="width:${pct}%"><span class="bigbar-num">${Math.round(pct)}</span></div></div>
+    </div>`;
+  }).join('');
 }
 renderStatGrid('attackingStats', REPORT.attacking);
 renderStatGrid('passingStats',   REPORT.passing);
@@ -537,25 +656,36 @@ tfEl.innerHTML = REPORT.teamFit.map(r => {
 const sfEl = document.getElementById('styleFitLabel');
 sfEl.innerHTML = `<strong class="${tagClass(REPORT.styleFitScore)}" style="padding:1px 6px;border-radius:4px;">${REPORT.styleFitScore}</strong> — ${REPORT.styleFitNote}`;
 
-// ── League chart ─────────────────────────────────────────────────────────
-new Chart(document.getElementById('leagueChart'), {
-  type: 'bar',
-  data: {
-    labels: REPORT.leagueData.labels,
-    datasets: [
-      { label: REPORT.originLeague, data: REPORT.leagueData.origin, backgroundColor: GREY + 'cc', borderRadius: 3 },
-      { label: REPORT.destLeague,   data: REPORT.leagueData.dest,   backgroundColor: RZ_BLUE_MID + 'cc', borderRadius: 3 },
-    ]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { labels: { font: { size: 10 }, boxWidth: 10 } } },
-    scales: {
-      x: { ticks: { font: { size: 9 } }, grid: { display: false } },
-      y: { ticks: { font: { size: 9 } }, grid: { color: '#e2e8f0' } }
-    }
-  }
-});
+// ── Percentile rank rows ─────────────────────────────────────────────────
+const pctlEl = document.getElementById('percentileRows');
+if (REPORT.percentiles && REPORT.percentiles.length) {
+  pctlEl.innerHTML = REPORT.percentiles.map(p => `
+    <div class="pctl-row">
+      <div class="pctl-label">${p.label}</div>
+      <div class="bigbar-track"><div class="bigbar-fill tier-${barTier(p.value)}" style="width:${p.value}%"><span class="bigbar-num">P${p.value}</span></div></div>
+    </div>`).join('');
+} else {
+  pctlEl.innerHTML = '<div style="color:#94a3b8;font-size:11px;">Not computable — see note below.</div>';
+}
+document.getElementById('percentileNote').textContent = REPORT.percentileNote;
+
+// ── League comparison bars (inline DOM, no external deps) ────────────────
+document.getElementById('leagueOriginLabel').textContent = REPORT.originLeague;
+document.getElementById('leagueDestLabel').textContent = REPORT.destLeague;
+const lrEl = document.getElementById('leagueRows');
+const leagueMax = REPORT.leagueData.labels.map((_, i) =>
+  Math.max(REPORT.leagueData.origin[i], REPORT.leagueData.dest[i]) * 1.15
+);
+lrEl.innerHTML = REPORT.leagueData.labels.map((label, i) => {
+  const o = REPORT.leagueData.origin[i], d = REPORT.leagueData.dest[i], max = leagueMax[i];
+  const op = Math.round(o / max * 100), dp = Math.round(d / max * 100);
+  return `
+  <div class="league-row">
+    <div class="league-row-label">${label}</div>
+    <div class="league-bar-track"><div class="league-bar-fill" style="width:${op}%;background:${GREY}"></div></div>
+    <div class="league-bar-track"><div class="league-bar-fill" style="width:${dp}%;background:${RZ_BLUE_MID}"></div></div>
+  </div>`;
+}).join('');
 document.getElementById('levelAdjLabel').innerHTML = `<strong>${REPORT.levelAdjustment}</strong>`;
 document.getElementById('leagueAdjText').textContent = REPORT.leagueAdjText;
 

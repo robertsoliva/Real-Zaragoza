@@ -63,6 +63,7 @@ Do not guess at column names. If unsure, check the schema file.
 | Eredivisie | 37 | 77012 (25/26) | backfill also: 61666 (24/25) — ⏳ backfilling |
 | Belgian Pro League | 38 | 77040 (25/26) | backfill also: 61459 (24/25) — ⏳ backfilling |
 | Liga Portugal | 238 | 77806 (25/26) | backfill also: 63670 (24/25) — ⏳ backfilling |
+| Liga Portugal 2 | 239 | 77801 (25/26) | ✅ manually scraped 2026-08-02, 25/26 only (317 matches); 24/25 not yet queued. Added late — first backfill hit the `league_name = 'tournament_239'` fallback bug (same class as the 16/17/8/23/34 incident); fixed in scraper + both bronze models same day, needs a prod dbt deploy to take effect on existing rows |
 | Bundesliga (1st div) | 35 | 77333 (25/26) | backfill also: 63516 (24/25) — ⏳ backfilling |
 | 2. Bundesliga | 44 | 77354 (25/26) | backfill also: 63514 (24/25) — ⏳ backfilling |
 | Premier League | 17 | 76986 (25/26) | backfill also: 61627 (24/25) — ⏳ backfilling |
