@@ -9,8 +9,8 @@
 - Preseason underway since 20 July; 8 friendlies scheduled (July 29 – August 22) — Barbastro friendly already played (lost 1-2)
 - Placed in **Group II of 1ª RFEF** for 2026-27; first match confirmed **Sunday 30 August, 21:30, away vs Nàstic** (Nou Estadi Costa Daurada)
 - Striker gap filled: Edu Espiau confirmed CF; Ander Herrera returns as squad leader; Emil Hansson provides winger depth
-- **Samed Baždar sold** (Sint-Truidense VV, Belgium, 2026-08-04) — resolves his previously-uncertain future
-- Still pursuing a central defender (Rubén Iranzo or Xavi Sintes, neither confirmed as of 2026-08-05); Adrián Liso's delayed exit still unresolved as of 2026-08-06
+- **Samed Baždar sold** to Sint-Truidense (Belgium) — confirmed on the official site; resolves his previously-uncertain future
+- Still pursuing a central defender and an Adrián Liso exit — both unresolved as of 2026-08-06; specific transfer targets/negotiation details in circulation are press-only rumour, not club-confirmed (see sections below)
 
 ## Model
 
@@ -26,7 +26,7 @@ The squad is being rebuilt almost from scratch for life in **Primera RFEF** (thi
 
 ## 2026–27 captaincy
 
-The club used a four-captain system in 2025–26: Francho Serrano, Keidi Bare, Raúl "Guti," and Iván Calero. Two of those are gone (Guti out of contract; Bare/Calero status pending). **Francho Serrano renewed through 2030** (announced during a tribute act at La Romareda) and is the natural dressing-room leader going into the rebuild.
+The club used a four-captain system in 2025–26: Francho Serrano, Keidi Bare, Raúl "Guti," and Iván Calero. Two of those are gone (Guti out of contract; Bare/Calero status pending). **Francho Serrano renewed through 2030** (announced during a tribute act at La Romareda; confirmed on official site) and is the natural dressing-room leader going into the rebuild.
 
 **Open item:** formal 2026–27 captaincy announcement not yet made.
 
@@ -36,18 +36,18 @@ The club used a four-captain system in 2025–26: Francho Serrano, Keidi Bare, R
 - **Contract termination (confirmed post-July 7):** **Hugo Goñi** — contract terminated (official site, 2026-07).
 - **Loan returns to parent clubs:** goalkeepers Adrián Rodríguez (back to Deportivo Alavés) and Esteban Andrada (back to Monterrey).
 - **Transfer out confirmed:** **Juan Sebastián** (born 7 Feb 2002) — permanent transfer to FC Andorra. Academy product since 2014-15 (joined U-12); 26 matches in 2025-26. (source: official site, 2026-07)
-- **Transfer out confirmed:** **Álex Gomes** — permanent transfer to Venezia (Serie A, recently promoted). 18-year-old academy product; had received call-ups to Spain U-18. Fee undisclosed but described as significant — proceeds contribute to the promotion-push budget. (source: Sport Aragón, 2026-07-04)
+- **Transfer out — reported, not verified against a source of truth:** **Álex Gomes** — reported permanent transfer to Venezia (Serie A). 18-year-old academy product; had received call-ups to Spain U-18. Fee not disclosed by any source. This claim currently rests only on Sport Aragón (2026-07-04) — not yet found on realzaragoza.com or Spanish Wikipedia; treat as unconfirmed until cross-checked.
 - **Loan out confirmed:** **Sebastian Kóša** — loan at FC Košice (Slovakia), 2026-27. (source: official site, 2026-07)
 - **Loan out confirmed (post-July 7):** **Iker García** — loan to Arenas de Getxo. (source: official site, 2026-07)
-- **At risk of release on salary-cap grounds** (reported, not yet confirmed as final): Dani Gómez, Valery, Keidi Bare. (Some aggregated squad-tracker sources suggest these may already be resolved via contract termination post-relegation, but no single dated article confirms this — leaving as unresolved pending a clearer source.)
-- **Sold:** **Samed Baždar** — to **Sint-Truidense VV** (Belgium), confirmed 2026-08-04. €1.5M upfront + €250k performance bonuses + Real Zaragoza retains 20% of any future sale. Originally cost €3M from Partizan Belgrade two years prior — recovers roughly half that outlay, with the sell-on clause offering a path to recouping the rest. Represented Bosnia & Herzegovina at FIFA World Cup 2026 (eliminated Round of 16 vs. USA, did not feature) before the move. (source: El Desmarque, 2026-08-04)
-- Sporting director Lalo Arantegui has been reported as targeting a total of **26 departures** — this is a near-total squad rebuild driven by Primera RFEF wage-cap constraints.
+- **At risk of release on salary-cap grounds — reported only, not verified against a source of truth:** Dani Gómez, Valery, Keidi Bare. No realzaragoza.com or Wikipedia confirmation found either way; treat as rumour.
+- **Sold — confirmed:** **Samed Baždar** — to **Sint-Truidense** (Belgian Jupiler Pro League). Confirmed directly on realzaragoza.com: joined summer 2024, 40 matches / 5 goals / 5 assists for the club, spent the second half of last season on loan at Jagiellonia (Poland), represented Bosnia & Herzegovina at FIFA World Cup 2026. (source: official site) — **the official article does not state a transfer fee.** A fee of €1.5M + €250k bonuses + 20% sell-on (vs. an original €3M cost from Partizan Belgrade) is reported by El Desmarque (2026-08-04) only — treat those specific numbers as unconfirmed until the club or Wikipedia states a figure.
+- Sporting director Lalo Arantegui has been reported as targeting a total of **26 departures** — this figure is press-only (not on realzaragoza.com/Wikipedia); treat as a rumoured/approximate scale, not a confirmed count.
 
 ## Players returning from loan (futures unclear)
 
-Two players regarded among the most successful loanees last season are back at the club with uncertain roles: **Adrián Liso**, **Pau Sans** (a third, Samed Baždar, has since been sold — see Confirmed departures above). Press describes their outlooks as differing — don't assume both are kept.
+Two players regarded among the most successful loanees last season are back at the club with uncertain roles: **Adrián Liso**, **Pau Sans** (a third, Samed Baždar, has since been sold — see Confirmed departures above, confirmed on the official site). Press describes their outlooks as differing — don't assume both are kept.
 
-**Adrián Liso** — his exit is a stated priority for Lalo Arantegui (needed to fund a CF and CB signing) but remains unresolved as of 2026-08-06. Asking price reportedly dropped from an initial €5M to ~€3M + a sell-on percentage as negotiations have dragged. Interested clubs reported: Sevilla, Alavés, Espanyol, Valencia, Venezia, Mallorca — no concrete offer yet. With his departure delayed and competitive football approaching, he rejoined training and is expected to feature in the Andorra friendly to maintain fitness. (source: El Desmarque, 2026-08-06)
+**Adrián Liso** — no realzaragoza.com or Wikipedia article confirms a departure; as of 2026-08-06 he is still training with the squad and expected in the Andorra friendly. Everything below this line is **rumour only, sourced entirely from El Desmarque, not independently confirmed**: that his exit is a stated Arantegui priority to fund a CF/CB signing, an asking price dropping from ~€5M to ~€3M+sell-on, and interest from Sevilla/Alavés/Espanyol/Valencia/Venezia/Mallorca.
 
 ## Confirmed 2026 summer signings (so far)
 
@@ -85,10 +85,10 @@ Primer partido oficial: **vs Nàstic, Sunday 30 August, 21:30, away at Nou Estad
 
 ## Remaining market priorities (updated 2026-08-06)
 
-- **One more central defender** — Diego González was the first of at least 2 Lalo Arantegui said were needed. As of 2026-08-05, two options under consideration: **Rubén Iranzo** (Valencia CF, can play CB or RB, preferred option but Valencia's own squad situation is creating uncertainty) and **Xavi Sintes** (free agent, ex-Córdoba, prefers a LaLiga Hypermotion move and previously rejected a Zaragoza offer — could be revisited). Neither confirmed. Final defensive shape also depends on whether Hugo Carrillo and Hugo Barrachina stay, since Diego González's arrival may push one out on loan. (source: El Desmarque, 2026-08-05)
-- A **left winger** — Emil Hansson was signed, but Pau Sans is considered as an option for a second option on that flank.
-- **Adrián Liso's exit** is now the key that unlocks the rest of the market — see "Players returning from loan" above; the club wants to bring in a CF and a CB but needs his sale to fund it.
-- Salary-cap cases still reported as unresolved: Dani Gómez, Valery, Keidi Bare (see caveat above).
+- **One more central defender** — Diego González was the first of at least 2 Lalo Arantegui said were needed (this "at least 2" figure itself is press-only, not on realzaragoza.com/Wikipedia). **Rumour only, not verified against a source of truth (El Desmarque, 2026-08-05):** two names reported as under consideration — Rubén Iranzo (Valencia CF) and Xavi Sintes (free agent, ex-Córdoba). Neither appears on the official site or Wikipedia; treat as speculative transfer talk, not a confirmed shortlist.
+- A **left winger** — Emil Hansson was signed (confirmed). Pau Sans as a second option on that flank is squad.md's own read of his existing profile, not a sourced club statement.
+- **Adrián Liso's future** — see "Players returning from loan" above; still unresolved, with the market-unlock framing being press-only.
+- Salary-cap cases reported, not confirmed: Dani Gómez, Valery, Keidi Bare — see caveat above.
 
 ## Open items for this page
 
@@ -103,8 +103,12 @@ Primer partido oficial: **vs Nàstic, Sunday 30 August, 21:30, away at Nou Estad
 
 ## Sources
 
+*Only realzaragoza.com and Spanish Wikipedia count as confirmed fact per project convention. Every other link below (El Desmarque, Sport Aragón, Cope, Aragón Digital, Hoy Aragón, Segundo Enfoque) is press reporting — claims that rest solely on one of these are flagged as rumour/unconfirmed in the body text above, not stated as settled fact.*
+
 - [Real Zaragoza — Wikipedia (ES)](https://es.wikipedia.org/wiki/Real_Zaragoza)
 - [Plantilla — official site](https://www.realzaragoza.com/plantilla)
+- [Samed Bazdar, traspasado al Sint-Truidense belga — official site](https://www.realzaragoza.com/noticias/samed-bazdar-traspasado-al-sint-truidense-belga)
+- [El Real Zaragoza y Francho Serrano, juntos hasta 2030 — official site](https://www.realzaragoza.com/noticias/el-real-zaragoza-y-francho-serrano-juntos-hasta-2030)
 - [Así está la plantilla del Real Zaragoza 26/27 — Sport Aragón](https://www.sportaragon.com/articulo/real-zaragoza/plantilla-real-zaragoza-pretemporada/20260623095555155076.html)
 - [Estos son los jugadores que no estarán en el Real Zaragoza la próxima temporada — Sport Aragón](https://www.sportaragon.com/articulo/real-zaragoza/jugadores-estaran-real-zaragoza-proxima-temporada/20260224170322148166.html)
 - [El Zaragoza perfila los ocho fichajes que quiere en el mercado de verano — El Desmarque](https://www.eldesmarque.com/futbol/primera-rfef/20260609/real-zaragoza-perfila-ocho-fichajes-quiere-mercado-verano-extra-como-guinda_18_019400832.html)
